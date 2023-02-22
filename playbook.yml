@@ -1,18 +1,34 @@
 ---
 
 - hosts: all
+  pre_tasks: # This task should be run before any other PLAY
+    - name: Install updates
+      tags: always
+      package:
+        update_cache: true
+      
+- hosts: containers # In our case containers = all, as defined in inventory
   tasks:
-
   - name: Install apache and vim package
+    tags: apache,vim
     package:
       name: 
         - "{{ apache_package }}"
         - "{{ vim_package }}"
       state: latest
-      update_cache: true
     # when: ansible_eth0.ipv4.address == "172.17.0.2"
+  
+  - name: Copy file to machine
+    tags: copy
+    copy:
+      src: files/file.txt
+      dest: ~/default_file.txt
+      owner: root
+      group: root
+      mode: 0644
 
   - name: Remove apache2 pacakge
+    tags: apache
     package:
       name: apache2
       state: absent

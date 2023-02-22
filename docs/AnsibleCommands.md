@@ -34,3 +34,12 @@ Update all packages:
 
 Run playbook:
 > `ansible-playbook playbook.yml`
+
+Show tags:
+> `ansible-playbook --list-tags playbook.yml`
+
+Run tasks ONLY associated with a specific tag:
+> `ansible-playbook --tags apache playbook.yml`
+
+Run tasks with specified tags:
+> `ansible-playbook --tags "apache,vim" playbook.yml`
