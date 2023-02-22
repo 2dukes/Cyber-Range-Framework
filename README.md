@@ -1,6 +1,12 @@
 # PROJ_Thesis_2223
 
+# Setup
+
 ## Steps
+
+## Step 1
+
+Install Ansible `sudo apt install ansible`
 
 Create SSH key pairs to connect from workstation to containers with SSH using Ansible.
 
