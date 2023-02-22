@@ -1,5 +1,6 @@
 [hosts]
-172.17.0.2
+172.17.0.2 apache_package=apache2 vim_package=vim
+172.17.0.3 apache_package=apache2 vim_package=vim
 
 [hosts:vars]
 ansible_python_interpreter=/usr/bin/python3

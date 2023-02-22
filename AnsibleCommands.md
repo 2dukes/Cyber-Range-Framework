@@ -14,3 +14,23 @@ Gather hosts facts.
 
 Or, more specific:
 > `ansible all -m gather_facts --limit 172.17.0.2`
+
+Update system.
+> `ansible all -m apk -a update_cache=true`
+
+If not with `root` privileges, then do:
+> `ansible all -m apk -a update_cache=true --become --ask-become-pass`
+
+`--become` tries to elevate ansible privileges to `sudo` and `--ask-become-pass` asks for the corresponding password. `-a` is a way to add arguments to the `apk` module.
+
+Install package (`vim`):
+> `ansible all -m apk -a name=vim`
+
+Update package (`vim`):
+> `ansible all -m apk -a "name=vim state=latest"`
+
+Update all packages:
+> `ansible all -m apk -a "upgrade=true"`
+
+Run playbook:
+> `ansible-playbook playbook.yml`

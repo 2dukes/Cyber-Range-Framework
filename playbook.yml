@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  tasks:
+
+  - name: Install apache and vim package
+    package:
+      name: 
+        - "{{ apache_package }}"
+        - "{{ vim_package }}"
+      state: latest
+      update_cache: true
+    # when: ansible_eth0.ipv4.address == "172.17.0.2"
+
+  - name: Remove apache2 pacakge
+    package:
+      name: apache2
+      state: absent
+  
