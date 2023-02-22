@@ -4,11 +4,16 @@ RUN apk update \
     && apk upgrade \
     && apk add --no-cache bash openrc openssh \
     && ssh-keygen -A \
-    && echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config \
-    && adduser -h /home/dukes -s /bin/sh -D dukes \
-    && echo -n 'dukes:some_password_here' | chpasswd \
+    # && adduser -h /home/dukes -s /bin/sh -D dukes \
+    && mkdir ~/.ssh \
+    && chmod 0700 ~/.ssh \
+    && sed -i s/^#PasswordAuthentication\ yes/PasswordAuthentication\ no/ /etc/ssh/sshd_config \
     && mkdir -p /run/openrc \
     && touch /run/openrc/softlevel
+
+COPY id_key.pub /
+RUN cat /id_key.pub > ~/.ssh/authorized_keys \
+    && chmod 600 ~/.ssh/authorized_keys
 
 EXPOSE 22
 
