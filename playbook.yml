@@ -9,27 +9,63 @@
       
 - hosts: containers # In our case containers = all, as defined in inventory
   tasks:
-  - name: Install apache and vim package
-    tags: apache,vim
+  - name: Install apache and nano package
+    tags: apache,nano
     package:
       name: 
         - "{{ apache_package }}"
-        - "{{ vim_package }}"
+        - nano
       state: latest
-    # when: ansible_eth0.ipv4.address == "172.17.0.2"
   
+  - name: Start apache2
+    tags: apache
+    service:
+      name: "{{ apache_package }}"
+      state: started
+      enabled: yes
+    when: ansible_eth0.ipv4.address == "172.17.0.2"
+
+  - name: Change email address for admin
+    tags: apache
+    lineinfile:
+      path: /etc/apache2/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin me@here.pt
+    when: ansible_eth0.ipv4.address == "172.17.0.2"
+    register: apache2_email_change # Allows to capture state in a variable
+
+  - name: Restart apache2
+    tags: apache
+    service:
+      name: apache2
+      state: reloaded
+    when: apache2_email_change.changed # Using the above mentioned variable 
+
   - name: Copy file to machine
     tags: copy
     copy:
-      src: files/file.txt
-      dest: ~/default_file.txt
+      src: files/index.html
+      dest: /var/www/localhost/htdocs/index.html
       owner: root
       group: root
       mode: 0644
 
-  - name: Remove apache2 pacakge
-    tags: apache
-    package:
-      name: apache2
-      state: absent
-  
+  # - name: Remove apache2 pacakge
+  #   tags: apache
+  #   package:
+  #     name: apache2
+  #     state: absent
+
+- hosts: workstations
+  tasks:
+    - name: Install unzip
+      package:
+        name: unzip
+    - name: Install Terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip
+        dest: ~/
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root

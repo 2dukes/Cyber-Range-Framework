@@ -15,7 +15,6 @@ COPY id_key.pub /
 RUN cat /id_key.pub > ~/.ssh/authorized_keys \
     && chmod 600 ~/.ssh/authorized_keys
 
-EXPOSE 22
+EXPOSE 22 80
 
-# -D in CMD below prevents sshd from becoming a daemon. -e is to log everything to stderr.
-ENTRYPOINT ["sh", "-c", "/usr/sbin/sshd -e; tail -f /dev/null"]
+ENTRYPOINT ["sh", "-c", "rc-status; rc-service sshd start; tail -f /dev/null"]
