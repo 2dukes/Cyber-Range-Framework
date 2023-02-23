@@ -6,7 +6,7 @@
 
 ## Step 1
 
-Install Ansible `sudo apt install ansible`
+Install Ansible `python3 -m pip install --user ansible`
 
 Create SSH key pairs to connect from workstation to containers with SSH using Ansible.
 
@@ -24,3 +24,17 @@ Your public key has been saved in /home/dukes/Documents/ThesisWork/PROJ_Thesis_2
 ## Connect to Container
 
 `ssh -i id_key root@ip`
+
+# Local Setup Test
+
+Build test image:
+`docker build -t ubuntu_test_image -f LocalSetupDockerfile .`
+
+Run container:
+`docker run --name ubuntu_test -d ubuntu_test_image`
+
+Prompt container:
+`docker exec -it ubuntu_test bash`
+    Setup local configuration by installing Docker and SSH client; initializing configurations:
+        `ansible-playbook setup_local.yml`
+    

@@ -1,0 +1,49 @@
+# Playbook used to setup local environment.
+# This configuration is suited for Ubuntu-based environments.
+# It performs setup of:
+# - Docker
+# - SSH
+# It assumes Ansible and Python packages are already installed on the control node.
+
+---
+- hosts: localhost
+  tasks:
+    - name: Fetch Machine Architecture
+      command: 'dpkg --print-architecture'
+      register: machine_architecture
+
+    - name: Install Required Packages (Docker + SSH)
+      apt:
+        pkg: 
+          - openssh-client
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-requests
+        state: latest
+        update_cache: true
+
+    - name: Setup Docker
+      block:
+        - name: Docker PGP Key
+          ansible.builtin.get_url:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            dest: /etc/apt/trusted.gpg.d/docker.asc
+
+        - name: Docker APT Repository
+          ansible.builtin.apt_repository:
+            repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+            state: present
+
+    - name: Install Docker Packages
+      apt:
+        pkg: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: latest
+        update_cache: true
+  

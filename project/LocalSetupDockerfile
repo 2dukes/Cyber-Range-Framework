@@ -1,0 +1,14 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y python3 python3-pip nano
+
+RUN python3 -m pip install --user ansible
+
+ENV PATH="$PATH:/root/.local/bin/"
+
+COPY Dockerfile /
+COPY ansible.cfg /
+COPY setup_local.yml /
+COPY inventory/ /inventory
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

@@ -1,0 +1,29 @@
+# Playbook used to setup containers.
+
+---
+- hosts: localhost
+  vars:
+    default_container_name: test_3
+    default_container_image: test
+  
+  tasks:  
+    - name: Start Docker Service
+      sysvinit:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Build Image
+      community.docker.docker_image:
+        name: "{{ default_container_image }}"
+        build:
+          path: .
+        state: present
+        source: build
+
+    - name: Create Container
+      community.general.docker_container:
+        name: "{{ default_container_name }}"
+        image: "{{ default_container_image }}"
+        state: present
+  
