@@ -6,6 +6,7 @@
       tags: always
       package:
         update_cache: true
+      changed_when: false
       
 - hosts: containers # In our case containers = all, as defined in inventory
   tasks:
@@ -15,6 +16,7 @@
       name: 
         - "{{ apache_package }}"
         - nano
+        - sudo
       state: latest
   
   - name: Start apache2
@@ -55,6 +57,30 @@
   #   package:
   #     name: apache2
   #     state: absent
+
+- hosts: all
+  tasks:
+    - name: Create new user
+      tags: always
+      user:
+        name: simone
+        groups: root
+        password: '*' # https://github.com/relrod/ansible/commit/859726eaab17c735bd5106bdce6c662504168382
+
+    - name: Add SSH key for user
+      tags: always
+      authorized_key:
+        user: simone
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILuxBPBtQPNCgp3DdxsqKD3RaJ7wVBqPjBRne329kHyU Thesis_Containers"
+    
+    - name: Add sudoers file for user
+      tags: always
+      copy:
+        src: files/sudoer_simone
+        dest: /etc/sudoers.d/simone
+        owner: root
+        group: root
+        mode: 0440
 
 - hosts: workstations
   tasks:
