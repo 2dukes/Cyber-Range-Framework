@@ -2,15 +2,15 @@
   tags: apache,nano
   package:
     name: 
-      - "{{ apache_package }}"
-      - nano
-      - sudo
+      - "{{ apache_package_name }}"
+      - "{{ nano_package_name }}"
+      - "{{ sudo_package_name }}"
     state: latest
   
 - name: Start apache2
   tags: apache
   service:
-    name: "{{ apache_package }}"
+    name: "{{ apache_service }}"
     state: started
     enabled: yes
   when: ansible_eth0.ipv4.address == "172.17.0.2"
@@ -20,16 +20,9 @@
   lineinfile:
     path: /etc/apache2/httpd.conf
     regexp: '^ServerAdmin'
-    line: ServerAdmin me@here.pt
+    line: ServerAdmin me@here.ps
   when: ansible_eth0.ipv4.address == "172.17.0.2"
-  register: apache2_email_change # Allows to capture state in a variable
-
-- name: Restart apache2
-  tags: apache
-  service:
-    name: apache2
-    state: reloaded
-  when: apache2_email_change.changed # Using the above mentioned variable 
+  notify: restart_apache # Using handlers
 
 - name: Copy file to machine
   tags: copy

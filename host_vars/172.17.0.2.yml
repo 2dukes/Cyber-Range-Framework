@@ -1,0 +1,6 @@
+apache_package_name: apache2
+apache_service: apache2
+nano_package_name: nano
+sudo_package_name: sudo
+
+# Name of this file can be either the IP address of the target or the corresponding DNS name.
