@@ -1,0 +1,41 @@
+- name: Install apache and nano package
+  tags: apache,nano
+  package:
+    name: 
+      - "{{ apache_package }}"
+      - nano
+      - sudo
+    state: latest
+  
+- name: Start apache2
+  tags: apache
+  service:
+    name: "{{ apache_package }}"
+    state: started
+    enabled: yes
+  when: ansible_eth0.ipv4.address == "172.17.0.2"
+
+- name: Change email address for admin
+  tags: apache
+  lineinfile:
+    path: /etc/apache2/httpd.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin me@here.pt
+  when: ansible_eth0.ipv4.address == "172.17.0.2"
+  register: apache2_email_change # Allows to capture state in a variable
+
+- name: Restart apache2
+  tags: apache
+  service:
+    name: apache2
+    state: reloaded
+  when: apache2_email_change.changed # Using the above mentioned variable 
+
+- name: Copy file to machine
+  tags: copy
+  copy:
+    src: index.html
+    dest: /var/www/localhost/htdocs/index.html
+    owner: root
+    group: root
+    mode: 0644
