@@ -7,6 +7,7 @@
 
 ---
 - hosts: localhost
+  become: true
   tasks:
     - name: Fetch Machine Architecture
       command: 'dpkg --print-architecture'
@@ -52,9 +53,14 @@
         path: keys/
         state: directory
         mode: '0755'
-  
+
+    - name: Check If Keys Already Exist
+      stat:
+        path: "keys/id_key"
+      register: result
+
     - name: Generate SSH Key Pair
       openssh_keypair:
         path: keys/id_key
         type: ed25519
-
+      when: not result.stat.exists

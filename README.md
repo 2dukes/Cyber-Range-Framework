@@ -27,6 +27,8 @@ Your public key has been saved in /home/dukes/Documents/ThesisWork/PROJ_Thesis_2
 
 This setup assumes both `ansible` and `python3` (along with `pip`) are already installed in the local machine. Otherwise, running the playbooks would not be possible.
 
+> If Docker images don't exist already, there might be errors. It's advisable to run this playbooks' outside a container.
+
 - **Playbooks**:
   - `bootstrap.yml`
     - Installs Docker, and the SSH client.
