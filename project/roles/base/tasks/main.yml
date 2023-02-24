@@ -1,0 +1,32 @@
+- name: Start Docker Service
+  sysvinit:
+    name: docker
+    state: started
+    enabled: yes
+
+# - name: Show all the hosts in the inventory
+#   ansible.builtin.debug:
+#     msg: "{{ item }}"
+#   loop: "{{ groups['all'] }}"
+
+- name: Build Image
+  community.docker.docker_image:
+    name: "{{ default_container_image }}"
+    build:
+      path: .
+    state: present
+    source: build
+
+- name: Create Container
+  community.general.docker_container:
+    name: "{{ item }}"
+    image: "{{ default_container_image }}"
+    state: started
+  loop: "{{ internal_network_pc_names }}"
+
+- name: Add the container to inventory
+  ansible.builtin.add_host:
+    name: "{{ item }}"
+    ansible_connection: docker
+    groups: internal_net
+  loop: "{{ internal_network_pc_names }}"
