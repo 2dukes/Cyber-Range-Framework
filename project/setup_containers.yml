@@ -25,5 +25,5 @@
       community.general.docker_container:
         name: "{{ default_container_name }}"
         image: "{{ default_container_image }}"
-        state: present
+        state: started
   

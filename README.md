@@ -2,11 +2,9 @@
 
 # Setup
 
-## Steps
-
 ## Step 1
 
-Install Ansible `python3 -m pip install --user ansible`
+Install Ansible `python3 -m pip install --user ansible`.
 
 Create SSH key pairs to connect from workstation to containers with SSH using Ansible.
 
@@ -27,14 +25,31 @@ Your public key has been saved in /home/dukes/Documents/ThesisWork/PROJ_Thesis_2
 
 # Local Setup Test
 
-Build test image:
+This setup assumes both `ansible` and `python3` (along with `pip`) are already installed in the local machine. Otherwise, running the playbooks would not be possible.
+
+- **Playbooks**:
+  - `bootstrap.yml`
+    - Installs Docker, and the SSH client.
+    - Sets up SSH keys for communication with containers.
+  - `setup_containers.yml`
+    - Starts necessary containers.
+
+**Build test image:**
+
 `docker build -t ubuntu_test_image -f LocalSetupDockerfile .`
 
-Run container:
-`docker run --name ubuntu_test -d ubuntu_test_image`
+**Run container:**
 
-Prompt container:
+`docker run --name ubuntu_test --privileged=true -v /var/run/docker.sock:/var/run/docker.sock -d ubuntu_test_image`
+
+> Docker-in-Docker because we need to instantiate Docker containers inside the container which then are visible to the host machine.
+
+**Prompt container:**
+
 `docker exec -it ubuntu_test bash`
-    Setup local configuration by installing Docker and SSH client; initializing configurations:
-        `ansible-playbook setup_local.yml`
+
+- Setup local configuration by installing Docker and SSH client; initializing configurations:
+
+    `ansible-playbook bootstrap.yml`
+    `ansible-playbook setup_containers.yml`
     

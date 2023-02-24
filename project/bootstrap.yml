@@ -46,4 +46,15 @@
           - docker-compose-plugin
         state: latest
         update_cache: true
+    
+    - name: Create keys/ directory
+      ansible.builtin.file:
+        path: keys/
+        state: directory
+        mode: '0755'
   
+    - name: Generate SSH Key Pair
+      openssh_keypair:
+        path: keys/id_key
+        type: ed25519
+

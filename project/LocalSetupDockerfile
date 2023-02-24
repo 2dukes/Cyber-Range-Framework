@@ -8,7 +8,8 @@ ENV PATH="$PATH:/root/.local/bin/"
 
 COPY Dockerfile /
 COPY ansible.cfg /
-COPY setup_local.yml /
+COPY bootstrap.yml /
+COPY setup_containers.yml /
 COPY inventory/ /inventory
 
 ENTRYPOINT ["tail", "-f", "/dev/null"]
