@@ -1,3 +1,3 @@
 default_container_image: base_image
 number_internal_containers: 4
-internal_network_pc_names: "{{ ['internal_pc'] | product(range(1,number_internal_containers)) | map('join','_') | list }}"
+internal_network_pc_names: "{{ ['internal_pc'] | product(range(1, number_internal_containers)) | map('join', '_') | list }}"

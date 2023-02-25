@@ -1,10 +1,12 @@
 # Playbook used to setup containers.
 
 ---
-- hosts: localhost      
+- name: Base Tasks
+  hosts: localhost
   roles:
     - base
 
-- hosts: internal_net
+- name: Internal Network Tasks
+  hosts: internal_net
   roles:
     - internal

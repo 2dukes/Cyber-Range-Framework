@@ -1,5 +1,6 @@
-- name: test command
-  command: ls
+- name: Test command
+  ansible.builtin.command: ls
   register: test_var
+  changed_when: false
 
 # - debug: var=test_var

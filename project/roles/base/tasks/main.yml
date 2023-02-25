@@ -1,8 +1,8 @@
 - name: Start Docker Service
-  sysvinit:
+  ansible.builtin.sysvinit:
     name: docker
     state: started
-    enabled: yes
+    enabled: true
 
 # - name: Show all the hosts in the inventory
 #   ansible.builtin.debug:
