@@ -17,16 +17,10 @@
     state: present
     source: build
 
-- name: Create Container
-  community.general.docker_container:
-    name: "{{ item }}"
-    image: "{{ default_container_image }}"
-    state: started
+- name: Container Operations
+  ansible.builtin.include_tasks: containers.yml
   loop: "{{ internal_network_pc_names }}"
+  loop_control:
+    loop_var: pc_name
 
-- name: Add the container to inventory
-  ansible.builtin.add_host:
-    name: "{{ item }}"
-    ansible_connection: docker
-    groups: internal_net
-  loop: "{{ internal_network_pc_names }}"
+# https://stackoverflow.com/questions/58908625/issue-looping-on-block-containing-a-set-of-tasks-in-ansible

@@ -1,0 +1,11 @@
+- name: Create Container
+  community.general.docker_container:
+    name: "{{ pc_name }}"
+    image: "{{ default_container_image }}"
+    state: started
+
+- name: Add the container to inventory
+  ansible.builtin.add_host:
+    name: "{{ pc_name }}"
+    ansible_connection: docker
+    groups: internal_net
