@@ -17,10 +17,12 @@
     state: present
     source: build
 
+- name: Create Docker network
+  docker_network:
+    name: "{{ internal_network_name }}"
+
 - name: Container Operations
   ansible.builtin.include_tasks: containers.yml
   loop: "{{ internal_network_pc_names }}"
   loop_control:
     loop_var: pc_name
-
-# https://stackoverflow.com/questions/58908625/issue-looping-on-block-containing-a-set-of-tasks-in-ansible

@@ -52,6 +52,6 @@ This setup assumes both `ansible` and `python3` (along with `pip`) are already i
 
 - Setup local configuration by installing Docker and SSH client; initializing configurations:
 
-    `ansible-playbook bootstrap.yml`
+    `ansible-playbook --ask-become-pass bootstrap.yml`
     `ansible-playbook setup_containers.yml`
     

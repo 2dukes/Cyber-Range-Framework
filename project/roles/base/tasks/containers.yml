@@ -9,3 +9,15 @@
     name: "{{ pc_name }}"
     ansible_connection: docker
     groups: internal_net
+
+- name: Add a container to Network
+  docker_network:
+    name: "{{ internal_network_name }}"
+    ipam_config:
+      - subnet: 172.3.27.0/24 # Hard-coded
+        gateway: 172.3.27.2 # Hard-coded
+    connected:
+      - "{{ pc_name }}"
+    appends: yes
+
+- debug: var=test_variable
