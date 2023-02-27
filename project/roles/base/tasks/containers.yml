@@ -8,14 +8,14 @@
   ansible.builtin.add_host:
     name: "{{ pc_name }}"
     ansible_connection: docker
-    groups: internal_net
+    groups: "{{ network_name }}"
 
 - name: Add a container to Network
-  docker_network:
+  community.docker.docker_network:
     name: "{{ network_name }}"
     ipam_config:
-      - subnet: 172.3.27.0/24 # Hard-coded
-        gateway: 172.3.27.2 # Hard-coded
+      - subnet: "{{ network_addr }}"
+        gateway: "{{ gateway_addr }}"
     connected:
       - "{{ pc_name }}"
     appends: true

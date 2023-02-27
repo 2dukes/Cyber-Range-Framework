@@ -1,31 +1,25 @@
 general:
-  random_seed: 10
   default_container_image_name: base_image
+  random_byte: "{{ 254 | random(start=30, seed=10) }}"
 
 networks:
   internal_net:
-    num_containers: 4
-    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
-    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    network_addr: 172.{{ general.random_byte }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte }}.0.254
     machines:
       - name: internal_pc_1
       - name: internal_pc_2
       - name: internal_pc_3
 
   dmz_net:
-    num_containers: 4
-    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
-    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
     machines:
-      - name: internal_pc_1
-      - name: internal_pc_2
-      - name: internal_pc_3
+      - name: dmz_pc_1
+      - name: dmz_pc_2
 
   external_net:
-    num_containers: 4
-    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
-    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 10 }}.0.254
     machines:
-      - name: internal_pc_1
-      - name: internal_pc_2
-      - name: internal_pc_3
+      - name: external_pc_1

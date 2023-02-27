@@ -17,15 +17,22 @@
     name: "{{ item }}"
   loop: "{{ networks.keys() }}"
 
-# - name: Display users
-#   debug:
-#     msg: "{{ item }}"
-#   loop: "{{ networks.internal_net.machines }}"
-
-- name: Container Operations
+- name: Container Operations (Internal Network)
   ansible.builtin.include_tasks: containers.yml
   vars:
     network_name: internal_net
+    network_addr: "{{ networks.internal_net.network_addr }}"
+    gateway_addr: "{{ networks.internal_net.gateway_addr }}"
   loop: "{{ networks.internal_net.machines | map(attribute='name') }}"
   loop_control:
     loop_var: pc_name
+
+# - name: Container Operations (DMZ Network)
+#   ansible.builtin.include_tasks: containers.yml
+#   vars:
+#     network_name: dmz_net
+#     network_addr: "{{ networks.dmz_net.network_addr }}"
+#     gateway_addr: "{{ networks.dmz_net.gateway_addr }}"
+#   loop: "{{ networks.dmz_net.machines | map(attribute='name') }}"
+#   loop_control:
+#     loop_var: pc_name
