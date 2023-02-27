@@ -1,21 +1,28 @@
+# - name: TEST
+#   debug:
+#     msg: "{{ pc_info }} and {{ networks.internal_net.network_addr }} and {{ networks.internal_net.gateway_addr }}"
+
 - name: Create Container
   community.general.docker_container:
-    name: "{{ pc_name }}"
+    name: "{{ pc_info.name }}"
     image: "{{ general.default_container_image_name }}"
+    networks:
+      - name: "{{ network_name }}"
+        ipv4_address: "{{ pc_info.ip_address }}"
     state: started
 
 - name: Add the container to inventory
   ansible.builtin.add_host:
-    name: "{{ pc_name }}"
+    name: "{{ pc_info.name }}"
     ansible_connection: docker
     groups: "{{ network_name }}"
 
-- name: Add a container to Network
-  community.docker.docker_network:
-    name: "{{ network_name }}"
-    ipam_config:
-      - subnet: "{{ network_addr }}"
-        gateway: "{{ gateway_addr }}"
-    connected:
-      - "{{ pc_name }}"
-    appends: true
+# - name: Add a container to Network
+#   community.docker.docker_network:
+#     name: "{{ network_name }}"
+#     ipam_config:
+#       - subnet: "{{ network_addr }}"
+#         gateway: "{{ gateway_addr }}"
+#     connected:
+#       - "{{ pc_info.name }}"
+#     appends: true
