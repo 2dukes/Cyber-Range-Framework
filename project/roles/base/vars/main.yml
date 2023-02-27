@@ -1,5 +1,31 @@
-default_container_image: base_image
-number_internal_containers: 4
-internal_network_pc_names: "{{ ['internal_pc'] | product(range(1, number_internal_containers)) | map('join', '_') | list }}"
-internal_network_name: internal_net
-test_variable: "{{ [] | generate_ipv4_address }}"
+general:
+  random_seed: 10
+  default_container_image_name: base_image
+
+networks:
+  internal_net:
+    num_containers: 4
+    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    machines:
+      - name: internal_pc_1
+      - name: internal_pc_2
+      - name: internal_pc_3
+
+  dmz_net:
+    num_containers: 4
+    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    machines:
+      - name: internal_pc_1
+      - name: internal_pc_2
+      - name: internal_pc_3
+
+  external_net:
+    num_containers: 4
+    network_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    gateway_addr: "{{ general.random_seed | generate_ipv4_address(True) }}"
+    machines:
+      - name: internal_pc_1
+      - name: internal_pc_2
+      - name: internal_pc_3

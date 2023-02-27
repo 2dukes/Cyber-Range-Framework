@@ -4,25 +4,28 @@
     state: started
     enabled: true
 
-# - name: Show all the hosts in the inventory
-#   ansible.builtin.debug:
-#     msg: "{{ item }}"
-#   loop: "{{ groups['all'] }}"
-
 - name: Build Image
   community.docker.docker_image:
-    name: "{{ default_container_image }}"
+    name: "{{ general.default_container_image_name }}"
     build:
       path: .
     state: present
     source: build
 
-- name: Create Docker network
-  docker_network:
-    name: "{{ internal_network_name }}"
+- name: Create Networks
+  community.docker.docker_network:
+    name: "{{ item }}"
+  loop: "{{ networks.keys() }}"
+
+# - name: Display users
+#   debug:
+#     msg: "{{ item }}"
+#   loop: "{{ networks.internal_net.machines }}"
 
 - name: Container Operations
   ansible.builtin.include_tasks: containers.yml
-  loop: "{{ internal_network_pc_names }}"
+  vars:
+    network_name: internal_net
+  loop: "{{ networks.internal_net.machines | map(attribute='name') }}"
   loop_control:
     loop_var: pc_name

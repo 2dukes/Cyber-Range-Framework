@@ -1,7 +1,7 @@
 - name: Create Container
   community.general.docker_container:
     name: "{{ pc_name }}"
-    image: "{{ default_container_image }}"
+    image: "{{ general.default_container_image_name }}"
     state: started
 
 - name: Add the container to inventory
@@ -12,12 +12,10 @@
 
 - name: Add a container to Network
   docker_network:
-    name: "{{ internal_network_name }}"
+    name: "{{ network_name }}"
     ipam_config:
       - subnet: 172.3.27.0/24 # Hard-coded
         gateway: 172.3.27.2 # Hard-coded
     connected:
       - "{{ pc_name }}"
-    appends: yes
-
-- debug: var=test_variable
+    appends: true

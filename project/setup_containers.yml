@@ -1,6 +1,7 @@
 # Playbook used to setup containers.
 
 ---
+
 - name: Base Tasks
   hosts: localhost
   roles:
