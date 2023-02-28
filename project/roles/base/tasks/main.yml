@@ -25,19 +25,3 @@
   loop: "{{ machines }}"
   loop_control:
     loop_var: pc_info
-
-# - name: Container Operations (DMZ Network)
-#   ansible.builtin.include_tasks: containers.yml
-#   vars:
-#     network_name: dmz_net
-#   loop: "{{ networks.dmz_net.machines }}"
-#   loop_control:
-#     loop_var: pc_info
-
-# - name: Container Operations (External Network)
-#   ansible.builtin.include_tasks: containers.yml
-#   vars:
-#     network_name: external_net
-#   loop: "{{ networks.external_net.machines }}"
-#   loop_control:
-#     loop_var: pc_info

@@ -1,13 +1,22 @@
 # Playbook used to setup containers.
 
 ---
-
 - name: Base Tasks
   hosts: localhost
   roles:
     - base
 
-- name: Internal Network Tasks
-  hosts: pcs
-  roles:
-    - internal
+# - name: Internal Network Tasks
+#   hosts: pcs
+#   roles:
+#     - internal
+
+# - name: DHCP Server
+#   hosts: dhcp
+#   roles:
+#     - dhcp
+
+# - name: Router Tasks
+#   hosts: routers
+#   roles:
+#     - routers

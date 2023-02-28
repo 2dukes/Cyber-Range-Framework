@@ -1,0 +1,60 @@
+general:
+  default_container_image_name: base_image
+  random_byte: "{{ 254 | random(start=30, seed=11) }}"
+
+networks:
+  internal_net:
+    network_addr: 172.{{ general.random_byte }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte }}.0.254      
+
+  dmz_net:
+    network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254      
+
+  external_net:
+    network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 10 }}.0.254
+
+machines:
+  - name: internal_pc_3
+    group: pcs
+    capabilities:
+      - NET_ADMIN
+    networks:
+      - name: internal_net
+        # ipv4_address: 172.{{ general.random_byte }}.0.2
+
+  # - name: router_1
+  #   group: routers
+  #   capabilities:
+  #     - NET_ADMIN
+  #   networks:
+  #     - name: internal_net
+  #       ipv4_address: 172.{{ general.random_byte }}.0.10
+  #     - name: dmz_net
+  #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
+
+  # - name: dhcp_server
+  #   group: dhcp
+  #   capabilities:
+  #     - NET_ADMIN
+  #   networks:
+  #     - name: internal_net
+  #       ipv4_address: 172.{{ general.random_byte }}.0.3
+
+  # - name: dmz_pc_1
+  #   group: pcs
+  #   capabilities:
+  #     - NET_ADMIN
+  #   networks:
+  #     - name: dmz_net
+  #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.2
+
+  # - name: external_pc_1
+  #   group: pcs
+  #   capabilities:
+  #     - NET_ADMIN
+  #   networks:
+  #     - name: external_net
+  #       ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
+

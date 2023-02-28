@@ -1,8 +1,9 @@
-- name: Create Container
+- name: Create Container "{{ pc_info.name }}"
   community.general.docker_container:
     name: "{{ pc_info.name }}"
     image: "{{ general.default_container_image_name }}"
     networks: "{{ pc_info.networks }}"
+    capabilities: "{{ pc_info.capabilities | default([]) }}"
     state: started
 
 - name: Add the container to inventory

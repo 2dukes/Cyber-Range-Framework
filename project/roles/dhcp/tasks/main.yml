@@ -1,0 +1,19 @@
+- name: Install DHCP server package
+  package:
+    name:
+      - dhcp
+    state: latest
+  # update_cache: true
+
+- name: Create lease file
+  ansible.builtin.file:
+    path: /var/lib/dhcp/dhcpd.leases
+    state: touch
+
+- name: generate config file from a template
+  template:
+    src: "dhcpd.j2"
+    dest: /etc/dhcp/dhcpd.conf
+
+- name: Start DHCP service
+  command: /usr/sbin/dhcpd -4 -f -d --no-pid -cf "/etc/dhcp/dhcpd.conf"
