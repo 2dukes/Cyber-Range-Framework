@@ -8,6 +8,6 @@
     - base
 
 - name: Internal Network Tasks
-  hosts: internal_net
+  hosts: pcs
   roles:
     - internal
