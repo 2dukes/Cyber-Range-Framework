@@ -1,10 +1,11 @@
-- name: Install DHCP client package
+- name: Install DHCP Client Package
   package:
     name:
       - dhcpcd
+      - openresolv
     state: latest
 
-- name: Get IP Address
+- name: Get IP Address Through DHCP
   ansible.builtin.command: dhcpcd
 
 - name: Remove Statically assigned IP from Docker
@@ -14,6 +15,6 @@
   ansible.builtin.command: ip r del default
 
 - name: Add New Default Route
-  ansible.builtin.command: "ip r add default via 
-    {{ ((machines | selectattr('name', '==', 'router_1'))[0]['networks'] | 
+  ansible.builtin.command: "ip r add default via
+    {{ ((machines | selectattr('name', '==', 'router_1'))[0]['networks'] |
     selectattr('name', '==', 'internal_net') | map(attribute='ipv4_address')) | first }}"

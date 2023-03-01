@@ -6,8 +6,8 @@
   roles:
     - base
 
-- name: DHCP Server
-  hosts: dhcp
+- name: DHCP Servers Tasks
+  hosts: dhcp_servers
   roles:
     - dhcp
 
@@ -16,6 +16,10 @@
   roles:
     - internal
 
+- name: DNS Servers Tasks
+  hosts: dns_servers
+  roles:
+    - dns
 
 - name: Router Tasks
   hosts: routers

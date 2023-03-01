@@ -1,0 +1,35 @@
+acl internals {
+    172.145.0.0/24;
+};
+
+view "internal" {
+    match-clients { internals; };
+    zone "myorg.net" {
+      type master;
+      file "/var/bind/db.myorg.net";
+    };
+};
+
+view "external" {
+    match-clients { any; };
+
+    // prime the server with knowledge of the root servers
+    zone "." {
+            type hint;
+            file "/usr/share/dns-root-hints/named.root";
+    };
+
+    // be authoritative for the localhost forward and reverse zones, and for
+    // broadcast zones as per RFC 1912
+
+    zone "localhost" {
+            type master;
+            file "/var/bind/pri/localhost.zone";
+    };
+
+    zone "127.in-addr.arpa" {
+            type master;
+            file "/var/bind/pri/127.zone";
+    };
+
+};

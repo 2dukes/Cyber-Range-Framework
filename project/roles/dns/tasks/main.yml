@@ -1,0 +1,44 @@
+- name: Install DNS Server Package
+  package:
+    name:
+      - bind
+    state: latest
+
+- name: Copy DNS Zone File
+  template:
+    src: "db.myorg.net.j2"
+    dest: /var/bind/db.{{ domain_name }}
+    mode: '0755'
+
+- name: Copy DNS Name File
+  template:
+    src: "named.conf.j2"
+    dest: /etc/bind/named.conf
+    mode: '0755'
+
+- name: Copy DNS Name Local File
+  template:
+    src: "named.conf.local.j2"
+    dest: /etc/bind/named.conf.local
+    mode: '0755'
+
+- name: Copy DNS Name Options File
+  template:
+    src: "named.conf.options.j2"
+    dest: /etc/bind/named.conf.options
+    mode: '0755'
+
+- name: Delete Previous DNS File
+  file:
+    state: absent
+    path: /etc/bind/named.conf.authoritative
+
+- name: Delete Previous DNS File
+  file:
+    state: absent
+    path: /etc/bind/named.conf.recursive
+
+- name: Start DHCP service
+  ansible.builtin.service:
+    name: named
+    state: started

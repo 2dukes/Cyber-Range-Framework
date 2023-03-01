@@ -15,6 +15,6 @@ COPY keys/id_key.pub /
 RUN cat /id_key.pub > ~/.ssh/authorized_keys \
     && chmod 600 ~/.ssh/authorized_keys
 
-EXPOSE 22 80
+EXPOSE 22
 
 ENTRYPOINT ["sh", "-c", "rc-status; rc-service sshd start; tail -f /dev/null"]

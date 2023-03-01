@@ -17,45 +17,43 @@ networks:
 
 machines:
   - name: dhcp_server
-    group: dhcp
-    capabilities:
-      - NET_ADMIN
+    group: dhcp_servers
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.3
     
   - name: internal_pc_1
     group: pcs
-    capabilities:
-      - NET_ADMIN
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.2
 
   - name: router_1
     group: routers
-    capabilities:
-      - NET_ADMIN
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.10
       - name: dmz_net
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
 
+  - name: dns_server
+    group: dns_servers
+    exposed_ports:
+      - 53/tcp
+      - 53/udp
+      - 953
+    networks:
+      - name: internal_net
+        ipv4_address: 172.{{ general.random_byte }}.0.20
 
-  # - name: dmz_pc_1
-  #   group: pcs
-  #   capabilities:
-  #     - NET_ADMIN
-  #   networks:
-  #     - name: dmz_net
-  #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.2
+  - name: web_server
+    group: web_servers
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.5
 
   # - name: external_pc_1
   #   group: pcs
-  #   capabilities:
-  #     - NET_ADMIN
   #   networks:
   #     - name: external_net
   #       ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
-
