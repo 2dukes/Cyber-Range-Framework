@@ -1,5 +1,17 @@
-# - name: Remove Default Route
-#   ansible.builtin.command: ip r del default
+- name: Install DHCP client package
+  package:
+    name:
+      - dhcpcd
+    state: latest
+
+- name: Get IP Address
+  ansible.builtin.command: dhcpcd
+
+- name: Remove Statically assigned IP from Docker
+  ansible.builtin.command: ip a d 172.145.0.1 dev eth0
+
+- name: Remove Default Route
+  ansible.builtin.command: ip r del default
 
 # - name: Add New Default Route
 #   ansible.builtin.command: "ip r add default via 

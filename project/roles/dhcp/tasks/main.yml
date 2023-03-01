@@ -16,4 +16,6 @@
     dest: /etc/dhcp/dhcpd.conf
 
 - name: Start DHCP service
-  command: /usr/sbin/dhcpd -4 -f -d --no-pid -cf "/etc/dhcp/dhcpd.conf"
+  ansible.builtin.service:
+    name: dhcpd
+    state: started

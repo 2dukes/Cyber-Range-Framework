@@ -6,15 +6,16 @@
   roles:
     - base
 
-# - name: Internal Network Tasks
-#   hosts: pcs
-#   roles:
-#     - internal
+- name: DHCP Server
+  hosts: dhcp
+  roles:
+    - dhcp
 
-# - name: DHCP Server
-#   hosts: dhcp
-#   roles:
-#     - dhcp
+- name: Internal Network Tasks
+  hosts: pcs
+  roles:
+    - internal
+
 
 # - name: Router Tasks
 #   hosts: routers
