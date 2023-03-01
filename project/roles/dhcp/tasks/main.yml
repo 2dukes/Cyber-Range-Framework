@@ -3,7 +3,6 @@
     name:
       - dhcp
     state: latest
-  # update_cache: true
 
 - name: Create lease file
   ansible.builtin.file:

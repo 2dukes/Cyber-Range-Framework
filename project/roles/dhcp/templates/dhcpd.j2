@@ -3,7 +3,7 @@ max-lease-time 7200;
 authoritative;
 option rfc3442-classless-static-routes code 121 = array of integer 8;
 
-subnet 172.145.0.0 netmask 255.255.255.0 {
-  range 172.145.0.64 172.145.0.127;
-  option routers 172.145.0.1;
+subnet 172.{{ general.random_byte }}.0.0 netmask 255.255.255.0 {
+  range 172.{{ general.random_byte }}.0.64 172.{{ general.random_byte }}.0.127;
+  option routers 172.{{ general.random_byte }}.0.1;
 }

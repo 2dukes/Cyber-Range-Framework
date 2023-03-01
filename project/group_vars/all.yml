@@ -30,17 +30,17 @@ machines:
       - NET_ADMIN
     networks:
       - name: internal_net
-        # ipv4_address: 172.{{ general.random_byte }}.0.2
+        ipv4_address: 172.{{ general.random_byte }}.0.2
 
-  # - name: router_1
-  #   group: routers
-  #   capabilities:
-  #     - NET_ADMIN
-  #   networks:
-  #     - name: internal_net
-  #       ipv4_address: 172.{{ general.random_byte }}.0.10
-  #     - name: dmz_net
-  #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
+  - name: router_1
+    group: routers
+    capabilities:
+      - NET_ADMIN
+    networks:
+      - name: internal_net
+        ipv4_address: 172.{{ general.random_byte }}.0.10
+      - name: dmz_net
+        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
 
 
   # - name: dmz_pc_1

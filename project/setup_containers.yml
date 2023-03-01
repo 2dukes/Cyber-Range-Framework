@@ -17,7 +17,7 @@
     - internal
 
 
-# - name: Router Tasks
-#   hosts: routers
-#   roles:
-#     - routers
+- name: Router Tasks
+  hosts: routers
+  roles:
+    - routers
