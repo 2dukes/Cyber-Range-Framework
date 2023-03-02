@@ -13,11 +13,3 @@
 
 - name: Update DNS Information
   ansible.builtin.command: resolvconf -u
-
-# - name: Remove Default Route
-#   ansible.builtin.command: ip r del default
-
-# - name: Add New Default Route
-#   ansible.builtin.command: "ip r add default via
-#     {{ ((machines | selectattr('name', '==', 'router_1'))[0]['networks'] |
-#     selectattr('name', '==', 'internal_net') | map(attribute='ipv4_address')) | first }}"

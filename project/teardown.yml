@@ -1,0 +1,4 @@
+- name: Remove Stale Containers (name="{{ pc_info.name }}")
+  community.docker.docker_container:
+    name: "{{ pc_info.name }}"
+    state: absent

@@ -1,6 +1,14 @@
 # Playbook used to setup containers.
 
 ---
+- hosts: localhost
+  tasks:
+  - name: Remove Stale Containers
+    ansible.builtin.include_tasks: teardown.yml
+    loop: "{{ machines }}"
+    loop_control:
+      loop_var: pc_info
+
 - name: Base Tasks
   hosts: localhost
   roles:
