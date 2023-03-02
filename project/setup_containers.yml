@@ -11,8 +11,13 @@
   roles:
     - dhcp
 
-- name: Internal Network Tasks
+- name: Internal Network PCs Tasks
   hosts: pcs
+  roles:
+    - internal_pcs
+
+- name: Internal Network Tasks
+  hosts: internal
   roles:
     - internal
 
@@ -20,6 +25,11 @@
   hosts: dns_servers
   roles:
     - dns
+
+- name: DMZ Network Tasks
+  hosts: dmz
+  roles:
+    - dmz
 
 - name: Router Tasks
   hosts: routers

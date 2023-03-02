@@ -1,0 +1,2 @@
+- name: Configure Static Route
+  ansible.builtin.command: ip r add {{ networks.internal_net.network_addr }} via {{ ((machines | selectattr('name', '==', 'router_1'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}

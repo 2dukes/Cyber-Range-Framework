@@ -13,6 +13,7 @@
   template:
     src: "dhcpd.j2"
     dest: /etc/dhcp/dhcpd.conf
+    mode: '0755'
 
 - name: Start DHCP Service
   ansible.builtin.service:

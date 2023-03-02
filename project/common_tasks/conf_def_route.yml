@@ -1,0 +1,7 @@
+- name: Remove Default Route
+  ansible.builtin.command: ip r del default
+
+- name: Add New Default Route
+  ansible.builtin.command: "ip r add default via
+    {{ ((machines | selectattr('name', '==', def_router_name))[0]['networks'] |
+    selectattr('name', '==', def_router_network_name) | map(attribute='ipv4_address')) | first }}"
