@@ -2,7 +2,6 @@
   package:
     name:
       - dhcpcd
-      - openresolv
     state: latest
 
 - name: Get IP Address Through DHCP
@@ -10,6 +9,3 @@
 
 - name: Remove Statically assigned IP from Docker
   ansible.builtin.command: ip a d "{{ ansible_facts['all_ipv4_addresses'] | first }}" dev eth0
-
-- name: Update DNS Information
-  ansible.builtin.command: resolvconf -u

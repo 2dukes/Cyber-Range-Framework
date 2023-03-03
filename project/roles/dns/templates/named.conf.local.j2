@@ -1,22 +1,27 @@
 acl internals {
-    172.145.0.0/24;
+    172.{{ general.random_byte }}.0.0/24;
 };
 
 view "internal" {
     match-clients { internals; };
     zone "myorg.net" {
       type master;
-      file "/var/bind/db.myorg.net";
+      file "/var/bind/db.internal.myorg.net";
     };
 };
 
 view "external" {
     match-clients { any; };
 
+    zone "myorg.net" {
+        type master;
+        file "/var/bind/db.external.myorg.net";
+    };
+
     // prime the server with knowledge of the root servers
     zone "." {
             type hint;
-            file "/usr/share/dns-root-hints/named.root";
+            file "/var/bind/named.ca";
     };
 
     // be authoritative for the localhost forward and reverse zones, and for

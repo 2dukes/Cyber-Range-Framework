@@ -3,11 +3,11 @@
 ---
 - hosts: localhost
   tasks:
-  - name: Remove Stale Containers
-    ansible.builtin.include_tasks: teardown.yml
-    loop: "{{ machines }}"
-    loop_control:
-      loop_var: pc_info
+    - name: Remove Stale Containers
+      ansible.builtin.include_tasks: teardown.yml
+      loop: "{{ machines }}"
+      loop_control:
+        loop_var: pc_info
 
 - name: Base Tasks
   hosts: localhost
@@ -43,3 +43,8 @@
   hosts: routers
   roles:
     - routers
+
+- name: Scenario Tasks
+  hosts: scenario
+  roles:
+    - scenario

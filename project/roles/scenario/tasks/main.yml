@@ -1,0 +1,38 @@
+# - name: Install DHCP Client Package
+#   package:
+#     name:
+#       - dhcpcd
+#     state: latest
+
+# - name: Get IP Address Through DHCP
+#   ansible.builtin.command: dhcpcd
+
+# - name: Update DNS Information
+#   ansible.builtin.command: resolvconf -u
+
+# - name: Copy Config File
+#   template:
+#     src: "resolv.conf.j2"
+#     dest: /etc/resolv.conf
+#     owner: root
+#     group: root
+#     mode: '0644'
+
+# - name: Update DNS Server Info
+#   command: echo "dns=none" >> /etc/NetworkManager/NetworkManager.conf
+
+# - name: tttt
+#   service:
+#     name: networkmanager
+#     state: restarted
+
+# - name: Update DNS Server Info
+#   command: echo "nameserver 172.140.0.20" > /etc/resolv.conf
+  # command: echo "nameserver {{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}" >> /etc/resolv.conf
+#   # command: tee /etc/resolv.conf < /etc/resolv.conf.example > /dev/null
+
+- name: test
+  command: cat /etc/resolv.conf
+  register: outp
+
+- debug: var=outp
