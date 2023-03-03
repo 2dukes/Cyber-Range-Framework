@@ -43,8 +43,3 @@
   hosts: routers
   roles:
     - routers
-
-- name: Scenario Tasks
-  hosts: scenario
-  roles:
-    - scenario
