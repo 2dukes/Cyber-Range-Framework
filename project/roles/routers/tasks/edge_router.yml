@@ -1,8 +1,13 @@
+- name: Iptables Flush FILTER Table
+  ansible.builtin.iptables:
+    table: filter
+    flush: true
+
+- name: Configure NAT
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    jump: MASQUERADE
+
 - name: Configure Static Route
   ansible.builtin.command: ip r add {{ networks.internal_net.network_addr }} via {{ ((machines | selectattr('name', '==', 'internal_router'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
-
-- name: Configure Default Router
-  vars:
-    def_router_name: 'edge_router'
-    def_router_network_name: 'dmz_net'
-  ansible.builtin.include_tasks: ../../../common_tasks/conf_def_route.yml

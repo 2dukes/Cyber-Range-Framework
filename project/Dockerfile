@@ -2,7 +2,7 @@ FROM node:lts-alpine
 
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache bash openrc openssh python3 openresolv nano \
+    && apk add --no-cache bash openrc openssh python3 openresolv nano iptables \
     && ssh-keygen -A \
     # && adduser -h /home/dukes -s /bin/sh -D dukes \
     && mkdir ~/.ssh \
