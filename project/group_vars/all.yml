@@ -34,8 +34,7 @@ machines:
     group: 
       - routers
       - firewalls
-    dns_servers:
-      - 172.{{ general.random_byte | int - 5 }}.0.20
+    dns_server: true
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.1
@@ -45,8 +44,7 @@ machines:
   - name: edge_router
     group: 
       - routers
-    dns_servers:
-      - 172.{{ general.random_byte | int - 5 }}.0.20
+    dns_server: true
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.2
@@ -67,8 +65,7 @@ machines:
   - name: web_server
     group: 
       - web_servers
-    dns_servers:
-      - 172.{{ general.random_byte | int - 5 }}.0.20
+    dns_server: true
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.5
