@@ -1,0 +1,31 @@
+- name: a1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    policy: DROP
+
+- name: a1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    ctstate: NEW,ESTABLISHED,RELATED
+    destination: "{{ networks.dmz_net.network_addr }}"
+    jump: ACCEPT
+
+- name: a1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    ctstate: ESTABLISHED,RELATED
+    destination: "{{ networks.internal_net.network_addr }}"
+    jump: ACCEPT
+
+- name: a1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    ctstate: NEW,ESTABLISHED,RELATED
+    source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
+    jump: ACCEPT
+
+- name: a1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
+    jump: ACCEPT

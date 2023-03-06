@@ -1,0 +1,23 @@
+- name: Install iptables Package
+  package:
+    name:
+      - iptables
+    state: latest
+
+- name: Iptables Flush NAT Table
+  ansible.builtin.iptables:
+    table: nat
+    flush: true
+
+- name: Iptables Flush FILTER Table
+  ansible.builtin.iptables:
+    table: filter
+    flush: true
+  when: is_edge_router
+
+- name: Configure NAT
+  ansible.builtin.iptables:
+    table: nat
+    chain: POSTROUTING
+    jump: MASQUERADE
+  when: is_edge_router

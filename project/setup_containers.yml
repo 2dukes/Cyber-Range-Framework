@@ -43,3 +43,8 @@
   hosts: routers
   roles:
     - routers
+
+- name: Firewall Tasks
+  hosts: firewalls
+  roles:
+    - firewalls
