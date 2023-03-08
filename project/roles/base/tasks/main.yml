@@ -12,6 +12,15 @@
     state: present
     source: build
 
+- name: Build Attacker Image
+  community.docker.docker_image:
+    name: "{{ general.attacker_container_image_name }}"
+    build:
+      path: .
+      dockerfile: KaliDockerfile
+    state: present
+    source: build
+
 - name: Create Docker Networks
   community.docker.docker_network:
     name: "{{ item }}"

@@ -1,0 +1,5 @@
+- name: Configure Default Router
+  vars:
+    def_router_name: 'edge_router'
+    def_router_network_name: 'external_net'
+  ansible.builtin.include_tasks: ../../../common_tasks/conf_def_route.yml

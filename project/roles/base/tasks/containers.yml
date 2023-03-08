@@ -1,16 +1,17 @@
 - name: Create Container (name="{{ pc_info.name }}")
   community.general.docker_container:
     name: "{{ pc_info.name }}"
-    image: "{{ general.default_container_image_name }}"
+    image: "{{ pc_info.image | default(general.default_container_image_name) }}"
     networks: "{{ pc_info.networks }}"
     capabilities:
       - NET_ADMIN
     dns_servers: "{{ pc_info.dns_server is defined | ternary((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | map(attribute='ipv4_address') | first, []) }}"
     exposed_ports: "{{ pc_info.exposed_ports | default([]) }}"
+    published_ports: "{{ pc_info.published_ports | default([]) }}"
     state: started
 
-- name: Add Container "{{ pc_info.name }}" To Inventory (group="{{ pc_info.group }}")
+- name: Add Container "{{ pc_info.name }}" To Inventory (group="{{ pc_info.group | default('')}}")
   ansible.builtin.add_host:
     name: "{{ pc_info.name }}"
     ansible_connection: docker
-    groups: "{{ pc_info.group }}"
+    groups: "{{ pc_info.group | default('scenario') }}"

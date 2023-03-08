@@ -44,7 +44,7 @@
     state: absent
     path: /etc/bind/named.conf.recursive
 
-- name: Start DHCP service
+- name: Start DNS service
   ansible.builtin.service:
     name: named
     state: started

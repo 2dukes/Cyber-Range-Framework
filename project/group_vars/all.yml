@@ -1,5 +1,6 @@
 general:
   default_container_image_name: base_image
+  attacker_container_image_name: kali_test_img
   random_byte: "{{ 254 | random(start=30, seed=11) }}"
 
 networks:
@@ -70,8 +71,14 @@ machines:
       - name: dmz_net
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.5
 
-  # - name: external_pc_1
-  #   group: pcs
-  #   networks:
-  #     - name: external_net
-  #       ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
+  - name: attacker_machine
+    image: kali_test_img
+    group:
+      - external
+    published_ports:
+      - 5900:5900
+      - 6080:6080
+    dns_server: true
+    networks:
+      - name: external_net
+        ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2

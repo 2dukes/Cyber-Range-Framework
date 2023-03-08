@@ -48,3 +48,8 @@
   hosts: firewalls
   roles:
     - firewalls
+
+- name: External Tasks
+  hosts: external
+  roles:
+    - external
