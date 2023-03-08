@@ -1,5 +1,2 @@
-- name: Configure Default Router
-  vars:
-    def_router_name: 'edge_router'
-    def_router_network_name: 'external_net'
-  ansible.builtin.include_tasks: ../../../common_tasks/conf_def_route.yml
+- name: Configure Static Route
+  ansible.builtin.command: ip r add {{ networks.dmz_net.network_addr }} via {{ ((machines | selectattr('name', '==', 'edge_router'))[0]['networks'] | selectattr('name', '==', 'external_net') | map(attribute='ipv4_address')) | first }}

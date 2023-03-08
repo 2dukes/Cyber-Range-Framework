@@ -7,6 +7,7 @@
   ansible.builtin.iptables:
     table: nat
     chain: POSTROUTING
+    source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
     jump: MASQUERADE
 
 - name: Configure Static Route
