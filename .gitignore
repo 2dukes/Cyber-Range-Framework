@@ -2,3 +2,4 @@ id_key
 id_key.pub
 **/__pycache__
 unifi/geckodriver.log
+**/privkey.pem

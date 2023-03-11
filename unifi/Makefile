@@ -52,7 +52,7 @@ run:
 	-docker run --rm --name $(CONTAINER_NAME)_$(CONTAINER_INSTANCE) $(PORTS) $(VOLUMES) $(OTHER) $(ENV) $(NS)/$(IMAGE_NAME):$(TAG)
 
 start:
-	-docker run -d --name $(CONTAINER_NAME)_$(CONTAINER_INSTANCE) $(PORTS) $(VOLUMES) $(OTHER) $(ENV) $(NS)/$(IMAGE_NAME):$(TAG)
+	-docker run -d -v ${PWD}/unifi-certs:/usr/lib/unifi/cert --name $(CONTAINER_NAME)_$(CONTAINER_INSTANCE) $(PORTS) $(VOLUMES) $(OTHER) $(ENV) $(NS)/$(IMAGE_NAME):$(TAG)
 
 stop:
 	-docker stop $(CONTAINER_NAME)_$(CONTAINER_INSTANCE)

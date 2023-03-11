@@ -1,0 +1,99 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 4100 (0x1004)
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=AU, ST=Some-State, O=Internet Widgits Pty Ltd
+        Validity
+            Not Before: Mar 11 22:17:12 2023 GMT
+            Not After : Mar  8 22:17:12 2033 GMT
+        Subject: C=US, O=UniFi, CN=example-domain.ui.com
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:c8:d8:63:58:1c:94:2e:ac:9a:e1:f0:60:2b:a2:
+                    3b:4c:95:90:9d:fe:17:e8:ef:09:43:d4:e8:95:61:
+                    44:2e:14:52:6b:6d:6c:5e:41:34:76:1b:68:15:7a:
+                    84:99:07:22:33:4d:35:9d:9b:2e:8e:76:05:90:a6:
+                    96:78:4b:e7:a8:ac:4e:a9:93:44:4e:53:c6:01:46:
+                    11:b9:9e:0d:95:42:ab:6b:a7:25:f5:58:5f:1d:45:
+                    8d:68:bc:f4:eb:c4:56:7a:dc:4b:87:ea:6c:f3:94:
+                    02:30:28:e5:ba:34:24:45:06:8c:7c:ce:84:87:18:
+                    51:b6:c2:14:f6:7e:ab:40:33:f4:d9:e4:60:9f:ae:
+                    f8:ec:97:3e:45:b2:01:16:94:c1:65:7d:dd:e4:9a:
+                    ef:55:78:11:9f:ee:36:45:4e:89:de:15:92:34:a9:
+                    c4:26:71:db:c1:d5:7e:6e:ba:7e:68:ce:ae:c3:da:
+                    fa:a5:62:1f:5a:40:c8:75:5e:7a:c7:66:f1:0d:52:
+                    b2:0d:0f:90:8f:82:67:ef:d4:94:a1:81:bd:c1:f2:
+                    e6:00:a1:1e:46:4d:7a:2c:a7:24:fb:3f:ab:5d:23:
+                    38:f3:9a:1d:12:74:56:1d:3e:7a:33:59:b0:f3:20:
+                    c2:8c:72:1a:b1:9b:87:0e:7b:4b:f3:e3:bc:cd:0d:
+                    b3:6b
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                55:5C:BD:C4:A0:A2:C8:DD:F7:19:F3:EF:43:70:56:05:EC:EC:6F:7C
+            X509v3 Authority Key Identifier: 
+                8E:AD:DA:BA:16:1A:1C:11:E2:02:DC:0B:67:9C:36:FA:7D:EC:38:2D
+            X509v3 Subject Alternative Name: 
+                DNS:example-domain.ui.com
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        14:6c:10:91:3a:ed:d3:86:b3:d9:34:d4:52:05:2e:c9:30:d7:
+        53:62:93:6a:ac:4e:cf:bc:71:c4:fb:c2:b9:3f:48:79:e7:97:
+        3a:f3:c9:9f:2b:0d:bf:8b:02:b9:fc:59:b8:e6:b5:8a:47:e0:
+        ff:2b:78:6b:6a:c3:5e:2b:5a:fa:8d:45:b2:f6:a5:32:58:f5:
+        d3:2c:1c:a4:09:2e:12:93:f0:62:8a:b0:20:3b:43:64:6f:e3:
+        ca:aa:6d:48:08:bc:ac:4e:f7:db:81:e5:36:fe:c9:95:85:1e:
+        13:4d:cc:91:62:67:03:eb:5a:7c:f0:5d:fc:ae:90:f6:33:82:
+        3e:42:58:8a:43:bf:80:43:08:83:cf:03:42:84:1e:dd:04:af:
+        fd:32:43:92:ec:15:1d:07:ce:3f:4d:94:e8:a4:23:9e:25:78:
+        ef:af:25:8e:6d:68:02:d4:9b:8c:4f:9b:56:b2:f5:bd:3c:50:
+        2a:d2:d9:e5:1c:e9:3a:f6:1e:37:49:29:40:40:ef:74:de:94:
+        4f:74:34:e3:ab:25:e7:04:9b:85:f8:be:e8:c3:a0:e8:49:f1:
+        76:88:dd:5a:27:f0:92:fb:14:2a:40:0d:97:a3:2a:b5:39:53:
+        a5:ee:6a:86:49:e4:91:44:a2:b3:4a:03:ec:80:b2:92:49:5f:
+        aa:83:6f:da:77:50:a4:f4:45:d8:e3:3f:a8:e9:6f:ec:f0:80:
+        3d:9e:b2:e1:9a:9d:47:58:10:75:20:08:e8:bc:08:7c:77:a8:
+        52:3d:fc:0b:25:f6:7c:58:05:72:0c:02:ec:37:e3:59:89:8d:
+        6b:5a:26:08:65:48:54:df:04:eb:b5:9f:b6:eb:01:10:47:fe:
+        d6:68:33:9c:ca:f6:39:6a:7a:02:43:16:60:49:8f:3e:2d:18:
+        b2:76:92:a4:0e:e9:1d:f6:1e:5e:6e:0e:9c:b3:d7:f9:44:d8:
+        5d:a2:fa:eb:0e:59:38:db:54:e2:f8:87:44:99:6f:be:d9:bd:
+        b0:9b:2b:49:93:d6:92:bc:61:a6:d0:ff:73:4d:2e:38:00:28:
+        b6:84:05:a2:49:90:0e:a2:a2:36:5d:c9:5c:ee:6d:d4:cd:24:
+        34:bc:f0:cd:b1:2a:66:d2:c1:7e:b1:59:1a:86:e1:b2:62:0e:
+        15:8a:ca:c4:52:e5:97:0e:e5:f8:98:8a:a8:30:d4:fd:b3:96:
+        09:f7:93:b2:e7:33:06:94:c6:be:d8:5e:72:8a:5f:07:eb:35:
+        58:4d:51:34:45:14:4d:5b:82:38:19:07:0f:d1:3a:d3:71:c0:
+        ff:f4:25:e2:2c:4d:8e:25:a1:39:41:75:a5:08:a6:79:9c:2b:
+        c0:9c:c7:95:98:9e:9e:35
+-----BEGIN CERTIFICATE-----
+MIIEbTCCAlWgAwIBAgICEAQwDQYJKoZIhvcNAQELBQAwRTELMAkGA1UEBhMCQVUx
+EzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMg
+UHR5IEx0ZDAeFw0yMzAzMTEyMjE3MTJaFw0zMzAzMDgyMjE3MTJaMD0xCzAJBgNV
+BAYTAlVTMQ4wDAYDVQQKDAVVbmlGaTEeMBwGA1UEAwwVZXhhbXBsZS1kb21haW4u
+dWkuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyNhjWByULqya
+4fBgK6I7TJWQnf4X6O8JQ9TolWFELhRSa21sXkE0dhtoFXqEmQciM001nZsujnYF
+kKaWeEvnqKxOqZNETlPGAUYRuZ4NlUKra6cl9VhfHUWNaLz068RWetxLh+ps85QC
+MCjlujQkRQaMfM6EhxhRtsIU9n6rQDP02eRgn6747Jc+RbIBFpTBZX3d5JrvVXgR
+n+42RU6J3hWSNKnEJnHbwdV+brp+aM6uw9r6pWIfWkDIdV56x2bxDVKyDQ+Qj4Jn
+79SUoYG9wfLmAKEeRk16LKck+z+rXSM485odEnRWHT56M1mw8yDCjHIasZuHDntL
+8+O8zQ2zawIDAQABo28wbTAJBgNVHRMEAjAAMB0GA1UdDgQWBBRVXL3EoKLI3fcZ
+8+9DcFYF7OxvfDAfBgNVHSMEGDAWgBSOrdq6FhocEeIC3AtnnDb6few4LTAgBgNV
+HREEGTAXghVleGFtcGxlLWRvbWFpbi51aS5jb20wDQYJKoZIhvcNAQELBQADggIB
+ABRsEJE67dOGs9k01FIFLskw11Nik2qsTs+8ccT7wrk/SHnnlzrzyZ8rDb+LArn8
+WbjmtYpH4P8reGtqw14rWvqNRbL2pTJY9dMsHKQJLhKT8GKKsCA7Q2Rv48qqbUgI
+vKxO99uB5Tb+yZWFHhNNzJFiZwPrWnzwXfyukPYzgj5CWIpDv4BDCIPPA0KEHt0E
+r/0yQ5LsFR0Hzj9NlOikI54leO+vJY5taALUm4xPm1ay9b08UCrS2eUc6Tr2HjdJ
+KUBA73TelE90NOOrJecEm4X4vujDoOhJ8XaI3Von8JL7FCpADZejKrU5U6XuaoZJ
+5JFEorNKA+yAspJJX6qDb9p3UKT0RdjjP6jpb+zwgD2esuGanUdYEHUgCOi8CHx3
+qFI9/Asl9nxYBXIMAuw341mJjWtaJghlSFTfBOu1n7brARBH/tZoM5zK9jlqegJD
+FmBJjz4tGLJ2kqQO6R32Hl5uDpyz1/lE2F2i+usOWTjbVOL4h0SZb77ZvbCbK0mT
+1pK8YabQ/3NNLjgAKLaEBaJJkA6iojZdyVzubdTNJDS88M2xKmbSwX6xWRqG4bJi
+DhWKysRS5ZcO5fiYiqgw1P2zlgn3k7LnMwaUxr7YXnKKXwfrNVhNUTRFFE1bgjgZ
+Bw/ROtNxwP/0JeIsTY4loTlBdaUIpnmcK8Ccx5WYnp41
+-----END CERTIFICATE-----
