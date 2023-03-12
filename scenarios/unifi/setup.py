@@ -7,7 +7,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
 
-    # Navigate to url
 driver.get("http://172.17.0.2:8080/")
 
 driver.implicitly_wait(0.5)

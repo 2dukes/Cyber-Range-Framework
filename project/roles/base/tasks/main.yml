@@ -16,7 +16,7 @@
   community.docker.docker_image:
     name: "{{ general.attacker_container_image_name }}"
     build:
-      path: .
+      path: ./attacker
       dockerfile: KaliDockerfile
     state: present
     source: build
