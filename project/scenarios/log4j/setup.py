@@ -39,3 +39,5 @@ driver.find_element(by=By.CSS_SELECTOR, value="button[type=submit]").click()
 driver.find_element(by=By.XPATH, value="//button[text()='Skip']").click()
 
 driver.find_element(by=By.CSS_SELECTOR, value="button[type=submit]").click()
+
+driver.quit()

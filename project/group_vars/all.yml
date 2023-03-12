@@ -63,14 +63,6 @@ machines:
       - name: dmz_net
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.20
 
-  - name: web_server
-    group: 
-      - web_servers
-    dns_server: true
-    networks:
-      - name: dmz_net
-        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.5
-
   - name: attacker_machine
     image: kali_test_img
     group:
@@ -82,3 +74,26 @@ machines:
     networks:
       - name: external_net
         ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
+
+vulnerables:
+  general:
+    images: 
+      - name: unifi_log4j
+        scenario: log4j
+        dockerfile: Dockerfile.alpine.mongo
+        args:
+          VERSION: "6.3.51-05a66381e3"
+
+  machines:
+    - name: vuln_service
+      image: unifi_log4j
+      group: 
+        - vuln_machines
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.30
+      volumes:
+        - "{{ playbook_dir }}/scenarios/log4j/unifi-certs:/usr/lib/unifi/cert"
+  
+

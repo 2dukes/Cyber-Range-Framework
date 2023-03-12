@@ -1,0 +1,20 @@
+# Vulnerable Machines
+
+- name: Build Vulnerable Image
+  community.docker.docker_image:
+    name: "{{ image_info.name }}"
+    build:
+      path: "./scenarios/{{ image_info.scenario }}"
+      dockerfile: "{{ image_info.dockerfile }}"
+      args: "{{ image_info.args | default({})}}"
+    state: present
+    source: build
+  loop: "{{ vulnerables.general.images }}"
+  loop_control:
+    loop_var: image_info
+
+- name: Vulnerable Container(s) Operation Tasks
+  ansible.builtin.include_tasks: containers.yml
+  loop: "{{ vulnerables.machines }}"
+  loop_control:
+    loop_var: pc_info

@@ -5,7 +5,7 @@
   tasks:
     - name: Remove Stale Containers
       ansible.builtin.include_tasks: teardown.yml
-      loop: "{{ machines }}"
+      loop: "{{ machines + vulnerables.machines }}"
       loop_control:
         loop_var: pc_info
 
@@ -53,3 +53,8 @@
   hosts: external
   roles:
     - external
+
+- name: Vulnerable Machine Tasks
+  hosts: localhost
+  roles:
+    - vuln_machines
