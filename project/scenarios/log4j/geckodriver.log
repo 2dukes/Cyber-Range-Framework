@@ -1453,3 +1453,108 @@ console.warn: LoginRecipes: "Falling back to a synchronous message for: http://1
 console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.17.0.2:8080."
 console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.17.0.2:8080."
 1678573226049	Marionette	INFO	Stopped listening on port 42069
+1678722329729	geckodriver	INFO	Listening on 127.0.0.1:45401
+1678722330244	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "47629" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileqH8viU"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: Policies.jsm: 
+  Unable to find certificate - ca.crt
+console.error: Policies.jsm: 
+  Unable to find certificate - /home/dukes/Documents/ThesisWork/PROJ_Thesis_2223/unifi/certs/ca.crt
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678722331597	Marionette	INFO	Marionette enabled
+1678722331603	Marionette	INFO	Listening on port 35387
+Read port: 35387
+WebDriver BiDi listening on ws://127.0.0.1:47629
+1678722331813	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileqH8viU/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:47629/devtools/browser/5ec63001-6ee6-4ed4-b8c4-3972ab700917
+console.error: ({})
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+1678722339056	Marionette	INFO	Stopped listening on port 35387
+1678722351351	geckodriver	INFO	Listening on 127.0.0.1:51395
+1678722351865	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "47605" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileQefjit"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: Policies.jsm: 
+  Unable to find certificate - ca.crt
+console.error: Policies.jsm: 
+  Unable to find certificate - /home/dukes/Documents/ThesisWork/PROJ_Thesis_2223/unifi/certs/ca.crt
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678722353205	Marionette	INFO	Marionette enabled
+1678722353211	Marionette	INFO	Listening on port 46695
+Read port: 46695
+WebDriver BiDi listening on ws://127.0.0.1:47605
+1678722353412	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofileQefjit/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:47605/devtools/browser/0a5e7cfa-a7ab-4c3f-8483-c02c234d42cb
+console.error: ({})
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: services.settings: main/search-config Signature verified failed. Retry from scratch
+1678722746153	Marionette	INFO	Stopped listening on port 46695
+console.error: (new AbortError("IndexedDB: security-state/intermediates list() IndexedDB:  execute() A request was aborted, for example through a call to IDBTransaction.abort.", "resource://services-settings/IDBHelpers.jsm", 18))
+console.error: services.settings: 
+  Message: NetworkError: Network error: TypeError: NetworkError: Network request failed
+  Stack:
+    APIError@resource://services-settings/RemoteSettingsClient.jsm:116:1
+NetworkError@resource://services-settings/RemoteSettingsClient.jsm:120:5
+_adjustedError@resource://services-settings/RemoteSettingsClient.jsm:916:14
+maybeSync@resource://services-settings/RemoteSettingsClient.jsm:821:38
+observe@resource://gre/modules/AsyncShutdown.sys.mjs:576:16
+
+console.warn: services.settings: security-state/onecrl sync interrupted by shutdown
+console.error: (new NetworkError("Network error: TypeError: NetworkError: Network request failed", "resource://services-settings/RemoteSettingsClient.jsm", 116))
+1678722880408	geckodriver	INFO	Listening on 127.0.0.1:45981
+1678722880923	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "51817" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofileBGRbXi"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: Policies.jsm: 
+  Unable to find certificate - ca.crt
+console.error: Policies.jsm: 
+  Unable to find certificate - /home/dukes/Documents/ThesisWork/PROJ_Thesis_2223/unifi/certs/ca.crt
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678722882253	Marionette	INFO	Marionette enabled
+1678722882260	Marionette	INFO	Listening on port 42329
+Read port: 42329
+WebDriver BiDi listening on ws://127.0.0.1:51817
+1678722882468	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+1678722898875	geckodriver	INFO	Listening on 127.0.0.1:59543
+1678722899391	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "--remote-debugging-port" "45549" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "/tmp/rust_mozprofilezZpjHt"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+console.error: Policies.jsm: 
+  Unable to find certificate - ca.crt
+console.error: Policies.jsm: 
+  Unable to find certificate - /home/dukes/Documents/ThesisWork/PROJ_Thesis_2223/unifi/certs/ca.crt
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+ATTENTION: default value of option mesa_glthread overridden by environment.
+1678722900732	Marionette	INFO	Marionette enabled
+1678722900738	Marionette	INFO	Listening on port 44001
+Read port: 44001
+WebDriver BiDi listening on ws://127.0.0.1:45549
+1678722900971	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.error: ({})
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at /tmp/rust_mozprofilezZpjHt/search.json.mozlz4", (void 0)))
+DevTools listening on ws://127.0.0.1:45549/devtools/browser/638f91db-a24d-49a0-80b1-b573db56e14f
+console.error: ({})
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: http://172.140.0.30:8080."
+1678722911354	Marionette	INFO	Stopped listening on port 44001

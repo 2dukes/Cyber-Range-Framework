@@ -1,0 +1,1 @@
+machine_to_setup: "{{ setup.machines | selectattr('name', '==', inventory_hostname) | list | length == 1 }}"

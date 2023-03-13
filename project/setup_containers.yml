@@ -1,6 +1,13 @@
 # Playbook used to setup containers.
 
 ---
+
+# - hosts: localhost
+#   tasks:
+#   - debug:
+#       msg: "{{ (setup.machines | selectattr('name', '==', 'attacker_machine'))[0]['setup'] }}"
+#   - debug: var="{{ setup.machines | selectattr('name', '==', ansible_hostname) | list | length == 1 }}"
+
 - hosts: localhost
   tasks:
     - name: Remove Stale Containers
@@ -54,7 +61,17 @@
   roles:
     - external
 
-- name: Vulnerable Machine Tasks
+- name: Vulnerable Machine Launch
   hosts: localhost
   roles:
-    - vuln_machines
+    - vuln_machines_deploy
+
+- name: Vulnerable Machine Tasks
+  hosts: vuln_machines
+  roles:
+    - vuln_machines_tasks
+
+- name: Entrypoint Tasks
+  hosts: scenario
+  roles:
+    - entrypoint

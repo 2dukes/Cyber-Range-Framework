@@ -40,7 +40,7 @@ RUN set -x \
     && apk add -q --no-cache \
         gcompat libc6-compat \
     && apk add -q --no-cache \
-        bash binutils coreutils curl libcap \
+        bash binutils coreutils curl libcap python3\
         mongodb=3.4.4-r0 openjdk8-jre openssl shadow su-exec \
         tzdata \
     && curl -sSL https://dl.ui.com/unifi/${VERSION}/UniFi.unix.zip -o /tmp/UniFi.unix.${VERSION}.zip \

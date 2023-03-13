@@ -1,0 +1,25 @@
+# Entrypoint Tasks
+
+- name: Create setup/ directory
+  ansible.builtin.file:
+    path: /setup
+    state: directory
+    mode: '0755'
+  when: machine_to_setup
+
+# - name: Debug var
+#   debug:
+#     msg: "{{ (setup.machines | selectattr('name', '==', 'attacker_machine'))[0]['setup'] }}"
+
+- name: Copy template files
+  template:
+    src: "{{ item }}"
+    dest: /setup/{{ item | basename | regex_replace('\.j2$', '') }}
+    mode: '0755'
+  with_fileglob:
+    - "{{ (setup.machines | selectattr('name', '==', 'attacker_machine'))[0]['setup'] }}"
+  when: machine_to_setup
+
+- name: Run entrypoint scripts
+  shell: sh /setup/entrypoint.sh
+  when: machine_to_setup

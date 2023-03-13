@@ -7,7 +7,7 @@ view "internal" {
     match-clients { internals; };
     zone "myorg.net" {
       type master;
-      file "/var/bind/db.internal.myorg.net";
+      file "/var/bind/db.internal";
     };
 };
 
@@ -16,7 +16,7 @@ view "external" {
 
     zone "myorg.net" {
         type master;
-        file "/var/bind/db.external.myorg.net";
+        file "/var/bind/db.external";
     };
 
     // prime the server with knowledge of the root servers

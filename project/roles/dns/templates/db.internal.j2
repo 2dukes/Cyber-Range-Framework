@@ -1,0 +1,14 @@
+$TTL 2
+@        IN      SOA   ns.{{ domain_name }}. admin.{{ domain_name }}. (
+                 2008111001
+                 8H
+                 2H
+                 4W
+                 1D)
+
+@        IN      NS    ns.{{ domain_name }}.
+
+@        IN      A     {{ ((vulnerables.machines | selectattr('name', '==', 'vuln_service'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
+www      IN      A     {{ ((vulnerables.machines | selectattr('name', '==', 'vuln_service'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
+ns       IN      A     {{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
+*        IN      A     {{ ((vulnerables.machines | selectattr('name', '==', 'vuln_service'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}

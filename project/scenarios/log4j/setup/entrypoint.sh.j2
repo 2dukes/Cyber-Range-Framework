@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd "$( dirname "$0" )"
+
+sleep 10
+pip install -r requirements.txt
+python3 setup.py
+
+cat policies.json > /usr/lib/firefox-esr/distribution/policies.json

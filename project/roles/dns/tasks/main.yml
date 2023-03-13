@@ -6,14 +6,14 @@
 
 - name: Copy DNS Zone File
   template:
-    src: "db.internal.myorg.net.j2"
-    dest: /var/bind/db.internal.{{ domain_name }}
+    src: "db.internal.j2"
+    dest: /var/bind/db.internal
     mode: '0755'
 
 - name: Copy DNS Zone File
   template:
-    src: "db.external.myorg.net.j2"
-    dest: /var/bind/db.external.{{ domain_name }}
+    src: "db.external.j2"
+    dest: /var/bind/db.external
     mode: '0755'
 
 - name: Copy DNS Name File
