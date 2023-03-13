@@ -100,10 +100,10 @@ f_mongo() {
 
 f_ssl() {
     if [ -e ${CERTDIR}/privkey.pem ] && [ -e ${CERTDIR}/fullchain.pem ]; then
-        if `/usr/bin/sha256sum -c ${CERTDIR}/unificert.sha256 &> /dev/null`; then
-            f_log "INFO - SSL: certificate files unchanged, continuing with UniFi startup"
-            f_log "INFO - SSL: To force rerun import process: delete '${CERTDIR}/unificert.sha256' and restart the container"
-        else
+        # if `/usr/bin/sha256sum -c ${CERTDIR}/unificert.sha256 &> /dev/null`; then
+        #     f_log "INFO - SSL: certificate files unchanged, continuing with UniFi startup"
+        #     f_log "INFO - SSL: To force rerun import process: delete '${CERTDIR}/unificert.sha256' and restart the container"
+        # else
             if [ ! -e ${DATADIR}/keystore ]; then
                 f_log "WARN - SSL: keystore does not exist, generating it with Java keytool"
                 keytool -genkey -keyalg RSA -alias unifi -keystore ${DATADIR}/keystore \
@@ -133,7 +133,7 @@ f_ssl() {
             f_log "INFO - SSL: completed update of custom certificate in '${DATADIR}/keystore'"
             f_log "INFO - SSL: Check above ***here*** for errors if your custom certificate import isn't working"
             f_log "INFO - SSL: To force rerun import process: delete '${CERTDIR}/unificert.sha256' and restart the container"
-        fi
+        # fi
     else
         [ -f ${CERTDIR}/privkey.pem ] || f_log "WARN - Custom SSL: missing '${CERTDIR}/privkey.pem'"
         [ -f ${CERTDIR}/fullchain.pem ] || f_log "WARN - Custom SSL: missing '${CERTDIR}/fullchain.pem'"
