@@ -5,7 +5,7 @@ acl internals {
 
 view "internal" {
     match-clients { internals; };
-    zone "myorg.net" {
+    zone "{{ domain_name }}" {
       type master;
       file "/var/bind/db.internal";
     };
@@ -14,7 +14,7 @@ view "internal" {
 view "external" {
     match-clients { any; };
 
-    zone "myorg.net" {
+    zone "{{ domain_name }}" {
         type master;
         file "/var/bind/db.external";
     };
