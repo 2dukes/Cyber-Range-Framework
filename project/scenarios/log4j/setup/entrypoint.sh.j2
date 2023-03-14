@@ -2,8 +2,17 @@
 
 cd "$( dirname "$0" )"
 
+# UniFi Wizard Setup 
+
 sleep 10
 pip install -r requirements.txt
 python3 setup.py
+
+# Load new trusted root CA
+
+cp /setup/ca.crt /usr/local/share/ca-certificates
+update-ca-certificates
+
+# Also in Firefox-Esr
 
 cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
