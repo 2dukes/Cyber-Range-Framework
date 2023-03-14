@@ -82,7 +82,7 @@ vulnerables:
         scenario: log4j
         dockerfile: Dockerfile.alpine.mongo
         args:
-          VERSION: "6.3.51-05a66381e3"
+          VERSION: "6.4.54"
         credentials:
           username: test_user
           password: test_password
