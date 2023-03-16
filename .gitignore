@@ -1,5 +1,18 @@
+# SSH Keys
 id_key
 id_key.pub
+
+# Ansible Filter Plugin
+
 **/__pycache__
+
+# Unifi Logs & Private Key
+
 unifi/geckodriver.log
 **/privkey.pem
+
+# CTFs folder
+
+ctfs/
+!ctfs/*.py
+!ctfs/requirements.txt
