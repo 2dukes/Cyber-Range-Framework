@@ -6,11 +6,11 @@ general:
 networks:
   internal_net:
     network_addr: 172.{{ general.random_byte }}.0.0/24
-    gateway_addr: 172.{{ general.random_byte }}.0.254      
+    gateway_addr: 172.{{ general.random_byte }}.0.254
 
   dmz_net:
     network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
-    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254      
+    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
 
   external_net:
     network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
@@ -18,21 +18,21 @@ networks:
 
 machines:
   - name: dhcp_server
-    group: 
+    group:
       - dhcp_servers
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.3
-    
+
   - name: internal_pc_1
-    group: 
+    group:
       - pcs
     networks:
       - name: internal_net
         ipv4_address: 172.{{ general.random_byte }}.0.2
 
   - name: internal_router
-    group: 
+    group:
       - routers
       - firewalls
     dns_server: true
@@ -43,7 +43,7 @@ machines:
         ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
 
   - name: edge_router
-    group: 
+    group:
       - routers
     dns_server: true
     networks:
@@ -53,7 +53,7 @@ machines:
         ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.1
 
   - name: dns_server
-    group: 
+    group:
       - dns_servers
     exposed_ports:
       - 53/tcp
@@ -76,22 +76,21 @@ machines:
         ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
 
 vulnerables:
-  general:
-    images: 
-      - name: unifi_log4j
-        scenario: log4j
-        dockerfile: Dockerfile.alpine.mongo
-        args:
-          VERSION: "6.4.54"
-        credentials:
-          username: test_user
-          password: test_password
-          email: admin@hotmail.com
-
+  images:
+    - name: unifi_log4j
+      scenario: log4j
+      dockerfile: Dockerfile.alpine.mongo
+      args:
+        VERSION: "6.4.54"
+      vars:
+        username: test_user
+        password: test_password
+        email: admin@hotmail.com
+        
   machines:
     - name: vuln_service
       image: unifi_log4j
-      group: 
+      group:
         - vuln_machines
       dns_server: true
       networks:
@@ -99,7 +98,7 @@ vulnerables:
           ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.30
       volumes:
         - "{{ playbook_dir }}/scenarios/log4j/unifi-certs:/usr/lib/unifi/cert"
-  
+
 setup:
   machines:
     - name: attacker_machine

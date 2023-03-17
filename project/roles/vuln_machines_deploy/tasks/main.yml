@@ -5,11 +5,11 @@
     name: "{{ image_info.name }}"
     build:
       path: "./scenarios/{{ image_info.scenario }}"
-      dockerfile: "{{ image_info.dockerfile }}"
+      dockerfile: "{{ image_info.dockerfile | default('Dockerfile') }}"
       args: "{{ image_info.args | default({})}}"
     state: present
     source: build
-  loop: "{{ vulnerables.general.images }}"
+  loop: "{{ vulnerables.images }}"
   loop_control:
     loop_var: image_info
 

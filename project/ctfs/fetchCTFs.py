@@ -1,6 +1,8 @@
 import git
 import os
 import shutil
+import yaml
+from yaml.loader import SafeLoader
 
 
 def rec_lookup_dockerfile(current_dir):
@@ -21,6 +23,59 @@ def rec_lookup_dockerfile(current_dir):
 def remove_dir(path):
     shutil.rmtree(path)
 
+def replace_flags()
+
+
+def parse_challenge(path, chal):
+    challenge_description_path = f"{path}/challenge.yaml" if os.path.exists(
+        f"{path}/challenge.yaml") else f"{path}/challenge.yml"
+    with open(challenge_description_path) as f:
+        data = yaml.load(f, Loader=SafeLoader)
+
+        # Replace flag
+        flag = ""
+        if("file" in data["flag"]):
+            # File
+
+            # Plain-text Flag
+
+
+        if ("containers" not in data):
+            remove_dir(path)
+            return
+
+        # Construct images
+        images = vulnerables["images"]
+        machines = vulnerables["machines"]
+
+        last_ip_byte = 30
+
+        # print(f"CHALLENGE = {path}|{chal}")
+
+        for container_name in data["containers"].keys():
+            container_info = data["containers"][container_name]
+
+            # Images
+            images.append({"name": f"{chal}_{container_name}",
+                          "scenario": f"{chal}/{container_info['build']}"})
+
+            # Ports, Environment Vars, Flags
+
+            # Machines
+            machines.append({"name": f"vuln_service_{chal}",
+                            "image": images[-1]["name"],
+                             "group": "vuln_machines",
+                             "dns_server": True,
+                             "exposed_ports": container_info["ports"] if "ports" in container_info else [],
+                             "env": container_info["environment"] if "environment" in container_info else {},
+                             "networks": [{
+                                 "name": "dmz_net",
+                                 "ipv4_address": f"172.{{ general.random_byte | int - 5 }}.0.{last_ip_byte}"
+                             }]
+                             })
+
+            last_ip_byte += 1
+
 
 def lookup_challenges(current_dir):
     categories = os.listdir(current_dir)
@@ -34,10 +89,16 @@ def lookup_challenges(current_dir):
 
             if not has_docker_build:
                 remove_dir(challenge_path)
+            else:
+                parse_challenge(challenge_path, chal)
 
-            print(
-                f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
+            # print(
+            #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
 
+    print(vulnerables)
+
+
+vulnerables = {"images": [], "machines": []}
 
 github_repositories = [
     {

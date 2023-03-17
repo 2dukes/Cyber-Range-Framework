@@ -9,6 +9,7 @@
     exposed_ports: "{{ pc_info.exposed_ports | default([]) }}"
     published_ports: "{{ pc_info.published_ports | default([]) }}"
     volumes: "{{ pc_info.volumes | default([]) }}"
+    env: "{{ pc_info.env | default({}) }}"
     state: started
 
 - name: Add Container "{{ pc_info.name }}" To Inventory (group="{{ pc_info.group | default('')}}")
