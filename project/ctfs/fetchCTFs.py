@@ -14,7 +14,7 @@ def rec_lookup_dockerfile(current_dir):
     flag = False
     for dir in [f for f in files if os.path.isdir(f"{current_dir}/{f}")]:
         flag = rec_lookup_dockerfile(f"{current_dir}/{dir}")
-        if (flag):
+        if flag:
             break
 
     return flag
@@ -23,24 +23,13 @@ def rec_lookup_dockerfile(current_dir):
 def remove_dir(path):
     shutil.rmtree(path)
 
-def replace_flags()
-
-
 def parse_challenge(path, chal):
     challenge_description_path = f"{path}/challenge.yaml" if os.path.exists(
         f"{path}/challenge.yaml") else f"{path}/challenge.yml"
     with open(challenge_description_path) as f:
         data = yaml.load(f, Loader=SafeLoader)
 
-        # Replace flag
-        flag = ""
-        if("file" in data["flag"]):
-            # File
-
-            # Plain-text Flag
-
-
-        if ("containers" not in data):
+        if "containers" not in data:
             remove_dir(path)
             return
 
