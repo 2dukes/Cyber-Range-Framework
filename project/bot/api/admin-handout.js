@@ -42,7 +42,7 @@ const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 try {
   (async () => {
     const browser = await puppeteer.launch({
-      headless: false,
+      // headless: false,
       pipe: true,
       // dumpio: true,
       args: ['--js-flags=--jitless', '--no-sandbox'],

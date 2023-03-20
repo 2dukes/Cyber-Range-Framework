@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require('fs');
+const path = require('path');
 const flag = fs.readFileSync(path.resolve(__dirname, 'flag.txt'), 'utf8');
 
 function sleep(time) {

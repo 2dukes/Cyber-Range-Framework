@@ -11,7 +11,7 @@ function App() {
   const test = (event) => {
     event.preventDefault();
 
-    fetch('http://localhost:8000/bot?' + new URLSearchParams({
+    fetch(`http://${process.env.REACT_APP_API}:8000/bot?` + new URLSearchParams({
       url: encodeURIComponent(url)
     })).then((response) => response.json())
       .then((data) => console.log(data));
