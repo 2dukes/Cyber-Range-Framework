@@ -2,14 +2,10 @@
 
 ---
 
-# - hosts: localhost
-#   tasks:
-#   - debug:
-#       msg: "{{ (setup.machines | selectattr('name', '==', 'attacker_machine'))[0]['setup'] }}"
-#   - debug: var="{{ setup.machines | selectattr('name', '==', ansible_hostname) | list | length == 1 }}"
+# Common Network Setup
 
 - hosts: localhost
-  tasks:
+  pre_tasks:
     - name: Remove Stale Containers
       ansible.builtin.include_tasks: teardown.yml
       loop: "{{ machines + vulnerables.machines }}"
@@ -60,6 +56,9 @@
   hosts: external
   roles:
     - external
+
+
+# Scenario
 
 - name: Vulnerable Machine Launch
   hosts: localhost

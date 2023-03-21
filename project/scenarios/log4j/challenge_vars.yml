@@ -1,0 +1,28 @@
+vulnerables:
+  images:
+    - name: unifi_log4j
+      scenario: log4j
+      dockerfile: Dockerfile.alpine.mongo
+      args:
+        VERSION: "6.4.54"
+      vars:
+        username: test_user
+        password: test_password
+        email: admin@hotmail.com
+        
+  machines:
+    - name: vuln_service
+      image: unifi_log4j
+      group:
+        - vuln_machines
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.30
+      volumes:
+        - "{{ playbook_dir }}/scenarios/log4j/unifi-certs:/usr/lib/unifi/cert"
+
+setup:
+  machines:
+    - name: attacker_machine
+      setup: "{{ playbook_dir }}/scenarios/log4j/setup/*.j2"
