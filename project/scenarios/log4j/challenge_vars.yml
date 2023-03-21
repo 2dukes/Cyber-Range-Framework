@@ -1,3 +1,17 @@
+dns:
+  - domain: example-domain.ui.com
+    machine: vuln_service
+    internal:
+      network: dmz_net
+    external:
+      network: dmz_net
+  # - domain: test.com
+  #   machine: edge_router
+  #   internal:
+  #     network: dmz_net
+  #   external:
+  #     network: external_net
+
 vulnerables:
   images:
     - name: unifi_log4j
@@ -9,7 +23,7 @@ vulnerables:
         username: test_user
         password: test_password
         email: admin@hotmail.com
-        
+
   machines:
     - name: vuln_service
       image: unifi_log4j

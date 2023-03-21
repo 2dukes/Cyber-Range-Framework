@@ -4,16 +4,10 @@
       - bind
     state: latest
 
-- name: Copy DNS Zone File
+- name: Copy DNS Name Options File
   template:
-    src: "db.internal.j2"
-    dest: /var/bind/db.internal
-    mode: '0755'
-
-- name: Copy DNS Zone File
-  template:
-    src: "db.external.j2"
-    dest: /var/bind/db.external
+    src: "named.conf.options.j2"
+    dest: /etc/bind/named.conf.options
     mode: '0755'
 
 - name: Copy DNS Name File
@@ -22,17 +16,39 @@
     dest: /etc/bind/named.conf
     mode: '0755'
 
-- name: Copy DNS Name Local File
+# Dynamic Configurations
+
+- name: Copy named.conf.local template
   template:
     src: "named.conf.local.j2"
     dest: /etc/bind/named.conf.local
     mode: '0755'
 
-- name: Copy DNS Name Options File
+- name: Copy DNS Zone File
+  vars:
+    network_type: "internal"
+    selected_machines: "{{ machines + vulnerables.machines }}"
   template:
-    src: "named.conf.options.j2"
-    dest: /etc/bind/named.conf.options
+    src: "db.template.j2"
+    dest: "/var/bind/db.internal.{{ dns_info.machine }}"
     mode: '0755'
+  loop: "{{ dns }}"
+  loop_control:
+    loop_var: dns_info
+
+- name: Copy DNS Zone File
+  vars:
+    network_type: "external"
+    selected_machines: "{{ machines + vulnerables.machines }}"
+  template:
+    src: "db.template.j2"
+    dest: "/var/bind/db.external.{{ dns_info.machine }}"
+    mode: '0755'
+  loop: "{{ dns }}"
+  loop_control:
+    loop_var: dns_info
+
+############################################
 
 - name: Delete Previous DNS File
   file:
@@ -48,4 +64,3 @@
   ansible.builtin.service:
     name: named
     state: started
-

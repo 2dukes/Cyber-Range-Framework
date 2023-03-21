@@ -1,0 +1,14 @@
+$TTL 2
+@        IN      SOA   ns.{{ dns_info.domain }}. admin.{{ dns_info.domain }}. (
+                 2008111001
+                 8H
+                 2H
+                 4W
+                 1D)
+
+@        IN      NS    ns.{{ dns_info.domain }}.
+
+@        IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info.machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
+www      IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info.machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
+ns       IN      A     {{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
+*        IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info.machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
