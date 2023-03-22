@@ -1,0 +1,9 @@
+- debug: var=machine_vars
+
+# - name: Copy nginx.conf
+#   vars:
+#     domain: "{{ (vulnerables.machines | selectattr('name', '==', inventory_hostname))[0]['vars'] }}"
+#   template:
+#     src: "nginx.conf.j2"
+#     dest:
+#     mode: '0755'

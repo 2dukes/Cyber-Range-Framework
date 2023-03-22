@@ -50,19 +50,19 @@
           - docker-compose-plugin
         update_cache: true
 
-    - name: Create keys/ directory
-      ansible.builtin.file:
-        path: keys/
-        state: directory
-        mode: '0755'
+    # - name: Create keys/ directory
+    #   ansible.builtin.file:
+    #     path: keys/
+    #     state: directory
+    #     mode: '0755'
 
-    - name: Check If Keys Already Exist
-      ansible.builtin.stat:
-        path: "keys/id_key"
-      register: result
+    # - name: Check If Keys Already Exist
+    #   ansible.builtin.stat:
+    #     path: "keys/id_key"
+    #   register: result
 
-    - name: Generate SSH Key Pair
-      community.crypto.openssh_keypair:
-        path: keys/id_key
-        type: ed25519
-      when: not result.stat.exists
+    # - name: Generate SSH Key Pair
+    #   community.crypto.openssh_keypair:
+    #     path: keys/id_key
+    #     type: ed25519
+    #   when: not result.stat.exists

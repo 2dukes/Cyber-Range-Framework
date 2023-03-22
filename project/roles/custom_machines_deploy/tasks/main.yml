@@ -4,7 +4,7 @@
   community.docker.docker_image:
     name: "{{ image_info.name }}"
     build:
-      path: "./scenarios/{{ image_info.scenario }}"
+      path: "{{ image_info.path }}"
       dockerfile: "{{ image_info.dockerfile | default('Dockerfile') }}"
       args: "{{ image_info.args | default({})}}"
     state: present

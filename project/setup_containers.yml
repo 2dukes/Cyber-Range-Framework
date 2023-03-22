@@ -37,11 +37,6 @@
   roles:
     - dns
 
-- name: DMZ Network Tasks
-  hosts: dmz
-  roles:
-    - dmz
-
 - name: Router Tasks
   hosts: routers
   roles:
@@ -57,20 +52,26 @@
   roles:
     - external
 
-
 # Scenario
 
 - name: Vulnerable Machine Launch
   hosts: localhost
   roles:
-    - vuln_machines_deploy
+    - custom_machines_deploy
 
-- name: Vulnerable Machine Tasks
-  hosts: vuln_machines
+- name: DMZ Network Tasks
+  hosts: dmz
   roles:
-    - vuln_machines_tasks
+    - dmz
 
 - name: Entrypoint Tasks
   hosts: scenario
   roles:
     - entrypoint
+
+- name: Reverse Proxy Tasks
+  hosts: reverse_proxies
+  vars: 
+    machine_vars: "{{ (vulnerables.machines | selectattr('name', '==', inventory_hostname))[0]['vars'] }}"
+  roles:
+    - reverse_proxies

@@ -5,7 +5,8 @@ dns:
       network: dmz_net
     external:
       network: dmz_net
-  # - domain: test.com
+
+  # - domain: test1.com
   #   machine: edge_router
   #   internal:
   #     network: dmz_net
@@ -15,26 +16,59 @@ dns:
 vulnerables:
   images:
     - name: unifi_log4j
-      scenario: log4j
+      path: scenarios/log4j
       dockerfile: Dockerfile.alpine.mongo
       args:
         VERSION: "6.4.54"
-      vars:
-        username: test_user
-        password: test_password
-        email: admin@hotmail.com
 
+    - name: reverse_proxy
+      path: reverse_proxy       
+        
   machines:
     - name: vuln_service
       image: unifi_log4j
       group:
-        - vuln_machines
+        - custom_machines
       dns_server: true
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.30
       volumes:
         - "{{ playbook_dir }}/scenarios/log4j/unifi-certs:/usr/lib/unifi/cert"
+      vars:
+        username: test_user
+        password: test_password
+        email: admin@hotmail.com
+
+    # - name: reverse_proxy1
+    #   image: reverse_proxy
+    #   group:
+    #     - custom_machines
+    #   dns_server: true
+    #   networks:
+    #     - name: dmz_net
+    #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.40
+    #   vars:
+    #     domain: test1.com
+    #     targets: 
+    #       - name: vuln_service
+    #         network: dmz_net
+    #         port: 8443
+
+    # - name: reverse_proxy2
+    #   image: reverse_proxy
+    #   group:
+    #     - custom_machines
+    #   dns_server: true
+    #   networks:
+    #     - name: dmz_net
+    #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.41
+    #   vars:
+    #     domain: test2.com
+    #     targets: 
+    #       - name: vuln_service
+    #         network: dmz_net
+    #         port: 8444
 
 setup:
   machines:

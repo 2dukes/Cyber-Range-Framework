@@ -24,7 +24,7 @@
     dest: /etc/bind/named.conf.local
     mode: '0755'
 
-- name: Copy DNS Zone File
+- name: Copy DNS Zone File (Internal)
   vars:
     network_type: "internal"
     selected_machines: "{{ machines + vulnerables.machines }}"
@@ -36,7 +36,7 @@
   loop_control:
     loop_var: dns_info
 
-- name: Copy DNS Zone File
+- name: Copy DNS Zone File (External)
   vars:
     network_type: "external"
     selected_machines: "{{ machines + vulnerables.machines }}"
