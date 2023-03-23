@@ -1,5 +1,3 @@
-- debug: var=machine_vars
-
 - name: Copy nginx.conf
   vars:
     domain: "{{ machine_vars.domain }}"

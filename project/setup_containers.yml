@@ -71,6 +71,7 @@
 
 - name: Reverse Proxy Tasks
   hosts: reverse_proxies
+  serial: 1
   vars: 
     machine_vars: "{{ (vulnerables.machines | selectattr('name', '==', inventory_hostname))[0]['vars'] }}"
   roles:

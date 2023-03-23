@@ -25,8 +25,7 @@ const launchRequest = async (url) => {
 
 const fetchURL = async (req, res, _) => {
     const url = decodeURIComponent(req.query?.url);
-    console.log(req.cookies);
-
+    
     try {
         const regex = challenge.urlRegex ?? /^https?:\/\/.*/;
         if (!regex.test(url))

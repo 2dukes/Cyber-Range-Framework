@@ -5,12 +5,18 @@ dns:
       network: dmz_net
     external:
       network: dmz_net
-  # - domain: test1.com
-  #   machine: edge_router
-  #   internal:
-  #     network: dmz_net
-  #   external:
-  #     network: external_net
+  - domain: test1.com
+    machine: reverse_proxy1
+    internal:
+      network: dmz_net
+    external:
+      network: dmz_net
+  - domain: test2.com
+    machine: reverse_proxy2
+    internal:
+      network: dmz_net
+    external:
+      network: dmz_net
 
 vulnerables:
   images:
@@ -20,7 +26,13 @@ vulnerables:
       args:
         VERSION: "6.4.54"
     - name: reverse_proxy
-      path: reverse_proxy       
+      path: reverse_proxy
+    - name: admin_bot_api
+      path: bot/api
+    - name: admin_bot_frontend
+      path: bot/my-app
+      args:
+        api: test2.com # Domain
         
   machines:
     - name: vuln_service
@@ -49,27 +61,42 @@ vulnerables:
       vars:
         domain: test1.com
         targets: 
-          - name: vuln_service
+          - name: admin_bot_frontend
             network: dmz_net
-            port: 8443
-          - name: vuln_service
-            network: dmz_net
-            port: 8445
+            port: 3000
 
-    # - name: reverse_proxy2
-    #   image: reverse_proxy
-    #   group:
-    #     - reverse_proxies
-    #   dns_server: true
-    #   networks:
-    #     - name: dmz_net
-    #       ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
-    #   vars:
-    #     domain: test2.com
-    #     targets: 
-    #       - name: vuln_service
-    #         network: dmz_net
-    #         port: 8444
+    - name: admin_bot_frontend
+      image: admin_bot_frontend
+      group:
+        - custom_machines
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.42
+    
+    - name: admin_bot_api
+      image: admin_bot_api
+      group:
+        - custom_machines
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.43
+       
+    - name: reverse_proxy2
+      image: reverse_proxy
+      group:
+        - reverse_proxies
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
+      vars:
+        domain: test2.com
+        targets: 
+          - name: admin_bot_api
+            network: dmz_net
+            port: 8000
 
 setup:
   machines:
