@@ -21,5 +21,6 @@ ctfs/
 
 **/*.pem
 **/index.txt.old
+**/index.txt.attr
 **/index.txt.attr.old
 **/serial.old
