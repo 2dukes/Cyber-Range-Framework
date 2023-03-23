@@ -6,27 +6,24 @@ acl internals {
 view "internal" {
     match-clients { internals; };
 
-    {% for info in dns %}
-
+    {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
         file "/var/bind/db.internal.{{ info.machine }}";
     };
-
-    {% endfor %}
+    {% endfor +%}
 };
 
 view "external" {
     match-clients { any; };
 
-    {% for info in dns %}
-
+    {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
         file "/var/bind/db.external.{{ info.machine }}";
     };
-    
-    {% endfor %}
+
+    {% endfor -%}
 
     // prime the server with knowledge of the root servers
     zone "." {

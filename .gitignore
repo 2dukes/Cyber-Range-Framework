@@ -16,3 +16,10 @@ unifi/geckodriver.log
 ctfs/
 !ctfs/*.py
 !ctfs/requirements.txt
+
+# CA 
+
+**/*.pem
+**/index.txt.old
+**/index.txt.attr.old
+**/serial.old

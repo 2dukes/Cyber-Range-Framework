@@ -57,7 +57,7 @@
 - name: Vulnerable Machine Launch
   hosts: localhost
   roles:
-    - custom_machines_deploy
+    - custom_machines
 
 - name: DMZ Network Tasks
   hosts: dmz

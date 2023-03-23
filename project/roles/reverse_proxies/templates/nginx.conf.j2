@@ -7,13 +7,15 @@ http {
     sendfile on;
     large_client_header_buffers 4 32k;
 
-    upstream admin-bot {
-        server 172.17.0.2:3000;
+    upstream service {
+    {% for target in targets %}
+    server {{ ((selected_machines | selectattr('name', '==', target.name))[0]['networks'] | selectattr('name', '==', target.network) | map(attribute='ipv4_address')) | first }}:{{ target.port }};
+    {% endfor -%}
     }
 
     server {
         listen 80;
-        server_name example-domain.ui.com;
+        server_name {{ domain }};
 
         location / {
             return 301 https://$host$request_uri;
@@ -22,13 +24,13 @@ http {
 
     server {
         listen 443 ssl;
-        server_name example-domain.ui.com;
+        server_name {{ domain }};
 
         ssl_certificate /etc/ssl/certs/my-site.crt;
         ssl_certificate_key /etc/ssl/private/my-site.key;
 
         location / {
-            proxy_pass         http://admin-bot;
+            proxy_pass         http://service;
             proxy_redirect     off;
             proxy_http_version 1.1;
             proxy_cache_bypass $http_upgrade;

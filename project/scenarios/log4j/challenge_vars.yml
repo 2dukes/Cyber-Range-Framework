@@ -5,7 +5,6 @@ dns:
       network: dmz_net
     external:
       network: dmz_net
-
   # - domain: test1.com
   #   machine: edge_router
   #   internal:
@@ -20,7 +19,6 @@ vulnerables:
       dockerfile: Dockerfile.alpine.mongo
       args:
         VERSION: "6.4.54"
-
     - name: reverse_proxy
       path: reverse_proxy       
         
@@ -40,25 +38,28 @@ vulnerables:
         password: test_password
         email: admin@hotmail.com
 
-    # - name: reverse_proxy1
-    #   image: reverse_proxy
-    #   group:
-    #     - custom_machines
-    #   dns_server: true
-    #   networks:
-    #     - name: dmz_net
-    #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.40
-    #   vars:
-    #     domain: test1.com
-    #     targets: 
-    #       - name: vuln_service
-    #         network: dmz_net
-    #         port: 8443
+    - name: reverse_proxy1
+      image: reverse_proxy
+      group:
+        - reverse_proxies
+      dns_server: true
+      networks:
+        - name: dmz_net
+          ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.40
+      vars:
+        domain: test1.com
+        targets: 
+          - name: vuln_service
+            network: dmz_net
+            port: 8443
+          - name: vuln_service
+            network: dmz_net
+            port: 8445
 
     # - name: reverse_proxy2
     #   image: reverse_proxy
     #   group:
-    #     - custom_machines
+    #     - reverse_proxies
     #   dns_server: true
     #   networks:
     #     - name: dmz_net
