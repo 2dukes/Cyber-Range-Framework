@@ -9,3 +9,4 @@ V	330320102333Z		1007	unknown	/C=US/O=FEUP/CN=test1.com
 V	330320103039Z		1008	unknown	/C=US/O=FEUP/CN=test1.com
 V	330320103633Z		1009	unknown	/C=US/O=FEUP/CN=test1.com
 V	330320105539Z		100A	unknown	/C=US/O=FEUP/CN=test1.com
+V	330320112508Z		100B	unknown	/C=US/O=FEUP/CN=test1.com

@@ -1,6 +1,6 @@
 acl internals {
-    172.{{ general.random_byte }}.0.0/24;
-    172.{{ general.random_byte | int - 5 }}.0.0/24;
+    172.{{ networks.internal_net.random_byte }}.0.0/24;
+    172.{{ networks.dmz_net.random_byte }}.0.0/24;
 };
 
 view "internal" {

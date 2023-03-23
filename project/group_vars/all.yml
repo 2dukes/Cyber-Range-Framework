@@ -7,14 +7,17 @@ networks:
   internal_net:
     network_addr: 172.{{ general.random_byte }}.0.0/24
     gateway_addr: 172.{{ general.random_byte }}.0.254
+    random_byte: "{{ general.random_byte }}"
 
   dmz_net:
     network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
     gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
+    random_byte: "{{ general.random_byte | int - 5 }}"
 
   external_net:
     network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
     gateway_addr: 172.{{ general.random_byte | int - 10 }}.0.254
+    random_byte: "{{ general.random_byte | int - 10 }}"
 
 machines:
   - name: dhcp_server
@@ -22,14 +25,14 @@ machines:
       - dhcp_servers
     networks:
       - name: internal_net
-        ipv4_address: 172.{{ general.random_byte }}.0.3
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.3
 
   - name: internal_pc_1
     group:
       - pcs
     networks:
       - name: internal_net
-        ipv4_address: 172.{{ general.random_byte }}.0.2
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.2
 
   - name: internal_router
     group:
@@ -38,9 +41,9 @@ machines:
     dns_server: true
     networks:
       - name: internal_net
-        ipv4_address: 172.{{ general.random_byte }}.0.1
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.1
       - name: dmz_net
-        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.1
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.1
 
   - name: edge_router
     group:
@@ -48,9 +51,9 @@ machines:
     dns_server: true
     networks:
       - name: dmz_net
-        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.2
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.2
       - name: external_net
-        ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.1
+        ipv4_address: 172.{{ networks.external_net.random_byte }}.0.1
 
   - name: dns_server
     group:
@@ -61,7 +64,7 @@ machines:
       - 953
     networks:
       - name: dmz_net
-        ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.20
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.20
 
   - name: attacker_machine
     image: kali_test_img
@@ -73,4 +76,4 @@ machines:
     dns_server: true
     networks:
       - name: external_net
-        ipv4_address: 172.{{ general.random_byte | int - 10 }}.0.2
+        ipv4_address: 172.{{ networks.external_net.random_byte }}.0.2

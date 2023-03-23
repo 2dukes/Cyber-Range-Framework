@@ -30,7 +30,7 @@ vulnerables:
       dns_server: true
       networks:
         - name: dmz_net
-          ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.30
+          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.30
       volumes:
         - "{{ playbook_dir }}/scenarios/log4j/unifi-certs:/usr/lib/unifi/cert"
       vars:
@@ -45,7 +45,7 @@ vulnerables:
       dns_server: true
       networks:
         - name: dmz_net
-          ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.40
+          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
       vars:
         domain: test1.com
         targets: 
@@ -63,7 +63,7 @@ vulnerables:
     #   dns_server: true
     #   networks:
     #     - name: dmz_net
-    #       ipv4_address: 172.{{ general.random_byte | int - 5 }}.0.41
+    #       ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
     #   vars:
     #     domain: test2.com
     #     targets: 
