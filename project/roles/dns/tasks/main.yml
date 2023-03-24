@@ -30,7 +30,7 @@
     selected_machines: "{{ machines + vulnerables.machines }}"
   template:
     src: "db.template.j2"
-    dest: "/var/bind/db.internal.{{ dns_info.machine }}"
+    dest: "/var/bind/db.internal.{{ dns_info.internal.machine }}"
     mode: '0755'
   loop: "{{ dns }}"
   loop_control:
@@ -42,7 +42,7 @@
     selected_machines: "{{ machines + vulnerables.machines }}"
   template:
     src: "db.template.j2"
-    dest: "/var/bind/db.external.{{ dns_info.machine }}"
+    dest: "/var/bind/db.external.{{ dns_info.external.machine }}"
     mode: '0755'
   loop: "{{ dns }}"
   loop_control:

@@ -10,7 +10,7 @@
   ansible.builtin.include_tasks: certs.yml
   loop: "{{ machine_vars }}"
   loop_control:
-    loop_var: machine_vars
+    loop_var: vars
 
 - name: Start NGINX
   ansible.builtin.service:

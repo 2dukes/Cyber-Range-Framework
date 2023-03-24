@@ -1,21 +1,25 @@
 dns:
   - domain: example-domain.ui.com
-    machine: vuln_service
     internal:
+      machine: vuln_service
       network: dmz_net
     external:
-      network: dmz_net
+      machine: edge_router
+      network: external_net
   - domain: test1.com
-    machine: reverse_proxy1
     internal:
+      machine: reverse_proxy1
       network: dmz_net
     external:
+      machine: reverse_proxy1
       network: dmz_net
   - domain: test2.com
     machine: reverse_proxy1
     internal:
+      machine: reverse_proxy1
       network: dmz_net
     external:
+      machine: reverse_proxy1
       network: dmz_net
 
 vulnerables:
@@ -87,21 +91,6 @@ vulnerables:
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.43
-       
-    # - name: reverse_proxy2
-    #   image: reverse_proxy
-    #   group:
-    #     - reverse_proxies
-    #   dns_server: true
-    #   networks:
-    #     - name: dmz_net
-    #       ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
-    #   vars:
-    #     domain: test2.com
-    #     targets: 
-    #       - name: admin_bot_api
-    #         network: dmz_net
-    #         port: 8000
 
 setup:
   machines:

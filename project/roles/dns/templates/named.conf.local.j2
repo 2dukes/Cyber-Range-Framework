@@ -9,7 +9,7 @@ view "internal" {
     {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
-        file "/var/bind/db.internal.{{ info.machine }}";
+        file "/var/bind/db.internal.{{ info.internal.machine }}";
     };
     {% endfor +%}
 };
@@ -20,10 +20,9 @@ view "external" {
     {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
-        file "/var/bind/db.external.{{ info.machine }}";
+        file "/var/bind/db.external.{{ info.external.machine }}";
     };
-
-    {% endfor -%}
+    {% endfor +%}
 
     // prime the server with knowledge of the root servers
     zone "." {
