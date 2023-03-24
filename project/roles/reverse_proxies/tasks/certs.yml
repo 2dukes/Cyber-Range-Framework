@@ -1,0 +1,23 @@
+- name: Generate CSR
+  ansible.builtin.shell: openssl req -newkey rsa:2048 -sha256 -keyout server.key -out my-site.csr -subj "/CN={{ machine_vars.domain }}/O=FEUP/C=US" -passout pass:pass -addext "subjectAltName = DNS:{{ machine_vars.domain }}"
+  delegate_to: 127.0.0.1
+
+- name: Generate my-site public key
+  ansible.builtin.shell: openssl ca -config ca/openssl.cnf -policy policy_anything -md sha256 -days 3650 -in my-site.csr -out "{{ machine_vars.domain }}".crt -batch -cert ca/ca.crt -keyfile ca/ca.key -passin pass:test
+  delegate_to: 127.0.0.1
+
+- name: Remove Password from my-site's private key
+  ansible.builtin.shell: openssl rsa -in server.key -out "{{ machine_vars.domain }}".key -passin pass:pass
+  delegate_to: 127.0.0.1
+
+- name: Copy Certificates to Reverse Proxy (Public-Key)
+  ansible.builtin.shell: docker cp "{{ machine_vars.domain }}".crt "{{ inventory_hostname }}":/etc/ssl/certs
+  delegate_to: 127.0.0.1
+
+- name: Copy Certificates to Reverse Proxy (Private-Key)
+  ansible.builtin.shell: docker cp "{{ machine_vars.domain }}".key "{{ inventory_hostname }}":/etc/ssl/private
+  delegate_to: 127.0.0.1
+
+- name: Remove Generated Certificates
+  ansible.builtin.shell: rm -f "{{ machine_vars.domain }}".key my-site.csr "{{ machine_vars.domain }}".crt server.key
+  delegate_to: 127.0.0.1

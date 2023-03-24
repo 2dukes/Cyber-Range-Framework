@@ -12,7 +12,7 @@ dns:
     external:
       network: dmz_net
   - domain: test2.com
-    machine: reverse_proxy2
+    machine: reverse_proxy1
     internal:
       network: dmz_net
     external:
@@ -59,11 +59,16 @@ vulnerables:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
       vars:
-        domain: test1.com
-        targets: 
-          - name: admin_bot_frontend
-            network: dmz_net
-            port: 3000
+        - domain: test1.com
+          targets: 
+            - name: admin_bot_frontend
+              network: dmz_net
+              port: 3000
+        - domain: test2.com
+          targets: 
+            - name: admin_bot_api
+              network: dmz_net
+              port: 8000
 
     - name: admin_bot_frontend
       image: admin_bot_frontend
@@ -83,20 +88,20 @@ vulnerables:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.43
        
-    - name: reverse_proxy2
-      image: reverse_proxy
-      group:
-        - reverse_proxies
-      dns_server: true
-      networks:
-        - name: dmz_net
-          ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
-      vars:
-        domain: test2.com
-        targets: 
-          - name: admin_bot_api
-            network: dmz_net
-            port: 8000
+    # - name: reverse_proxy2
+    #   image: reverse_proxy
+    #   group:
+    #     - reverse_proxies
+    #   dns_server: true
+    #   networks:
+    #     - name: dmz_net
+    #       ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.41
+    #   vars:
+    #     domain: test2.com
+    #     targets: 
+    #       - name: admin_bot_api
+    #         network: dmz_net
+    #         port: 8000
 
 setup:
   machines:

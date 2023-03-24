@@ -7,15 +7,17 @@ http {
     sendfile on;
     large_client_header_buffers 4 32k;
 
-    upstream service {
-    {% for target in targets %}
+    {%+ for vars in machine_vars %}
+    
+    upstream service-{{ loop.index }} {
+    {% for target in vars.targets %}
     server {{ ((selected_machines | selectattr('name', '==', target.name))[0]['networks'] | selectattr('name', '==', target.network) | map(attribute='ipv4_address')) | first }}:{{ target.port }};
     {% endfor -%}
     }
 
     server {
         listen 80;
-        server_name {{ domain }};
+        server_name {{ vars.domain }};
 
         location / {
             return 301 https://$host$request_uri;
@@ -24,13 +26,13 @@ http {
 
     server {
         listen 443 ssl;
-        server_name {{ domain }};
+        server_name {{ vars.domain }};
 
-        ssl_certificate /etc/ssl/certs/my-site.crt;
-        ssl_certificate_key /etc/ssl/private/my-site.key;
+        ssl_certificate /etc/ssl/certs/{{ vars.domain }}.crt;
+        ssl_certificate_key /etc/ssl/private/{{ vars.domain }}.key;
 
         location / {
-            proxy_pass         http://service;
+            proxy_pass         http://service-{{ loop.index }};
             proxy_redirect     off;
             proxy_http_version 1.1;
             proxy_cache_bypass $http_upgrade;
@@ -46,4 +48,6 @@ http {
             proxy_busy_buffers_size     256k;
         }
     }
+    {% endfor %}
+
 }

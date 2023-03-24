@@ -1,36 +1,16 @@
 - name: Copy nginx.conf
   vars:
-    domain: "{{ machine_vars.domain }}"
-    targets: "{{ machine_vars.targets }}"
     selected_machines: "{{ machines + vulnerables.machines }}"
   template:
     src: "nginx.conf.j2"
     dest: /etc/nginx/nginx.conf
     mode: '0755'
 
-- name: Generate CSR
-  ansible.builtin.shell: openssl req -newkey rsa:2048 -sha256 -keyout server.key -out my-site.csr -subj "/CN={{ machine_vars.domain }}/O=FEUP/C=US" -passout pass:pass -addext "subjectAltName = DNS:{{ machine_vars.domain }}"
-  delegate_to: 127.0.0.1
-
-- name: Generate my-site public key
-  ansible.builtin.shell: openssl ca -config ca/openssl.cnf -policy policy_anything -md sha256 -days 3650 -in my-site.csr -out my-site.crt -batch -cert ca/ca.crt -keyfile ca/ca.key -passin pass:test
-  delegate_to: 127.0.0.1
-
-- name: Remove Password from my-site's private key
-  ansible.builtin.shell: openssl rsa -in server.key -out my-site.key -passin pass:pass
-  delegate_to: 127.0.0.1
-
-- name: Copy Certificates to Reverse Proxy (Public-Key)
-  ansible.builtin.shell: docker cp my-site.crt "{{ inventory_hostname }}":/etc/ssl/certs
-  delegate_to: 127.0.0.1
-
-- name: Copy Certificates to Reverse Proxy (Private-Key)
-  ansible.builtin.shell: docker cp my-site.key "{{ inventory_hostname }}":/etc/ssl/private
-  delegate_to: 127.0.0.1
-
-- name: Remove Generated Certificates
-  ansible.builtin.shell: rm -f my-site.key my-site.csr my-site.crt server.key
-  delegate_to: 127.0.0.1
+- name: Handle Certificates
+  ansible.builtin.include_tasks: certs.yml
+  loop: "{{ machine_vars }}"
+  loop_control:
+    loop_var: machine_vars
 
 - name: Start NGINX
   ansible.builtin.service:
