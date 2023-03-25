@@ -42,10 +42,6 @@
   roles:
     - routers
 
-- name: Firewall Tasks
-  hosts: firewalls
-  roles:
-    - firewalls
 
 - name: External Tasks
   hosts: external
@@ -64,11 +60,6 @@
   roles:
     - dmz
 
-- name: Entrypoint Tasks
-  hosts: scenario
-  roles:
-    - entrypoint
-
 - name: Reverse Proxy Tasks
   hosts: reverse_proxies
   serial: 1
@@ -76,3 +67,13 @@
     machine_vars: "{{ (vulnerables.machines | selectattr('name', '==', inventory_hostname))[0]['vars'] }}"
   roles:
     - reverse_proxies
+
+- name: Firewall Tasks
+  hosts: firewalls
+  roles:
+    - firewalls
+
+- name: Entrypoint Tasks
+  hosts: scenario
+  roles:
+    - entrypoint

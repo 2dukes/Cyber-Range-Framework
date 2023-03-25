@@ -1,0 +1,173 @@
+- name: Default Policy for FORWARD Chain is DROP
+  ansible.builtin.iptables:
+    chain: FORWARD
+    policy: DROP
+
+- name: Accept Already Established Connections to Internal/DMZ Networks
+  ansible.builtin.iptables:
+    chain: FORWARD
+    ctstate: ESTABLISHED,RELATED
+    destination: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
+    jump: ACCEPT
+
+- name: Accept Packets from Internal/DMZ Networks
+  ansible.builtin.iptables:
+    chain: FORWARD
+    source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
+    jump: ACCEPT
+
+# DNS
+
+- name: PREROUTING 0.1
+  ansible.builtin.shell: iptables -A PREROUTING -p tcp -t nat -i eth1 --dport 53 -j DNAT --to "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}:53"
+
+- name: PREROUTING 0.2
+  ansible.builtin.shell: iptables -A PREROUTING -p udp -t nat -i eth1 --dport 53 -j DNAT --to "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}:53"
+
+# - name: DNS PREROUTING Rules 1
+#   ansible.builtin.iptables:
+#     chain: PREROUTING
+#     table: nat
+#     in_interface: eth1
+#     destination_port: 53
+#     protocol: tcp
+#     to_destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
+#     to_ports: 53
+#     jump: DNAT
+
+# - name: DNS PREROUTING Rules 2
+#   ansible.builtin.iptables:
+#     chain: PREROUTING
+#     table: nat
+#     in_interface: eth1
+#     destination_port: 53
+#     protocol: udp
+#     to_destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
+#     to_ports: 53
+#     jump: DNAT
+
+- name: FORWARD
+  ansible.builtin.iptables:
+    chain: FORWARD
+    destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
+    jump: ACCEPT
+
+- name: DNS POSTROUTING Rules
+  ansible.builtin.iptables:
+    chain: POSTROUTING
+    table: nat
+    destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
+    jump: MASQUERADE
+
+# Port Forwarding (CHANGE RULES' NAMES)
+
+- name: FORWARD 1
+  ansible.builtin.iptables:
+    chain: FORWARD
+    destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}"
+    destination_port: "{{ machine.port_forwarding.to_port }}"
+    protocol: tcp
+    jump: ACCEPT
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+- name: FORWARD 2
+  ansible.builtin.iptables:
+    chain: FORWARD
+    destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}"
+    destination_port: "{{ machine.port_forwarding.to_port }}"
+    protocol: udp
+    jump: ACCEPT
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+- name: FORWARD 3
+  ansible.builtin.iptables:
+    chain: FORWARD
+    destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}"
+    protocol: icmp
+    jump: ACCEPT
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+- name: PREROUTING 1.1
+  ansible.builtin.shell: iptables -A PREROUTING -p tcp -t nat -i eth1 --dport "{{ machine.port_forwarding.destination_port }}" -j DNAT --to "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}:{{ machine.port_forwarding.to_port }}"
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+- name: PREROUTING 1.2
+  ansible.builtin.shell: iptables -A PREROUTING -p udp -t nat -i eth1 --dport "{{ machine.port_forwarding.destination_port }}" -j DNAT --to "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}:{{ machine.port_forwarding.to_port }}"
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+- name: PREROUTING 1.2
+  ansible.builtin.shell: iptables -A PREROUTING -p icmp -t nat -i eth1 -j DNAT --to "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}"
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined
+
+# - name: PREROUTING 1
+#   ansible.builtin.iptables:
+#     chain: PREROUTING
+#     table: nat
+#     in_interface: eth1
+#     destination_port: "{{ machine.port_forwarding.destination_port }}"
+#     protocol: tcp
+#     to_destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address')) | first }}"
+#     to_ports: "{{ machine.port_forwarding.to_port }}"
+#     jump: DNAT
+#   loop: "{{ machines + vulnerables.machines }}"
+#   loop_control:
+#     loop_var: machine
+#   when: machine.port_forwarding is defined
+
+# - name: PREROUTING 2
+#   ansible.builtin.iptables:
+#     chain: PREROUTING
+#     table: nat
+#     in_interface: eth1
+#     destination_port: "{{ machine.port_forwarding.destination_port }}"
+#     protocol: udp
+#     to_destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address')) | first }}"
+#     to_ports: "{{ machine.port_forwarding.to_port }}"
+#     jump: DNAT
+#   loop: "{{ machines + vulnerables.machines }}"
+#   loop_control:
+#     loop_var: machine
+#   when: machine.port_forwarding is defined
+  
+# - name: PREROUTING 3
+#   ansible.builtin.iptables:
+#     chain: PREROUTING
+#     table: nat
+#     in_interface: eth1
+#     destination_port: "{{ machine.port_forwarding.destination_port }}"
+#     protocol: icmp
+#     to_destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address')) | first }}"
+#     jump: DNAT
+#   loop: "{{ machines + vulnerables.machines }}"
+#   loop_control:
+#     loop_var: machine
+#   when: machine.port_forwarding is defined
+
+- name: POSTROUTING
+  ansible.builtin.iptables:
+    chain: POSTROUTING
+    table: nat
+    destination: "{{ machine.networks | selectattr('name', '==', machine.port_forwarding.to_network) | map(attribute='ipv4_address') | first }}"
+    jump: MASQUERADE
+  loop: "{{ machines + vulnerables.machines }}"
+  loop_control:
+    loop_var: machine
+  when: machine.port_forwarding is defined

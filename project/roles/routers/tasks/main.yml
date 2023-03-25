@@ -3,10 +3,10 @@
     table: nat
     flush: true
 
-- name: Container Operation Tasks
+- name: Internal Router Tasks
   ansible.builtin.include_tasks: internal_router.yml
   when: not is_edge_router
 
-- name: Container Operation Tasks
+- name: Edge Router Tasks
   ansible.builtin.include_tasks: edge_router.yml
   when: is_edge_router

@@ -38,7 +38,9 @@ machines:
     group:
       - routers
       - firewalls
-    dns_server: true
+    dns: 
+      name: dns_server
+      network: dmz_net
     networks:
       - name: internal_net
         ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.1
@@ -48,7 +50,10 @@ machines:
   - name: edge_router
     group:
       - routers
-    dns_server: true
+      - firewalls
+    dns:
+      name: dns_server
+      network: dmz_net
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.2
@@ -73,7 +78,9 @@ machines:
     published_ports:
       - 5900:5900
       - 6080:6080
-    dns_server: true
+    dns: 
+      name: edge_router
+      network: external_net
     networks:
       - name: external_net
         ipv4_address: 172.{{ networks.external_net.random_byte }}.0.2

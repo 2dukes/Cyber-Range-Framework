@@ -5,7 +5,7 @@
     networks: "{{ pc_info.networks }}"
     capabilities:
       - NET_ADMIN
-    dns_servers: "{{ pc_info.dns_server is defined | ternary((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | map(attribute='ipv4_address') | first, []) }}"
+    dns_servers: "{{ pc_info.dns is defined | ternary((machines | selectattr('name', '==', pc_info.dns.name | default('dns_server')))[0]['networks'] | selectattr('name', '==', pc_info.dns.network | default('dmz_net')) | map(attribute='ipv4_address') | first, []) }}"
     exposed_ports: "{{ pc_info.exposed_ports | default([]) }}"
     published_ports: "{{ pc_info.published_ports | default([]) }}"
     volumes: "{{ pc_info.volumes | default([]) }}"

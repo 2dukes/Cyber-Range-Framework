@@ -11,16 +11,16 @@ dns:
       machine: reverse_proxy1
       network: dmz_net
     external:
-      machine: reverse_proxy1
-      network: dmz_net
+      machine: edge_router
+      network: external_net
   - domain: test2.com
     machine: reverse_proxy1
     internal:
       machine: reverse_proxy1
       network: dmz_net
     external:
-      machine: reverse_proxy1
-      network: dmz_net
+      machine: edge_router
+      network: external_net
 
 vulnerables:
   images:
@@ -43,7 +43,9 @@ vulnerables:
       image: unifi_log4j
       group:
         - custom_machines
-      dns_server: true
+      dns:
+        name: dns_server
+        network: dmz_net
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.30
@@ -53,12 +55,19 @@ vulnerables:
         username: test_user
         password: test_password
         email: admin@hotmail.com
+        domain: example-domain.ui.com
+      port_forwarding:
+        destination_port: 8443
+        to_network: dmz_net
+        to_port: 8443
 
     - name: reverse_proxy1
       image: reverse_proxy
       group:
         - reverse_proxies
-      dns_server: true
+      dns:
+        name: dns_server
+        network: dmz_net
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
@@ -78,19 +87,31 @@ vulnerables:
       image: admin_bot_frontend
       group:
         - custom_machines
-      dns_server: true
+      dns:
+        name: dns_server
+        network: dmz_net
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.42
+      port_forwarding:
+        destination_port: 4001
+        to_network: dmz_net
+        to_port: 443
     
     - name: admin_bot_api
       image: admin_bot_api
       group:
         - custom_machines
-      dns_server: true
+      dns:
+        name: dns_server
+        network: dmz_net
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.43
+      port_forwarding:
+        destination_port: 5001
+        to_network: dmz_net
+        to_port: 443
 
 setup:
   machines:

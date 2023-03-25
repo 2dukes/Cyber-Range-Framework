@@ -1,0 +1,1 @@
+is_edge_router: "{{ (machines | selectattr('name', '==', 'edge_router'))[0]['networks'] | map(attribute='ipv4_address') | difference(ansible_facts['all_ipv4_addresses']) | list | length == 0 }}"

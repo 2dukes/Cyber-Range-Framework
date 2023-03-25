@@ -1,31 +1,13 @@
-- name: Default Policy for FORWARD Chain is DROP
-  ansible.builtin.iptables:
-    chain: FORWARD
-    policy: DROP
+# - name: Update the repository cache and update package "nginx" to latest version using default release squeeze-backport
+#   community.general.apk:
+#     name: iptables
+#     state: latest
+#     update_cache: true
 
-# - name: Accept Connections to DMZ Network
-#   ansible.builtin.iptables:
-#     chain: FORWARD
-#     ctstate: NEW,ESTABLISHED,RELATED
-#     destination: "{{ networks.dmz_net.network_addr }}"
-#     jump: ACCEPT
+- name: Internal Firewall Tasks
+  ansible.builtin.include_tasks: internal_firewall.yml
+  when: not is_edge_router
 
-- name: Accept Already Established Connections to Internal Network
-  ansible.builtin.iptables:
-    chain: FORWARD
-    ctstate: ESTABLISHED,RELATED
-    destination: "{{ networks.internal_net.network_addr }}"
-    jump: ACCEPT
-
-- name: Accept Connections From Internal and DMZ networks [1]
-  ansible.builtin.iptables:
-    chain: FORWARD
-    ctstate: NEW,ESTABLISHED,RELATED
-    source: "{{ networks.internal_net.network_addr }}"
-    jump: ACCEPT
-
-# - name: Accept Connections From Internal and DMZ networks [2]
-#   ansible.builtin.iptables:
-#     chain: FORWARD
-#     source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
-#     jump: ACCEPT
+- name: External Firewall Tasks
+  ansible.builtin.include_tasks: external_firewall.yml
+  when: is_edge_router
