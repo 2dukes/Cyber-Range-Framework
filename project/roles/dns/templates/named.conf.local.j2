@@ -1,5 +1,11 @@
+acl "exclude" {
+    {{ (machines | selectattr('name', '==', 'edge_router'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address') | first }};
+};
+
 acl internals {
+    !exclude;
     172.{{ networks.internal_net.random_byte }}.0.0/24;
+    172.{{ networks.dmz_net.random_byte }}.0.0/24;
 };
 
 view "internal" {
