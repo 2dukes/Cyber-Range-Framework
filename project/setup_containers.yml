@@ -78,6 +78,6 @@
     - firewalls
 
 - name: Entrypoint Tasks
-  hosts: all
+  hosts: all:localhost
   roles:
     - entrypoint
