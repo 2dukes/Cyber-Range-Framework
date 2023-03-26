@@ -34,6 +34,8 @@
 
 - name: DNS Servers Tasks
   hosts: dns_servers
+  vars: 
+    selected_machines: "{{ machines + vulnerables.machines }}"
   roles:
     - dns
 
@@ -42,13 +44,12 @@
   roles:
     - routers
 
-
 - name: External Tasks
   hosts: external
   roles:
     - external
 
-# Scenario
+# Scenario-specific Tasks
 
 - name: Vulnerable Machine Launch
   hosts: localhost
@@ -63,17 +64,20 @@
 - name: Reverse Proxy Tasks
   hosts: reverse_proxies
   serial: 1
-  vars: 
+  vars:
+    selected_machines: "{{ machines + vulnerables.machines }}"
     machine_vars: "{{ (vulnerables.machines | selectattr('name', '==', inventory_hostname))[0]['vars'] }}"
   roles:
     - reverse_proxies
 
 - name: Firewall Tasks
   hosts: firewalls
+  vars:
+    dns_server_ip: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
   roles:
     - firewalls
 
 - name: Entrypoint Tasks
-  hosts: scenario
+  hosts: all
   roles:
     - entrypoint

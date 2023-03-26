@@ -8,7 +8,7 @@ $TTL 2
 
 @        IN      NS    ns.{{ dns_info.domain }}.
 
-@        IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info[network_type].machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
-www      IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info[network_type].machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
-ns       IN      A     {{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}
-*        IN      A     {{ ((selected_machines | selectattr('name', '==', dns_info[network_type].machine))[0]['networks'] | selectattr('name', '==', dns_info[network_type].network) | map(attribute='ipv4_address')) | first }}
+@        IN      A     {{ domain_machine }}
+www      IN      A     {{ domain_machine }}
+ns       IN      A     {{ ns_machine }}
+*        IN      A     {{ domain_machine }}

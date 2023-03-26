@@ -1,15 +1,9 @@
-# - name: Update the repository cache and update package "nginx" to latest version using default release squeeze-backport
-#   community.general.apk:
-#     name: iptables
-#     state: latest
-#     update_cache: true
-
 - name: Internal Firewall Tasks
-  ansible.builtin.include_tasks: internal_firewall.yml
+  ansible.builtin.include_tasks: internal/internal_firewall.yml
   when: not is_edge_router
 
 - name: External Firewall Tasks
   vars:
     selected_machines: "{{ machines + vulnerables.machines }}"
-  ansible.builtin.include_tasks: external_firewall.yml
+  ansible.builtin.include_tasks: external/external_firewall.yml
   when: is_edge_router
