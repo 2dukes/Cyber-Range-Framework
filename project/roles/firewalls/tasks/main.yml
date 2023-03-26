@@ -9,5 +9,7 @@
   when: not is_edge_router
 
 - name: External Firewall Tasks
+  vars:
+    selected_machines: "{{ machines + vulnerables.machines }}"
   ansible.builtin.include_tasks: external_firewall.yml
   when: is_edge_router

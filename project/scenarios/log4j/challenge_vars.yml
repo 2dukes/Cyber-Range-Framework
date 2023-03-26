@@ -56,10 +56,6 @@ vulnerables:
         password: test_password
         email: admin@hotmail.com
         domain: example-domain.ui.com
-      port_forwarding:
-        destination_port: 8443
-        to_network: dmz_net
-        to_port: 8443
 
     - name: reverse_proxy1
       image: reverse_proxy
@@ -93,10 +89,6 @@ vulnerables:
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.42
-      port_forwarding:
-        destination_port: 4001
-        to_network: dmz_net
-        to_port: 443
     
     - name: admin_bot_api
       image: admin_bot_api
@@ -108,10 +100,16 @@ vulnerables:
       networks:
         - name: dmz_net
           ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.43
-      port_forwarding:
-        destination_port: 5001
-        to_network: dmz_net
-        to_port: 443
+
+port_forwarding:
+  - destination_port: 443
+    to_machine: reverse_proxy1
+    to_network: dmz_net
+    to_port: 443
+  - destination_port: 8443
+    to_machine: vuln_service
+    to_network: dmz_net
+    to_port: 8443
 
 setup:
   machines:
