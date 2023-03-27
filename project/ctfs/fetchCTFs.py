@@ -25,18 +25,28 @@ def remove_dir(path):
     shutil.rmtree(path)
 
 
+def admin_file_exists(path):
+    return os.path.exists(f"{path}/adminbot.js")
+
+
+def write_vars(challenge_path, images, machines, dns, port_forwarding):
+    with open(f"{challenge_path}/challenge_vars.yaml", 'w') as f:
+        yaml.dump({
+            "dns": dns,
+            "vulnerables": {"images": images, "machines": machines},
+            "port_forwarding": port_forwarding
+        }, f)
+
+
 def parse_admin_file(path):
-    if os.path.exists(f"{path}/adminbot.js"):
+    if admin_file_exists(path):
         admin_file_path = f"{path}/adminbot.js"
         with open(admin_file_path) as f:
             contents = f.read()
 
             var = "flag"
-            file = "flag"
-
             if not re.search("import flag from '(.*flag.txt)'", contents):
                 var = "token"
-                file = "admin"
 
             match = re.search("import .* '(.*.txt)'", contents)
             flag_path = match.group(1)
@@ -59,6 +69,7 @@ def parse_admin_file(path):
 def parse_challenge(path, chal):
     challenge_description_path = f"{path}/challenge.yaml" if os.path.exists(
         f"{path}/challenge.yaml") else f"{path}/challenge.yml"
+
     with open(challenge_description_path) as f:
         data = yaml.load(f, Loader=SafeLoader)
 
@@ -72,37 +83,161 @@ def parse_challenge(path, chal):
         else:
             flag = data["flag"]
 
-        vulnerables["flag"] = flag
+        # vulnerables["flag"] = flag
 
         # Construct images
-        images = [] # vulnerables["images"]
-        machines = [] # vulnerables["machines"]
+        images = []
+        machines = []
+        dns = []
+        port_forwarding = []
 
-        last_ip_byte = 30
+        last_ip_byte = 50
+
+        # Reverse Proxy Image (ALWAYS needed)
+        images.append({"name": "reverse_proxy",
+                       "path": "reverse_proxy",
+                       })
+
+        # Reverse Proxy Machine (ALWAYS needed)
+        # Optimistic approach because we only consider the first container as the one exposed by a domain.
+        first_container_name = list(data["containers"].keys())[0]
+        reverse_proxy_vars = [{
+            "domain": f"{chal}.mc.ax",
+            "targets": [{
+                "name": f"vuln_service_{chal}",
+                "network": "dmz_net",
+                "port": data["containers"][first_container_name]["ports"][0]
+            }]
+        }]
+
+        # DNS Configuration (ALWAYS needed)
+        dns.append({
+            "domain": f"{chal}.mc.ax",
+            "internal": {
+                "machine": f"vuln_service_{chal}",
+                "network": "dmz_net"
+            },
+            "external": {
+                "machine": "edge_router",
+                "network": "dmz_net"
+            }
+        })
+
+        # Port Forwarding (ALWAYS needed)
+        port_forwarding.append({
+            "destination_port": 443,
+            "to_machine": "reverse_proxy1",
+            "to_network": "dmz_net",
+            "to_port": 443
+        })
+
+        if admin_file_exists(path):
+            # DNS
+            dns.append({
+                "domain": "adminbot.mc.ax",
+                "internal": {
+                    "machine": "reverse_proxy1",
+                    "network": "dmz_net"
+                },
+                "external": {
+                    "machine": "reverse_proxy1",
+                    "network": "dmz_net"
+                }
+            })
+
+            dns.append({
+                "domain": "adminbot_api.mc.ax",
+                "internal": {
+                    "machine": "reverse_proxy1",
+                    "network": "dmz_net"
+                },
+                "external": {
+                    "machine": "reverse_proxy1",
+                    "network": "dmz_net"
+                }
+            })
+
+            # Reverse Proxy
+            reverse_proxy_vars.append({
+                "domain": "adminbot.mc.ax",
+                "targets": [{
+                    "name": "admin_bot_frontend",
+                    "network": "dmz_net",
+                    "port": 3000
+                }]
+            })
+
+            reverse_proxy_vars.append({
+                "domain": "adminbot_api.mc.ax",
+                "targets": [{
+                    "name": "admin_bot_api",
+                    "network": "dmz_net",
+                    "port": 8000
+                }]
+            })
+
+            # Images
+            images.append({
+                "name": "admin_bot_api",
+                "path": "bot/api",
+            })
+
+            images.append({
+                "name": "admin_bot_frontend",
+                "path": "bot/my-app",
+                "args": {
+                    "api": "adminbot_api.mc.ax"
+                }
+            })
+
+        machines.append({
+            "name": "reverse_proxy1",
+            "image": "reverse_proxy",
+            "group": ['reverse_proxies'],
+            "dns": {
+                "name": "dns_server",
+                "network": "dmz_net"
+            },
+            "networks": [{
+                "name": "dmz_net",
+                "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0.40"
+            }],
+            "vars": reverse_proxy_vars
+        })
 
         for container_name in data["containers"].keys():
             container_info = data["containers"][container_name]
 
             # Images
+            build_path = chal
+            if "context" in container_info['build']:
+                build_path += f"/{container_info['build']['context']}"
+            else:
+                build_path += f"/{container_info['build']}"
+
             images.append({"name": f"{chal}_{container_name}",
-                          "scenario": f"{chal}/{container_info['build']}"})
+                           "path": f"{build_path}",
+                           "args": {k: v for k, v in container_info['build']['args'].items()} if 'args' in container_info['build'] else {}
+                           })
 
             # Ports, Environment Vars, Flags
 
             # Machines
             machines.append({"name": f"vuln_service_{chal}",
-                        "image": images[-1]["name"],
-                        "group": "vuln_machines",
-                        "dns_server": True,
-                        "exposed_ports": container_info["ports"] if "ports" in container_info else [],
-                        "env": container_info["environment"] if "environment" in container_info else {},
-                        "networks": [{
+                             "image": images[-1]["name"],
+                             "group": "custom_machines",
+                             "dns": {"name": "dns_server", "network": "dmz_net"},
+                             "exposed_ports": container_info["ports"] if "ports" in container_info else [],
+                             "env": container_info["environment"] if "environment" in container_info else {},
+                             "networks": [{
                                  "name": "dmz_net",
-                                 "ipv4_address": f"172.{{ general.random_byte | int - 5 }}.0.{last_ip_byte}"
-                        }]
-                        })
+                                 "ipv4_address": f"172.{{ general.dmz_net.random_byte }}.0.{last_ip_byte}"
+                             }]
+                             })
 
             last_ip_byte += 1
+
+        write_vars(path, images, machines, dns, port_forwarding)
 
 
 def lookup_challenges(current_dir):
@@ -118,16 +253,11 @@ def lookup_challenges(current_dir):
             if not has_docker_build:
                 remove_dir(challenge_path)
             else:
-                parse_challenge(challenge_path, chal)
                 parse_admin_file(challenge_path)
+                parse_challenge(challenge_path, chal)
 
             # print(
             #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
-
-    print(vulnerables)
-
-
-vulnerables = {"images": [], "machines": []}
 
 github_repositories = [
     {
