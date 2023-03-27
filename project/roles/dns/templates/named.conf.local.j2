@@ -14,7 +14,7 @@ view "internal" {
     {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
-        file "/var/bind/db.internal.{{ info.internal.machine }}";
+        file "/var/bind/db.internal.{{ info.domain }}";
     };
     {% endfor +%}
 };
@@ -25,7 +25,7 @@ view "external" {
     {% for info in dns -%}
     zone "{{ info.domain }}" {
         type master;
-        file "/var/bind/db.external.{{ info.external.machine }}";
+        file "/var/bind/db.external.{{ info.domain }}";
     };
     {% endfor +%}
 

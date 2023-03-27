@@ -112,3 +112,5 @@ V	330324160340Z		106E	unknown	/C=US/O=FEUP/CN=test1.com
 V	330324160343Z		106F	unknown	/C=US/O=FEUP/CN=test2.com
 V	330324161207Z		1070	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330324161210Z		1071	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330324162705Z		1072	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330324162708Z		1073	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax

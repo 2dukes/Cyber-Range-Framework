@@ -31,7 +31,7 @@
     ns_machine: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
   template:
     src: "db.template.j2"
-    dest: "/var/bind/db.internal.{{ dns_info.internal.machine }}"
+    dest: "/var/bind/db.internal.{{ dns_info.domain }}"
     mode: '0755'
   loop: "{{ dns }}"
   loop_control:
@@ -44,7 +44,7 @@
     ns_machine: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
   template:
     src: "db.template.j2"
-    dest: "/var/bind/db.external.{{ dns_info.external.machine }}"
+    dest: "/var/bind/db.external.{{ dns_info.domain }}"
     mode: '0755'
   loop: "{{ dns }}"
   loop_control:
