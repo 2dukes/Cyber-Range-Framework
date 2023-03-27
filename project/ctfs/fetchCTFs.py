@@ -24,6 +24,8 @@ def rec_lookup_dockerfile(current_dir):
 def remove_dir(path):
     shutil.rmtree(path)
 
+def copy_dir(src, dst):
+    shutil.copytree(src, dst, dirs_exist_ok=True)
 
 def admin_file_exists(path):
     return os.path.exists(f"{path}/adminbot.js")
@@ -238,6 +240,7 @@ def parse_challenge(path, chal):
             last_ip_byte += 1
 
         write_vars(path, images, machines, dns, port_forwarding)
+        copy_dir(path, os.path.join(os.getcwd(), "..", "scenarios", chal))
 
 
 def lookup_challenges(current_dir):

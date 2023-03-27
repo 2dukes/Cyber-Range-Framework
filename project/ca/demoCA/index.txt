@@ -106,3 +106,9 @@ V	330324084722Z		1068	unknown	/C=US/O=FEUP/CN=test1.com
 V	330324084726Z		1069	unknown	/C=US/O=FEUP/CN=test2.com
 V	330324091028Z		106A	unknown	/C=US/O=FEUP/CN=test1.com
 V	330324091031Z		106B	unknown	/C=US/O=FEUP/CN=test2.com
+V	330324154054Z		106C	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330324154057Z		106D	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330324160340Z		106E	unknown	/C=US/O=FEUP/CN=test1.com
+V	330324160343Z		106F	unknown	/C=US/O=FEUP/CN=test2.com
+V	330324161207Z		1070	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330324161210Z		1071	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
