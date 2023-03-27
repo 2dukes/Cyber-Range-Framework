@@ -13,10 +13,3 @@
     destination_port: "{{ forward_info.to_port }}"
     protocol: udp
     jump: ACCEPT
-  
-- name: Forward Rules (ICMP)
-  ansible.builtin.iptables:
-    chain: FORWARD
-    destination: "{{ ((selected_machines | selectattr('name', '==', forward_info.to_machine))[0]['networks'] | selectattr('name', '==', forward_info.to_network) | map(attribute='ipv4_address')) | first }}"
-    protocol: icmp
-    jump: ACCEPT
