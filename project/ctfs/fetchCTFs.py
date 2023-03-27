@@ -24,6 +24,7 @@ def rec_lookup_dockerfile(current_dir):
 def remove_dir(path):
     shutil.rmtree(path)
 
+
 def parse_admin_file(path):
     if os.path.exists(f"{path}/adminbot.js"):
         admin_file_path = f"{path}/adminbot.js"
@@ -32,17 +33,20 @@ def parse_admin_file(path):
 
             var = "flag"
             file = "flag"
-            if not re.search("import flag from './flag.txt'", contents):
+
+            if not re.search("import flag from '(.*flag.txt)'", contents):
                 var = "token"
                 file = "admin"
 
+            match = re.search("import .* '(.*.txt)'", contents)
+            flag_path = match.group(1)
             sub_flag_string = "const fs = require('fs');\n" \
                 "const path = require('path');\n" \
-                "const {var} = fs.readFileSync(path.resolve(__dirname, '{file}.txt'), 'utf8');".format(
-                    var=var, file=file)
+                "const {var} = fs.readFileSync(path.resolve(__dirname, '{flag_path}'), 'utf8');".format(
+                    var=var, flag_path=flag_path)
 
             # Import flag
-            contents = re.sub("import .* from './.*.txt'",
+            contents = re.sub("import .* from '.*.txt'",
                               sub_flag_string, contents)
 
             # Module export
@@ -61,7 +65,7 @@ def parse_challenge(path, chal):
         if "containers" not in data:
             remove_dir(path)
             return
-        
+
         if "file" in data["flag"]:
             with open(f"{path}/{data['flag']['file']}") as f:
                 flag = f.read()
@@ -71,8 +75,8 @@ def parse_challenge(path, chal):
         vulnerables["flag"] = flag
 
         # Construct images
-        images = vulnerables["images"]
-        machines = vulnerables["machines"]
+        images = [] # vulnerables["images"]
+        machines = [] # vulnerables["machines"]
 
         last_ip_byte = 30
 
@@ -80,23 +84,23 @@ def parse_challenge(path, chal):
             container_info = data["containers"][container_name]
 
             # Images
-            images = {"name": f"{chal}_{container_name}",
-                          "scenario": f"{chal}/{container_info['build']}"}
+            images.append({"name": f"{chal}_{container_name}",
+                          "scenario": f"{chal}/{container_info['build']}"})
 
             # Ports, Environment Vars, Flags
 
             # Machines
-            machines = {"name": f"vuln_service_{chal}",
-                            "image": images[-1]["name"],
-                             "group": "vuln_machines",
-                             "dns_server": True,
-                             "exposed_ports": container_info["ports"] if "ports" in container_info else [],
-                             "env": container_info["environment"] if "environment" in container_info else {},
-                             "networks": [{
+            machines.append({"name": f"vuln_service_{chal}",
+                        "image": images[-1]["name"],
+                        "group": "vuln_machines",
+                        "dns_server": True,
+                        "exposed_ports": container_info["ports"] if "ports" in container_info else [],
+                        "env": container_info["environment"] if "environment" in container_info else {},
+                        "networks": [{
                                  "name": "dmz_net",
                                  "ipv4_address": f"172.{{ general.random_byte | int - 5 }}.0.{last_ip_byte}"
-                             }]
-                             }
+                        }]
+                        })
 
             last_ip_byte += 1
 
