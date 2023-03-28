@@ -21,5 +21,5 @@
   when: machine_to_setup and inventory_hostname != "localhost"
 
 - name: Run entrypoint scripts (localhost)
-  shell: sh "{{ setup }}/entrypoint.sh" # In case of localhost, only the folder should be specified
+  shell: sh "{{ (setup.machines | selectattr('name', '==', inventory_hostname))[0]['setup'] }}/entrypoint.sh" # In case of localhost, only the folder should be specified
   when: machine_to_setup and inventory_hostname == "localhost"

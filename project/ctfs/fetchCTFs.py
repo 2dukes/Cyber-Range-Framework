@@ -35,7 +35,7 @@ def admin_file_exists(path):
 
 
 def write_vars(challenge_path, images, machines, dns, port_forwarding, setup):
-    with open(f"{challenge_path}/challenge_vars.yaml", 'w') as f:
+    with open(f"{challenge_path}/challenge_vars.yml", 'w') as f:
         yaml.dump({
             "dns": dns,
             "vulnerables": {"images": images, "machines": machines},
@@ -77,10 +77,12 @@ def parse_admin_file(path):
                 
                 cd "$( dirname "$0" )"
                 
-                # Copy adminbot.js and flag.txt to Admin Bot API
-                
-                cp ../adminbot.js ../../../bot/api/controllers
-                cp ../{flag_path} ../../../bot/api/controllers
+                # Copy adminbot.js and flag file to Admin Bot API
+                docker cp ../adminbot.js admin_bot_api:/backend/controllers
+                docker cp ../{flag_path} admin_bot_api:/backend/controllers
+
+                # Reload Docker container
+                docker restart admin_bot_api
                 """.format(flag_path=flag_path))
                 f.write(code)
 
@@ -213,6 +215,13 @@ def parse_challenge(path, chal):
                 }
             })
 
+            # Setup
+            setup.append({
+                "name": "localhost",
+                "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/setup/"
+            })
+
+
         # Machines
         machines.append({
             "name": "reverse_proxy1",
@@ -227,12 +236,6 @@ def parse_challenge(path, chal):
                 "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0.40"
             }],
             "vars": reverse_proxy_vars
-        })
-
-        # Setup
-        setup.append({
-            "name": "localhost",
-            "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/setup/"
         })
 
         for container_name in data["containers"].keys():
