@@ -5,7 +5,7 @@
     path: /setup
     state: directory
     mode: '0755'
-  when: machine_to_setup
+  when: machine_to_setup and inventory_hostname != "localhost"
 
 - name: Copy template files
   template:
@@ -14,8 +14,12 @@
     mode: '0755'
   with_fileglob:
     - "{{ (setup.machines | selectattr('name', '==', inventory_hostname))[0]['setup'] }}"
-  when: machine_to_setup
+  when: machine_to_setup and inventory_hostname != "localhost"
 
-- name: Run entrypoint scripts
+- name: Run entrypoint scripts (not localhost)
   shell: sh /setup/entrypoint.sh
-  when: machine_to_setup
+  when: machine_to_setup and inventory_hostname != "localhost"
+
+- name: Run entrypoint scripts (localhost)
+  shell: sh "{{ setup }}/entrypoint.sh" # In case of localhost, only the folder should be specified
+  when: machine_to_setup and inventory_hostname == "localhost"

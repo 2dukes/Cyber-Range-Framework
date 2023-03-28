@@ -12,6 +12,12 @@
       loop_control:
         loop_var: pc_info
 
+# [Scenario-specific Tasks] Exception Entrypoint script for localhost
+- name: Entrypoint Tasks
+  hosts: localhost
+  roles:
+    - entrypoint
+
 - name: Base Tasks
   hosts: localhost
   roles:
@@ -78,6 +84,6 @@
     - firewalls
 
 - name: Entrypoint Tasks
-  hosts: all:localhost
+  hosts: all
   roles:
     - entrypoint

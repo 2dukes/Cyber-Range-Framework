@@ -4,6 +4,7 @@ import re
 import shutil
 import yaml
 from yaml.loader import SafeLoader
+from textwrap import dedent
 
 
 def rec_lookup_dockerfile(current_dir):
@@ -24,20 +25,23 @@ def rec_lookup_dockerfile(current_dir):
 def remove_dir(path):
     shutil.rmtree(path)
 
+
 def copy_dir(src, dst):
     shutil.copytree(src, dst, dirs_exist_ok=True)
+
 
 def admin_file_exists(path):
     return os.path.exists(f"{path}/adminbot.js")
 
 
-def write_vars(challenge_path, images, machines, dns, port_forwarding):
+def write_vars(challenge_path, images, machines, dns, port_forwarding, setup):
     with open(f"{challenge_path}/challenge_vars.yaml", 'w') as f:
         yaml.dump({
             "dns": dns,
             "vulnerables": {"images": images, "machines": machines},
-            "port_forwarding": port_forwarding
-        }, f)
+            "port_forwarding": port_forwarding,
+            "setup": {"machines": setup}
+        }, f, indent=4)
 
 
 def parse_admin_file(path):
@@ -63,6 +67,22 @@ def parse_admin_file(path):
 
             # Module export
             contents = re.sub("export default", "module.exports =", contents)
+
+            # Setup/ Operations
+            setup_path = f"{path}/setup"
+            os.mkdir(setup_path)
+            with open(f"{setup_path}/entrypoint.sh", 'w') as f:
+                code = dedent("""\
+                #!/bin/bash
+                
+                cd "$( dirname "$0" )"
+                
+                # Copy adminbot.js and flag.txt to Admin Bot API
+                
+                cp ../adminbot.js ../../../bot/api/controllers
+                cp ../{flag_path} ../../../bot/api/controllers
+                """.format(flag_path=flag_path))
+                f.write(code)
 
         with open(admin_file_path, 'w') as f:
             f.write(contents)
@@ -92,6 +112,7 @@ def parse_challenge(path, chal):
         machines = []
         dns = []
         port_forwarding = []
+        setup = []
 
         last_ip_byte = 50
 
@@ -192,6 +213,7 @@ def parse_challenge(path, chal):
                 }
             })
 
+        # Machines
         machines.append({
             "name": "reverse_proxy1",
             "image": "reverse_proxy",
@@ -205,6 +227,12 @@ def parse_challenge(path, chal):
                 "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0.40"
             }],
             "vars": reverse_proxy_vars
+        })
+
+        # Setup
+        setup.append({
+            "name": "localhost",
+            "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/setup/"
         })
 
         for container_name in data["containers"].keys():
@@ -239,7 +267,7 @@ def parse_challenge(path, chal):
 
             last_ip_byte += 1
 
-        write_vars(path, images, machines, dns, port_forwarding)
+        write_vars(path, images, machines, dns, port_forwarding, setup)
         copy_dir(path, os.path.join(os.getcwd(), "..", "scenarios", chal))
 
 
@@ -261,6 +289,7 @@ def lookup_challenges(current_dir):
 
             # print(
             #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
+
 
 github_repositories = [
     {

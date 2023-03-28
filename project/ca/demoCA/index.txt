@@ -114,3 +114,11 @@ V	330324161207Z		1070	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330324161210Z		1071	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
 V	330324162705Z		1072	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330324162708Z		1073	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330325092126Z		1074	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330325092130Z		1075	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330325092751Z		1076	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330325092753Z		1077	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330325093334Z		1078	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330325093336Z		1079	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
+V	330325093946Z		107A	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330325093948Z		107B	unknown	/C=US/O=FEUP/CN=adminbot_api.mc.ax
