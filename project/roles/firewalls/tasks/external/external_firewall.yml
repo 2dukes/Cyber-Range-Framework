@@ -18,10 +18,10 @@
 
 # DNS
 
-- name: PREROUTING 0.1
+- name: TCP FW PREROUTING Rule [DNS]
   ansible.builtin.shell: iptables -A PREROUTING -p tcp -t nat -i eth1 --dport 53 -j DNAT --to "{{ dns_server_ip }}:53"
 
-- name: PREROUTING 0.2
+- name: UDP FW PREROUTING Rule [DNS]
   ansible.builtin.shell: iptables -A PREROUTING -p udp -t nat -i eth1 --dport 53 -j DNAT --to "{{ dns_server_ip }}:53"
 
 # - name: DNS PREROUTING Rules 1
@@ -46,13 +46,13 @@
 #     to_ports: 53
 #     jump: DNAT
 
-- name: FORWARD
+- name: FW FORWARD Rule [DNS]
   ansible.builtin.iptables:
     chain: FORWARD
     destination: "{{ dns_server_ip }}"
     jump: ACCEPT
 
-- name: DNS POSTROUTING Rules
+- name: FW POSTROUTING Rule [DNS]
   ansible.builtin.iptables:
     chain: POSTROUTING
     table: nat
