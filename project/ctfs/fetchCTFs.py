@@ -6,18 +6,35 @@ import yaml
 from yaml.loader import SafeLoader
 from textwrap import dedent
 
+def findall(p, s):
+    '''Yields all the positions of
+    the pattern p in the string s.'''
+    i = s.find(p)
+    while i != -1:
+        yield i
+        i = s.find(p, i+1)
+
+def add_pack_dockerfile(path):
+    with open(path, 'r+') as f:
+        data = f.read()
+        match_pos = [i for i in findall('FROM', data)]
+        write_pos = data.find("\n", match_pos[-1]) + 1
+        f.seek(write_pos)
+        after_write_data = f.read()
+        to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
+        f.seek(write_pos)
+        f.write(to_write_data)
 
 def rec_lookup_dockerfile(current_dir):
     files = os.listdir(current_dir)
 
-    if "Dockerfile" in files:
-        return True
-
     flag = False
+    if "Dockerfile" in files:
+        flag = True
+        add_pack_dockerfile(f"{current_dir}/Dockerfile")
+
     for dir in [f for f in files if os.path.isdir(f"{current_dir}/{f}")]:
-        flag = rec_lookup_dockerfile(f"{current_dir}/{dir}")
-        if flag:
-            break
+        flag |= rec_lookup_dockerfile(f"{current_dir}/{dir}")
 
     return flag
 
@@ -129,7 +146,7 @@ def parse_challenge(path, chal):
         reverse_proxy_vars = [{
             "domain": f"{chal}.mc.ax",
             "targets": [{
-                "name": f"vuln_service_{chal}",
+                "name": f"vuln_service_{chal}_{first_container_name}",
                 "network": "dmz_net",
                 "port": data["containers"][first_container_name]["ports"][0]
             }]
@@ -139,7 +156,7 @@ def parse_challenge(path, chal):
         dns.append({
             "domain": f"{chal}.mc.ax",
             "internal": {
-                "machine": f"vuln_service_{chal}",
+                "machine": f"vuln_service_{chal}_{first_container_name}",
                 "network": "dmz_net"
             },
             "external": {
@@ -249,22 +266,22 @@ def parse_challenge(path, chal):
                 build_path += f"/{container_info['build']}"
 
             images.append({"name": f"{chal}_{container_name}",
-                           "path": f"{build_path}",
+                           "path": f"scenarios/{build_path}",
                            "args": {k: v for k, v in container_info['build']['args'].items()} if 'args' in container_info['build'] else {}
                            })
 
             # Ports, Environment Vars, Flags
 
             # Machines
-            machines.append({"name": f"vuln_service_{chal}",
+            machines.append({"name": f"vuln_service_{chal}_{container_name}",
                              "image": images[-1]["name"],
-                             "group": "custom_machines",
+                             "group": ["custom_machines"],
                              "dns": {"name": "dns_server", "network": "dmz_net"},
                              "exposed_ports": container_info["ports"] if "ports" in container_info else [],
                              "env": container_info["environment"] if "environment" in container_info else {},
                              "networks": [{
                                  "name": "dmz_net",
-                                 "ipv4_address": f"172.{{ general.dmz_net.random_byte }}.0.{last_ip_byte}"
+                                 "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0." + f"{last_ip_byte}"
                              }]
                              })
 
