@@ -6,6 +6,7 @@ import yaml
 from yaml.loader import SafeLoader
 from textwrap import dedent
 
+
 def findall(p, s):
     '''Yields all the positions of
     the pattern p in the string s.'''
@@ -13,6 +14,7 @@ def findall(p, s):
     while i != -1:
         yield i
         i = s.find(p, i+1)
+
 
 def add_pack_dockerfile(path):
     with open(path, 'r+') as f:
@@ -24,6 +26,7 @@ def add_pack_dockerfile(path):
         to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
         f.seek(write_pos)
         f.write(to_write_data)
+
 
 def rec_lookup_dockerfile(current_dir):
     files = os.listdir(current_dir)
@@ -142,7 +145,8 @@ def parse_challenge(path, chal):
 
         # Reverse Proxy Machine (ALWAYS needed)
         # Optimistic approach because we only consider the first container as the one exposed by a domain.
-        first_container_name = list(data["containers"].keys())[0]
+        container_names = list(data["containers"].keys())
+        first_container_name = container_names[0]
         reverse_proxy_vars = [{
             "domain": f"{chal}.mc.ax",
             "targets": [{
@@ -153,6 +157,22 @@ def parse_challenge(path, chal):
         }]
 
         # DNS Configuration (ALWAYS needed)
+        # When there's more than 1 container
+        number_containers = len(container_names)
+        if number_containers > 1:
+            for idx in range(1, number_containers):
+                dns.append({
+                    "domain": container_names[idx],
+                    "internal": {
+                        "machine": f"vuln_service_{chal}_{container_names[idx]}",
+                        "network": "dmz_net"
+                    },
+                    "external": {
+                        "machine": f"vuln_service_{chal}_{container_names[idx]}",
+                        "network": "dmz_net"
+                    },
+                })
+
         dns.append({
             "domain": f"{chal}.mc.ax",
             "internal": {
@@ -244,7 +264,8 @@ def parse_challenge(path, chal):
             "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/attacker_machine_setup/*.j2"
         })
 
-        copy_dir(f"{parent_dir}/attacker_machine_setup", f"{path}/attacker_machine_setup")
+        copy_dir(f"{parent_dir}/attacker_machine_setup",
+                 f"{path}/attacker_machine_setup")
 
         # Machines
         machines.append({
