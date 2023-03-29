@@ -16,6 +16,7 @@ unifi/geckodriver.log
 ctfs/
 !ctfs/*.py
 !ctfs/requirements.txt
+!ctfs/attacker_machine_setup/
 
 # CA 
 

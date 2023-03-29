@@ -238,6 +238,13 @@ def parse_challenge(path, chal):
                 "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/setup/"
             })
 
+        # Import CA
+        setup.append({
+            "name": "attacker_machine",
+            "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/attacker_machine_setup/*.j2"
+        })
+
+        copy_dir(f"{parent_dir}/attacker_machine_setup", f"{path}/attacker_machine_setup")
 
         # Machines
         machines.append({
