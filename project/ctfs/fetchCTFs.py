@@ -181,7 +181,7 @@ def parse_challenge(path, chal):
             },
             "external": {
                 "machine": "edge_router",
-                "network": "dmz_net"
+                "network": "external_net"
             }
         })
 
@@ -202,20 +202,20 @@ def parse_challenge(path, chal):
                     "network": "dmz_net"
                 },
                 "external": {
-                    "machine": "reverse_proxy1",
-                    "network": "dmz_net"
+                    "machine": "edge_router",
+                    "network": "external_net"
                 }
             })
 
             dns.append({
-                "domain": "adminbot_api.mc.ax",
+                "domain": "adminbotapi.mc.ax",
                 "internal": {
                     "machine": "reverse_proxy1",
                     "network": "dmz_net"
                 },
                 "external": {
-                    "machine": "reverse_proxy1",
-                    "network": "dmz_net"
+                    "machine": "edge_router",
+                    "network": "external_net"
                 }
             })
 
@@ -230,12 +230,40 @@ def parse_challenge(path, chal):
             })
 
             reverse_proxy_vars.append({
-                "domain": "adminbot_api.mc.ax",
+                "domain": "adminbotapi.mc.ax",
                 "targets": [{
                     "name": "admin_bot_api",
                     "network": "dmz_net",
                     "port": 8000
                 }]
+            })
+
+            machines.append({
+                "name": "admin_bot_frontend",
+                "image": "admin_bot_frontend",
+                "group": ['custom_machines'],
+                "dns": {
+                    "name": "dns_server",
+                    "network": "dmz_net"
+                },
+                "networks": [{
+                    "name": "dmz_net",
+                    "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0.42"
+                }],
+            })
+
+            machines.append({
+                "name": "admin_bot_api",
+                "image": "admin_bot_api",
+                "group": ['custom_machines'],
+                "dns": {
+                    "name": "dns_server",
+                    "network": "dmz_net"
+                },
+                "networks": [{
+                    "name": "dmz_net",
+                    "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0.43"
+                }],
             })
 
             # Images
@@ -248,7 +276,7 @@ def parse_challenge(path, chal):
                 "name": "admin_bot_frontend",
                 "path": "bot/my-app",
                 "args": {
-                    "api": "adminbot_api.mc.ax"
+                    "api": "adminbotapi.mc.ax"
                 }
             })
 

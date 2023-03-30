@@ -13,7 +13,7 @@ dns:
     external:
       machine: edge_router
       network: external_net
-  - domain: adminbot_api.mc.ax
+  - domain: adminbotapi.mc.ax
     machine: reverse_proxy1
     internal:
       machine: reverse_proxy1
@@ -36,7 +36,7 @@ vulnerables:
     - name: admin_bot_frontend
       path: bot/my-app
       args:
-        api: adminbot_api.mc.ax # Domain
+        api: adminbotapi.mc.ax # Domain
         
   machines:
     - name: vuln_service
@@ -73,7 +73,7 @@ vulnerables:
             - name: admin_bot_frontend
               network: dmz_net
               port: 3000
-        - domain: adminbot_api.mc.ax
+        - domain: adminbotapi.mc.ax
           targets: 
             - name: admin_bot_api
               network: dmz_net

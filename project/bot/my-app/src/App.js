@@ -24,7 +24,7 @@ function App() {
           <Typography variant="h4" mt={4}>Welcome to Admin Bot!</Typography>
           <Typography mt={1}>Enter a URL and the bot will navigate to it.</Typography>
           <InputLabel htmlFor="my-input">Email address</InputLabel>
-          <TextField value={url} onChange={(e) => setURL(e.target.value)} style={{ color: 'white', backgroundColor: 'lightgray', width: '100%' }} placeholder="https://example.com" label="URL" variant="filled" />
+          <TextField value={url} onChange={(e) => setURL(e.target.value)} style={{ color: 'white', backgroundColor: 'lightgray', width: '100%' }} placeholder="https://example.com/" label="URL" variant="filled" />
           <Button variant="contained" type="submit" style={{ width: '100%', marginTop: "2em" }}>Submit</Button>
         </form>
       </Grid>
