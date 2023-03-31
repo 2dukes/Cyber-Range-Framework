@@ -164,3 +164,7 @@ V	330327143908Z		10A2	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
 V	330327144859Z		10A3	unknown	/C=US/O=FEUP/CN=recursive-csp.mc.ax
 V	330327144901Z		10A4	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330327144903Z		10A5	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330327185601Z		10A6	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330327190859Z		10A7	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330327192235Z		10A8	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330327202936Z		10A9	unknown	/C=US/O=FEUP/CN=mlog.mc.ax

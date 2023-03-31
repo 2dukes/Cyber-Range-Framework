@@ -19,13 +19,23 @@ def findall(p, s):
 def add_pack_dockerfile(path):
     with open(path, 'r+') as f:
         data = f.read()
-        match_pos = [i for i in findall('FROM', data)]
-        write_pos = data.find("\n", match_pos[-1]) + 1
-        f.seek(write_pos)
-        after_write_data = f.read()
-        to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
-        f.seek(write_pos)
-        f.write(to_write_data)
+        
+        is_jail = False
+        if re.search("pwn.red/jail:0.3.1", data):
+            is_jail = True
+            new_data = re.sub("pwn.red/jail:0.3.1", "2dukes/pwnred_jail", data)
+            f.seek(0)
+            f.write(new_data)
+        
+        match_pos = [i for i in findall('FROM', new_data if is_jail else data)]
+        if len(match_pos) > 1 and not is_jail or len(match_pos) == 1:
+            data = new_data if is_jail else data
+            write_pos = data.find("\n", match_pos[-1]) + 1
+            f.seek(write_pos)
+            after_write_data = f.read()
+            to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
+            f.seek(write_pos)
+            f.write(to_write_data)
 
 
 def rec_lookup_dockerfile(current_dir):
