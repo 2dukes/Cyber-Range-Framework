@@ -17,16 +17,17 @@ def findall(p, s):
 
 
 def add_pack_dockerfile(path):
+    is_jail = False
+    
     with open(path, 'r+') as f:
         data = f.read()
-        
-        is_jail = False
+
         if re.search("pwn.red/jail:0.3.1", data):
             is_jail = True
             new_data = re.sub("pwn.red/jail:0.3.1", "2dukes/pwnred_jail", data)
             f.seek(0)
             f.write(new_data)
-        
+
         match_pos = [i for i in findall('FROM', new_data if is_jail else data)]
         if len(match_pos) > 1 and not is_jail or len(match_pos) == 1:
             data = new_data if is_jail else data
@@ -37,19 +38,24 @@ def add_pack_dockerfile(path):
             f.seek(write_pos)
             f.write(to_write_data)
 
+    return is_jail
+
 
 def rec_lookup_dockerfile(current_dir):
     files = os.listdir(current_dir)
 
-    flag = False
+    has_dockerbuild = False
+    has_jail_img = False
     if "Dockerfile" in files:
-        flag = True
-        add_pack_dockerfile(f"{current_dir}/Dockerfile")
+        has_dockerbuild = True
+        has_jail_img = add_pack_dockerfile(f"{current_dir}/Dockerfile")
 
     for dir in [f for f in files if os.path.isdir(f"{current_dir}/{f}")]:
-        flag |= rec_lookup_dockerfile(f"{current_dir}/{dir}")
+        tmp_has_dockerbuild, tmp_has_jail_img = rec_lookup_dockerfile(f"{current_dir}/{dir}")
+        has_dockerbuild |= tmp_has_dockerbuild
+        has_jail_img |= tmp_has_jail_img
 
-    return flag
+    return has_dockerbuild, has_jail_img
 
 
 def remove_dir(path):
@@ -120,7 +126,7 @@ def parse_admin_file(path):
             f.write(contents)
 
 
-def parse_challenge(path, chal):
+def parse_challenge(path, chal, has_jail_img):
     challenge_description_path = f"{path}/challenge.yaml" if os.path.exists(
         f"{path}/challenge.yaml") else f"{path}/challenge.yml"
 
@@ -348,7 +354,8 @@ def parse_challenge(path, chal):
                              "networks": [{
                                  "name": "dmz_net",
                                  "ipv4_address": "172.{{ networks.dmz_net.random_byte }}.0." + f"{last_ip_byte}"
-                             }]
+                             }],
+                             "privileged": has_jail_img
                              })
 
             last_ip_byte += 1
@@ -365,13 +372,13 @@ def lookup_challenges(current_dir):
         challenges = os.listdir(category_path)
         for chal in [f for f in challenges if os.path.isdir(f"{current_dir}/{cat}/{f}")]:
             challenge_path = f"{current_dir}/{cat}/{chal}"
-            has_docker_build = rec_lookup_dockerfile(challenge_path)
+            has_docker_build, has_jail_img = rec_lookup_dockerfile(challenge_path)
 
             if not has_docker_build:
                 remove_dir(challenge_path)
             else:
                 parse_admin_file(challenge_path)
-                parse_challenge(challenge_path, chal)
+                parse_challenge(challenge_path, chal, has_jail_img)
 
             # print(
             #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
