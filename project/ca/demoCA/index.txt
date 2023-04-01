@@ -168,3 +168,5 @@ V	330327185601Z		10A6	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330327190859Z		10A7	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330327192235Z		10A8	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330327202936Z		10A9	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330328190214Z		10AA	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330329153704Z		10AB	unknown	/C=US/O=FEUP/CN=vinaigrette.mc.ax

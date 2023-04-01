@@ -21,15 +21,26 @@ def add_pack_dockerfile(path):
     
     with open(path, 'r+') as f:
         data = f.read()
+        
+        # Dockerfile with "ADD <path1> <path2> ." restriction
+        if re.search("ADD .*\s.*\s\.", data):
+            new_data = re.sub("(ADD .*\s.*\s\.)", r"\1/", data)
+            f.seek(0)
+            f.write(new_data)
 
+        f.seek(0)
+        data = f.read()
+        
+        # Pwn Jail Docker image
         if re.search("pwn.red/jail:0.3.1", data):
             is_jail = True
             new_data = re.sub("pwn.red/jail:0.3.1", "2dukes/pwnred_jail", data)
             f.seek(0)
             f.write(new_data)
 
+        # Install python3 and iproute2 packages
         match_pos = [i for i in findall('FROM', new_data if is_jail else data)]
-        if len(match_pos) > 1 and not is_jail or len(match_pos) == 1:
+        if not is_jail:
             data = new_data if is_jail else data
             write_pos = data.find("\n", match_pos[-1]) + 1
             f.seek(write_pos)
