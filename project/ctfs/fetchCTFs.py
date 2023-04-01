@@ -6,6 +6,14 @@ import yaml
 from yaml.loader import SafeLoader
 from textwrap import dedent
 
+customized_scenario_confs = {
+    "mlog": {
+        "args": {
+            "OPENAI_KEY": "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"
+        }
+    }
+}
+
 
 def findall(p, s):
     '''Yields all the positions of
@@ -18,10 +26,10 @@ def findall(p, s):
 
 def add_pack_dockerfile(path):
     is_jail = False
-    
+
     with open(path, 'r+') as f:
         data = f.read()
-        
+
         # Dockerfile with "ADD <path1> <path2> ." restriction
         if re.search("ADD .*\s.*\s\.", data):
             new_data = re.sub("(ADD .*\s.*\s\.)", r"\1/", data)
@@ -30,7 +38,7 @@ def add_pack_dockerfile(path):
 
         f.seek(0)
         data = f.read()
-        
+
         # Pwn Jail Docker image
         if re.search("pwn.red/jail:0.3.1", data):
             is_jail = True
@@ -62,7 +70,8 @@ def rec_lookup_dockerfile(current_dir):
         has_jail_img = add_pack_dockerfile(f"{current_dir}/Dockerfile")
 
     for dir in [f for f in files if os.path.isdir(f"{current_dir}/{f}")]:
-        tmp_has_dockerbuild, tmp_has_jail_img = rec_lookup_dockerfile(f"{current_dir}/{dir}")
+        tmp_has_dockerbuild, tmp_has_jail_img = rec_lookup_dockerfile(
+            f"{current_dir}/{dir}")
         has_dockerbuild |= tmp_has_dockerbuild
         has_jail_img |= tmp_has_jail_img
 
@@ -348,9 +357,15 @@ def parse_challenge(path, chal, has_jail_img):
             else:
                 build_path += f"/{container_info['build']}"
 
+            img_args = {k: v for k, v in container_info['build']['args'].items(
+            )} if 'args' in container_info['build'] else {}
+
+            if chal in customized_scenario_confs:
+                img_args |= customized_scenario_confs[chal]['args']
+
             images.append({"name": f"{chal}_{container_name}",
                            "path": f"scenarios/{build_path}",
-                           "args": {k: v for k, v in container_info['build']['args'].items()} if 'args' in container_info['build'] else {}
+                           "args": img_args
                            })
 
             # Ports, Environment Vars, Flags
@@ -383,7 +398,8 @@ def lookup_challenges(current_dir):
         challenges = os.listdir(category_path)
         for chal in [f for f in challenges if os.path.isdir(f"{current_dir}/{cat}/{f}")]:
             challenge_path = f"{current_dir}/{cat}/{chal}"
-            has_docker_build, has_jail_img = rec_lookup_dockerfile(challenge_path)
+            has_docker_build, has_jail_img = rec_lookup_dockerfile(
+                challenge_path)
 
             if not has_docker_build:
                 remove_dir(challenge_path)
