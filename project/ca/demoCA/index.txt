@@ -171,3 +171,5 @@ V	330327202936Z		10A9	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330328190214Z		10AA	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330329153704Z		10AB	unknown	/C=US/O=FEUP/CN=vinaigrette.mc.ax
 V	330329165453Z		10AC	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
+V	330329170525Z		10AD	unknown	/C=US/O=FEUP/CN=vinaigrette.mc.ax
+V	330329171118Z		10AE	unknown	/C=US/O=FEUP/CN=seaside.mc.ax

@@ -30,9 +30,18 @@ def add_pack_dockerfile(path):
     with open(path, 'r+') as f:
         data = f.read()
 
-        # Dockerfile with "ADD <path1> <path2> ." restriction
-        if re.search("ADD .*\s.*\s\.", data):
-            new_data = re.sub("(ADD .*\s.*\s\.)", r"\1/", data)
+        # Dockerfile with "COPY --chmod=755 <path1> <path2>" restriction
+        if re.search("COPY --chmod=\d{3} .*\s.*", data):
+            new_data = re.sub("COPY --chmod=(\d{3}) (.*?)\s(.*)\n", r"COPY \2 \3\nRUN chmod \1 \3\n", data)
+            f.seek(0)
+            f.write(new_data)
+
+        f.seek(0)
+        data = f.read()
+
+        # Dockerfile with "ADD|COPY <path1> <path2> ." restriction
+        if re.search("(ADD|COPY) .*\s.*\s\.", data):
+            new_data = re.sub("((ADD|COPY) .*\s.*\s\.)", r"\1/", data)
             f.seek(0)
             f.write(new_data)
 
