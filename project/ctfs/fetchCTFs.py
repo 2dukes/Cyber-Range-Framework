@@ -32,7 +32,8 @@ def add_pack_dockerfile(path):
 
         # Dockerfile with "COPY --chmod=755 <path1> <path2>" restriction
         if re.search("COPY --chmod=\d{3} .*\s.*", data):
-            new_data = re.sub("COPY --chmod=(\d{3}) (.*?)\s(.*)\n", r"COPY \2 \3\nRUN chmod \1 \3\n", data)
+            new_data = re.sub(
+                "COPY --chmod=(\d{3}) (.*?)\s(.*)\n", r"COPY \2 \3\nRUN chmod \1 \3\n", data)
             f.seek(0)
             f.write(new_data)
 
@@ -69,22 +70,35 @@ def add_pack_dockerfile(path):
     return is_jail
 
 
+def check_sagemath(path):
+    with open(path, 'r') as f:
+        data = f.read()
+
+        if re.search("sagemath", data):
+            return True
+
+    return False
+
+
 def rec_lookup_dockerfile(current_dir):
     files = os.listdir(current_dir)
 
+    has_sagemath = False
     has_dockerbuild = False
     has_jail_img = False
     if "Dockerfile" in files:
         has_dockerbuild = True
+        has_sagemath = check_sagemath(f"{current_dir}/Dockerfile")
         has_jail_img = add_pack_dockerfile(f"{current_dir}/Dockerfile")
 
     for dir in [f for f in files if os.path.isdir(f"{current_dir}/{f}")]:
-        tmp_has_dockerbuild, tmp_has_jail_img = rec_lookup_dockerfile(
+        tmp_has_dockerbuild, tmp_has_jail_img, tmp_has_sagemath = rec_lookup_dockerfile(
             f"{current_dir}/{dir}")
         has_dockerbuild |= tmp_has_dockerbuild
         has_jail_img |= tmp_has_jail_img
+        has_sagemath |= tmp_has_sagemath
 
-    return has_dockerbuild, has_jail_img
+    return has_dockerbuild, has_jail_img, has_sagemath
 
 
 def remove_dir(path):
@@ -407,10 +421,11 @@ def lookup_challenges(current_dir):
         challenges = os.listdir(category_path)
         for chal in [f for f in challenges if os.path.isdir(f"{current_dir}/{cat}/{f}")]:
             challenge_path = f"{current_dir}/{cat}/{chal}"
-            has_docker_build, has_jail_img = rec_lookup_dockerfile(
+            has_docker_build, has_jail_img, has_sagemath = rec_lookup_dockerfile(
                 challenge_path)
 
-            if not has_docker_build:
+            # Ignore scenarios that don't use Docker or in which the Docker image is Sagemath
+            if not has_docker_build or has_sagemath:
                 remove_dir(challenge_path)
             else:
                 parse_admin_file(challenge_path)
