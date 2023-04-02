@@ -32,6 +32,8 @@ JVM_OPTS="${JVM_EXTRA_OPTS} -Djava.awt.headless=true -Dfile.encoding=UTF-8"
 
 cd ${BASEDIR}
 
+echo "flag{l3ts_un1f1_every0ne_l0g4j}" > ...
+
 f_exit_handler() {
     f_log "INFO - Exit signal received, commencing shutdown"
     exec /usr/bin/java ${JVM_OPTS} -jar ${BASEDIR}/lib/ace.jar stop &
@@ -99,6 +101,7 @@ else
     f_log "WARN - Unable to change permissions or set custom GID/UID if configured"
     f_log "WARN - Process will be spawned with GID=$(id -g), UID=$(id -u)"
     f_log "WARN - Depending on permissions requested command may not work"
+    
     if [[ "${@}" == 'unifi' ]]; then
         f_mongo
         f_sysprop

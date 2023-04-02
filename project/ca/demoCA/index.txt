@@ -174,3 +174,16 @@ V	330329165453Z		10AC	unknown	/C=US/O=FEUP/CN=mlog.mc.ax
 V	330329170525Z		10AD	unknown	/C=US/O=FEUP/CN=vinaigrette.mc.ax
 V	330329171118Z		10AE	unknown	/C=US/O=FEUP/CN=seaside.mc.ax
 V	330329184348Z		10AF	unknown	/C=US/O=FEUP/CN=scorescope.mc.ax
+V	330330160456Z		10B0	unknown	/C=US/O=FEUP/CN=pike.mc.ax
+V	330330163739Z		10B1	unknown	/C=US/O=FEUP/CN=otterworld.mc.ax
+V	330330164706Z		10B2	unknown	/C=US/O=FEUP/CN=jnotes.mc.ax
+V	330330164708Z		10B3	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330330164711Z		10B4	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330330172858Z		10B5	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330330172900Z		10B6	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330330175150Z		10B7	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330330175155Z		10B8	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330330180611Z		10B9	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330330180614Z		10BA	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330330181524Z		10BB	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330330181526Z		10BC	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
