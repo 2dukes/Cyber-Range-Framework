@@ -453,3 +453,4 @@ for repo in github_repositories:
     git.Git(".").clone(repo["url"])
     remove_dir(f"{repo_path}/.git")
     lookup_challenges(repo_path)
+    remove_dir(f"{repo_path}")
