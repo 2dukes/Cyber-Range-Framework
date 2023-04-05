@@ -4,22 +4,17 @@
     state: started
     enabled: true
 
-- name: Build Base Image
+- name: Building Images
   community.docker.docker_image:
-    name: "{{ general.default_container_image_name }}"
+    name: "{{ image.name }}"
     build:
-      path: .
+      path: "{{ image.path }}"
+      dockerfile: "{{ image.dockerfile | default('Dockerfile') }}"
     state: present
     source: build
-
-- name: Build Attacker Image
-  community.docker.docker_image:
-    name: "{{ general.attacker_container_image_name }}"
-    build:
-      path: ./attacker
-      dockerfile: KaliDockerfile
-    state: present
-    source: build
+  loop: "{{ general.images }}"
+  loop_control:
+    loop_var: image
 
 - name: Create Docker Networks
   community.docker.docker_network:
