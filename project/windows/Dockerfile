@@ -14,6 +14,7 @@ RUN vagrant box add --provider libvirt peru/windows-10-enterprise-x64-eval
 RUN vagrant init peru/windows-10-enterprise-x64-eval
 
 RUN apt-get install -y openssh-server
+RUN apt-get install -y nano python3
 
 COPY startup.sh /
 

@@ -1,0 +1,12 @@
+Host windows
+  HostName 192.168.121.225
+  IdentityFile ~/.ssh/privWindows.rsa
+  IdentitiesOnly yes
+  User administrator
+  ProxyJump kvm
+
+Host kvm
+  HostName 172.17.0.2
+  IdentityFile ~/.ssh/privKVM.rsa
+  IdentitiesOnly yes
+  User root
