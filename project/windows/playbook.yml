@@ -1,11 +1,7 @@
-# Playbook used to setup containers.
-
 ---
-
-# Common Network Setup
 
 - hosts: machine
   gather_facts: false
   tasks:
     - name: Execute a command in the remote shell, stdout goes to the specified file on the remote
-      ansible.windows.win_ping:
+      ansible.windows.win_shell: dir

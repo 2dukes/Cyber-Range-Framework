@@ -43,3 +43,10 @@
   hosts: routers
   roles:
     - routers
+
+# ------------------ Windows ------------------ #
+
+- hosts: localhost
+  tasks:
+    - name: Local Setup Tasks
+      ansible.builtin.include_tasks: windows/local.yml
