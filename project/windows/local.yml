@@ -1,2 +1,16 @@
 - name: Test
   ansible.builtin.shell: sh windows/localconfig.sh
+
+- name: Fetch Windows Machine IP
+  ansible.builtin.shell: cat tmp_file
+  register: ip_windows
+
+- debug: var=ip_windows.stdout
+
+- name: Add host to group
+  ansible.builtin.add_host:
+    name: "{{ ip_windows.stdout }}"
+    groups: machine
+
+- name: Delete Temporary File
+  ansible.builtin.shell: rm -rf tmp_file

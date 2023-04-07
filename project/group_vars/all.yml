@@ -71,6 +71,8 @@ machines:
   - name: kvmcontainer
     image: ubuntukvm_windows
     privileged: true
+    group:
+      - custom_machines
     dns: 
       name: dns_server
       network: dmz_net

@@ -50,3 +50,13 @@
   tasks:
     - name: Local Setup Tasks
       ansible.builtin.include_tasks: windows/local.yml
+
+- hosts: machine
+  tasks:
+    - name: Windows Tasks
+      ansible.builtin.include_tasks: windows/playbook.yml
+
+- name: DMZ Network Tasks
+  hosts: dmz
+  roles:
+    - dmz

@@ -21,8 +21,6 @@ echo "$ssh_config1" > ~/.ssh/config
 ssh kvm vagrant rdp | awk 'NR==2 { print $3 }' | awk '{ print $1 }' FS=':' > tmp_file 2> /dev/null
 ip_windows=$(cat tmp_file)
 
-rm -rf tmp_file
-
 ssh_config2="Host windows
   HostName ${ip_windows}
   StrictHostKeyChecking no

@@ -1,7 +1,2 @@
----
-
-- hosts: machine
-  gather_facts: false
-  tasks:
-    - name: Execute a command in the remote shell, stdout goes to the specified file on the remote
-      ansible.windows.win_shell: dir
+- name: Execute a command in the remote shell, stdout goes to the specified file on the remote
+  ansible.windows.win_shell: dir
