@@ -1,17 +1,14 @@
 #!/bin/bash
 
+sleep 500
+
 docker cp kvmcontainer:/root/.ssh/id_rsa ~/.ssh/privKVM.rsa
 
 # Optional
 docker cp kvmcontainer:/root/.vagrant.d/insecure_private_key ~/.ssh/privWindows.rsa
 
-ssh kvm vagrant rdp | awk 'NR==2 { print $3 }' | awk '{ print $1 }' FS=':' > tmp_file 2> /dev/null
-ip_windows=$(cat tmp_file)
-
-rm -rf tmp_file
-
 ssh_config1="Host kvm
-  HostName 172.17.0.2
+  HostName 172.140.0.40
   StrictHostKeyChecking no
   IdentityFile ~/.ssh/privKVM.rsa
   IdentitiesOnly yes
@@ -19,7 +16,12 @@ ssh_config1="Host kvm
   Port 22
 "
 
-echo "$ssh_config" > ~/.ssh/config
+echo "$ssh_config1" > ~/.ssh/config
+
+ssh kvm vagrant rdp | awk 'NR==2 { print $3 }' | awk '{ print $1 }' FS=':' > tmp_file 2> /dev/null
+ip_windows=$(cat tmp_file)
+
+rm -rf tmp_file
 
 ssh_config2="Host windows
   HostName ${ip_windows}
@@ -30,9 +32,9 @@ ssh_config2="Host windows
   Port 22
   ProxyJump kvm"
 
-echo "$ssh_config" >> ~/.ssh/config
+echo "$ssh_config2" >> ~/.ssh/config
 
-mkdir ~/.ssh/cp
+mkdir -p ~/.ssh/cp
 ssh -o "ControlMaster=auto" -o "ControlPersist=no" -o "ControlPath=~/.ssh/cp/ssh-%r@%h:%p" -CfNq -D 127.0.0.1:1234 kvm
 
 # Stop OR Check

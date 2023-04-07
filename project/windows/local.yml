@@ -1,2 +1,2 @@
 - name: Test
-  ansible.builtin.shell: sh localconfig.sh
+  ansible.builtin.shell: sh windows/localconfig.sh

@@ -36,4 +36,4 @@ service ssh start
 
 cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
 
-exec "$@"
+sleep infinity
