@@ -1,13 +1,11 @@
-- name: Test
+- name: Setup SSH and SOCKS server for WinRM Connection
   ansible.builtin.shell: sh windows/localconfig.sh
 
-- name: Fetch Windows Machine IP
+- name: Fetch Windows Vagrant Box IP
   ansible.builtin.shell: cat tmp_file
   register: ip_windows
 
-- debug: var=ip_windows.stdout
-
-- name: Add host to group
+- name: Add Windows Host
   ansible.builtin.add_host:
     name: "{{ ip_windows.stdout }}"
     groups: machine

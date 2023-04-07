@@ -1,2 +1,8 @@
 - name: Execute a command in the remote shell, stdout goes to the specified file on the remote
   ansible.windows.win_shell: dir
+
+- name: Install IDA
+  win_chocolatey:
+    name: ida-free
+    ignore_checksums: true
+    state: present
