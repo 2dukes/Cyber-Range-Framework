@@ -10,6 +10,7 @@ VAGRANT_DEFAULT_PROVIDER=libvirt vagrant up
 vagrant rdp | awk 'NR==2 { print $3 }' | awk '{ print $1 }' FS=':' > file 2> /dev/null
 ip_windows=$(cat file)
 
+# Remote Desktop
 iptables -A FORWARD -i eth0 -o virbr1 -p tcp --syn --dport 3389 -m conntrack --ctstate NEW -j ACCEPT
 iptables -A FORWARD -i eth0 -o virbr1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -i virbr1 -o eth0 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT

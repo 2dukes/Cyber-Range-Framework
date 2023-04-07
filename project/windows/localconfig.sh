@@ -35,17 +35,5 @@ echo "$ssh_config2" >> ~/.ssh/config
 mkdir -p ~/.ssh/cp
 ssh -o "ControlMaster=auto" -o "ControlPersist=no" -o "ControlPath=~/.ssh/cp/ssh-%r@%h:%p" -CfNq -D 127.0.0.1:1234 kvm
 
-inventory="[machine]
-${ip_windows}
-
-[machine:vars]
-ansible_user=administrator
-ansible_password=vagrant
-ansible_connection=psrp
-ansible_psrp_protocol=http
-ansible_psrp_proxy=socks5h://localhost:1234"
-
-echo "$inventory" > windows/inventory.ini
-
 # Stop OR Check
 # ssh -o "ControlPath=~/.ssh/cp/ssh-%r@%h:%p" -O stop|check kvm
