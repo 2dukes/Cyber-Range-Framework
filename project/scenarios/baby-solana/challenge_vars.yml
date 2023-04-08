@@ -1,0 +1,56 @@
+dns:
+-   domain: baby-solana.mc.ax
+    external:
+        machine: edge_router
+        network: external_net
+    internal:
+        machine: vuln_service_baby-solana_main
+        network: dmz_net
+port_forwarding:
+-   destination_port: 443
+    to_machine: reverse_proxy1
+    to_network: dmz_net
+    to_port: 443
+setup:
+    machines:
+    -   name: attacker_machine
+        setup: '{{ playbook_dir }}/scenarios/baby-solana/attacker_machine_setup/*.j2'
+vulnerables:
+    images:
+    -   name: reverse_proxy
+        path: reverse_proxy
+    -   args: {}
+        name: baby-solana_main
+        path: scenarios/baby-solana/challenge
+    machines:
+    -   dns:
+            name: dns_server
+            network: dmz_net
+        group:
+        - reverse_proxies
+        image: reverse_proxy
+        name: reverse_proxy1
+        networks:
+        -   ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
+            name: dmz_net
+        vars:
+        -   domain: baby-solana.mc.ax
+            targets:
+            -   name: vuln_service_baby-solana_main
+                network: dmz_net
+                port: 8080
+    -   dns:
+            name: dns_server
+            network: dmz_net
+        env:
+            FLAG: dice{z3r0_c0py_h3r0_c0py_cPDsolK8}
+        exposed_ports:
+        - 8080
+        group:
+        - custom_machines
+        image: baby-solana_main
+        name: vuln_service_baby-solana_main
+        networks:
+        -   ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.50
+            name: dmz_net
+        privileged: false

@@ -25,8 +25,3 @@ ctfs/
 **/index.txt.attr
 **/index.txt.attr.old
 **/serial.old
-
-# Imported Scenarios
-
-**/scenarios
-!scenarios/log4j

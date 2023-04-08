@@ -12,7 +12,7 @@
 # Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
 - name: Install x64dbg
   win_chocolatey:
-    name: x64dbg.portable
+    name: x64dbg.portable 
     ignore_checksums: true
     state: present
 
