@@ -1,8 +1,27 @@
 - name: Execute a command in the remote shell, stdout goes to the specified file on the remote
   ansible.windows.win_shell: dir
 
+# Install Tools
+
 - name: Install IDA
   win_chocolatey:
     name: ida-free
     ignore_checksums: true
     state: present
+
+# Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
+- name: Install x64dbg
+  win_chocolatey:
+    name: x64dbg.portable
+    ignore_checksums: true
+    state: present
+
+- name: Copy Scenario Files [1]
+  ansible.windows.win_copy:
+    src: windows/scenarios/ransomware/briefcase
+    dest: C:\Users\vagrant\Desktop
+
+- name: Copy Scenario Files [2]
+  ansible.windows.win_copy:
+    src: windows/scenarios/ransomware/DudeLocker.exe
+    dest: C:\Users\vagrant\Desktop
