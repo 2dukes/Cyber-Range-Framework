@@ -50,6 +50,19 @@
           - docker-compose-plugin
         update_cache: true
 
+    - name: Install Ansible
+      ansible.builtin.apt:
+        pkg:
+          - rdesktop
+
+    - name: Install pypsrp python package
+      ansible.builtin.pip:
+        name: pypsrp
+
+    - name: Install requests[socks] python package
+      ansible.builtin.pip:
+        name: requests[socks]
+
     # - name: Create keys/ directory
     #   ansible.builtin.file:
     #     path: keys/
