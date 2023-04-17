@@ -34,7 +34,7 @@
 
 - name: DNS Servers Tasks
   hosts: dns_servers
-  vars: 
+  vars:
     selected_machines: "{{ machines }}"
   roles:
     - dns
@@ -49,12 +49,12 @@
 - hosts: localhost
   tasks:
     - name: Local Setup Tasks
-      ansible.builtin.include_tasks: windows/local.yml
+      ansible.builtin.include_tasks: ad/local.yml
 
 - hosts: machine
   tasks:
     - name: Windows Tasks
-      ansible.builtin.include_tasks: windows/playbook.yml
+      ansible.builtin.include_tasks: ad/playbook.yml
 
 - name: DMZ Network Tasks
   hosts: dmz

@@ -1,7 +1,7 @@
 general:
   images:
-    - name: ubuntukvm_windowsserver
-      path: ./ad
+    - name: ubuntukvm_windows
+      path: ./windows
     - name: base_image
       path: .
   default_container_image_name: base_image
@@ -69,7 +69,7 @@ machines:
         ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.20
 
   - name: kvmcontainer
-    image: ubuntukvm_windowsserver
+    image: ubuntukvm_windows
     privileged: true
     group:
       - custom_machines

@@ -1,0 +1,14 @@
+- name: Setup SSH and SOCKS server for WinRM Connection
+  ansible.builtin.shell: sh ad/localconfig.sh
+
+- name: Fetch Windows Vagrant Box IP
+  ansible.builtin.shell: cat tmp_file
+  register: ip_windows
+
+- name: Add Windows Host
+  ansible.builtin.add_host:
+    name: "{{ ip_windows.stdout }}"
+    groups: machine
+
+- name: Delete Temporary File
+  ansible.builtin.shell: rm -rf tmp_file
