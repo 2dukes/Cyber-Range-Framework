@@ -125,13 +125,28 @@ function VulnAD-ASREPRoasting {
         
         $name = $userObject.name
         $firstname, $lastname = $name.Split(" ")
-        $username = ($firstname[0] + $lastname).ToLower()
-        $samAccountName = $username
+        $samAccountName = ($firstname[0] + $lastname).ToLower()
         #$password = (Get-Random -InputObject $Global:BadPasswords)
         #Set-AdAccountPassword -Identity $randomuser -Reset -NewPassword (ConvertTo-SecureString $password -AsPlainText -Force)
         Set-ADAccountControl -Identity $samAccountName -DoesNotRequirePreAuth 1
         Write-Info "AS-REPRoasting $samAccountName"
     }
+}
+
+function VulnAD-DnsAdmins {
+    for ($i=1; $i -le (Get-Random -Maximum 4); $i=$i+1 ) {
+        $userObject = (Get-Random -InputObject $Global:json.users)
+
+        $name = $userObject.name
+        $firstname, $lastname = $name.Split(" ")
+        $samAccountName = ($firstname[0] + $lastname).ToLower()
+        Add-ADGroupMember -Identity "DnsAdmins" -Members $samAccountName
+        Write-Info "DnsAdmins : $samAccountName"
+    }
+
+    # $randomgroup = (GetRandom -InputObject $Global:groups)
+    # Add-ADGroupMember -Identity "DnsAdmins" -Members $randomgroup
+    # Write-Info "DnsAdmins Nested Group : $randomgroup"
 }
 
 $Global:Spacing = "`t"
@@ -167,6 +182,9 @@ if ( -not $Undo) {
 
     VulnAD-ASREPRoasting
     Write-Good "AS-REPRoasting Done"
+
+    VulnAD-DnsAdmins
+    Write-Good "DNS Admins Done"
 } else {
     StrengthenPasswordPolicy | Out-Null
 
