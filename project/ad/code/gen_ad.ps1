@@ -8,7 +8,7 @@ function CreateADGroup(){
 
     $name = $groupObject.name
 
-    Write-Info "Creating $groupObject.name Group"
+    Write-Good "Creating $groupObject.name Group"
     Try { New-ADGroup -name $name -GroupScope Global } Catch {}
 }
 
@@ -17,7 +17,7 @@ function RemoveADGroup(){
 
     $name = $groupObject.name
 
-    Write-Info "Removing $groupObject.name Group"
+    Write-Bad "Removing $groupObject.name Group"
     Try { Remove-ADGroup -Identity $name -Confirm:$False } Catch {}
 }
 
@@ -35,7 +35,7 @@ function CreateADUser(){
     $principalname = $username
 
     # Actually create the AD user object
-    Write-Info "Creating $samAccountName User"
+    Write-Good "Creating $samAccountName User"
     Try { New-ADUser -Name "$name" -GivenName $firstname -Surname $lastname -SamAccountName $SamAccountName -UserPrincipalName $principalname@$Global:Domain -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -PassThru | Enable-ADAccount } Catch {}
 
     # Add the user to its appropriate group
@@ -43,12 +43,12 @@ function CreateADUser(){
 
         try {
             # Get-ADGroup -Identity "$group_name"
-            Write-Info "Adding $samAccountName to $group_name"
+            Write-Good "Adding $samAccountName to $group_name"
             Try { Add-ADGroupMember -Identity $group_name -Members $username } Catch {}
         }
         catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException]
         {
-            Write-Warning "User $name NOT added to group $group_name because it does not exist"
+            Write-Info "User $name NOT added to group $group_name because it does not exist"
         }
     }
     
@@ -70,7 +70,7 @@ function RemoveADUser(){
     $username = ($firstname[0] + $lastname).ToLower()
     $samAccountName = $username
 
-    Write-Info "Removing $samAccountName User"
+    Write-Bad "Removing $samAccountName User"
     Try { Remove-ADUser -Identity $samAccountName -Confirm:$False } Catch {}
 }
 
@@ -93,14 +93,14 @@ function VulnAD-Kerberoasting {
     $svc = $selected_service.split(',')[0];
     $spn = $selected_service.split(',')[1];
     $password = (Get-Random -InputObject $Global:BadPasswords);
-    Write-Info "Kerberoasting $svc $spn"
+    Write-Good "Kerberoasting $svc $spn"
     Try { New-ADServiceAccount -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
     
     foreach ($sv in $Global:ServicesAccountsAndSPNs) {
         if ($selected_service -ne $sv) {
             $svc = $sv.split(',')[0];
             $spn = $sv.split(',')[1];
-            Write-Info "Creating $svc Services Account"
+            Write-Good "Creating $svc Services Account"
             $password = ([System.Web.Security.Membership]::GeneratePassword(12,2))
             Try { New-ADServiceAccount -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
         }
@@ -112,9 +112,24 @@ function VulnAD-RemoveServiceAccount(){
     if ($selected_service -ne $sv) {
         $svc = $sv.split(',')[0];
         $spn = $sv.split(',')[1];
-        Write-Info "Removing $svc Services Account"
+        Write-Bad "Removing $svc Services Account"
         $password = ([System.Web.Security.Membership]::GeneratePassword(12,2))
         Try { Remove-ADServiceAccount -Identity $svc -Confirm:$False } Catch {}
+    }
+}
+
+function VulnAD-ASREPRoasting {
+    for ($i=1; $i -le (Get-Random -Maximum 4); $i=$i+1 ) {
+        $userObject = (Get-Random -InputObject $Global:json.users)
+
+        $name = $userObject.name
+        $firstname, $lastname = $name.Split(" ")
+        $username = ($firstname[0] + $lastname).ToLower()
+        $samAccountName = $username
+        #$password = (Get-Random -InputObject $Global:BadPasswords)
+        #Set-AdAccountPassword -Identity $randomuser -Reset -NewPassword (ConvertTo-SecureString $password -AsPlainText -Force)
+        Set-ADAccountControl -Identity $samAccountName -DoesNotRequirePreAuth 1
+        Write-Good "AS-REPRoasting $samAccountName"
     }
 }
 
@@ -127,8 +142,8 @@ function Write-Good { param( $String ) Write-Host $Global:PlusLine  $String -For
 function Write-Bad  { param( $String ) Write-Host $Global:ErrorLine $String -ForegroundColor 'red'  }
 function Write-Info { param( $String ) Write-Host $Global:InfoLine $String -ForegroundColor 'gray' }
 
-$json = ( Get-Content $JSONFile | ConvertFrom-JSON)
-$Global:Domain = $json.domain
+$Global:json = ( Get-Content $JSONFile | ConvertFrom-JSON)
+$Global:Domain = $Global:json.domain
 
 $Global:ServicesAccountsAndSPNs = @('mssql_svc,mssqlserver','http_svc,httpserver','exchange_svc,exserver');
 $Global:BadPasswords = [System.Collections.ArrayList](Get-Content "data/passwords.txt")
@@ -136,22 +151,23 @@ $Global:BadPasswords = [System.Collections.ArrayList](Get-Content "data/password
 if ( -not $Undo) {
     WeakenPasswordPolicy | Out-Null
 
-    foreach ( $group in $json.groups ){
+    foreach ( $group in $Global:json.groups ){
         CreateADGroup $group
     }
     
-    foreach ( $user in $json.users ){
+    foreach ( $user in $Global:json.users ){
         CreateADUser $user
     }
 
     VulnAD-Kerberoasting
+    VulnAD-ASREPRoasting
 } else {
     StrengthenPasswordPolicy | Out-Null
 
-    foreach ( $user in $json.users ){
+    foreach ( $user in $Global:json.users ){
         RemoveADUser $user
     }
-    foreach ( $group in $json.groups ){
+    foreach ( $group in $Global:json.groups ){
         RemoveADGroup $group
     }
 
