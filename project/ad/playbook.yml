@@ -9,33 +9,8 @@
   ansible.windows.win_reboot:
   when: res.reboot_required
 
-# Set Static address to DC
-
-# - name: Set static IP address
-#   win_shell: "(new-netipaddress -InterfaceAlias Ethernet -IPAddress 192.168.121.155 -prefixlength 24 -defaultgateway 192.168.121.1)"
-#   ignore_errors: True
-
-# - name: Set up static IP address
-#   win_shell: "Get-NetIpAddress -InterfaceAlias 'Ethernet' | New-NetIpAddress -IpAddress 192.168.121.155 -PrefixLength 24 -DefaultGateway 192.168.121.1"
-#   async: 100 # Using "fire-and-forget" asynchronous execution for this task, otherwise it will always fail and timeout
-#   poll: 0
-
-# - name: Wait for the hosts network interface to come back up
-#   local_action:
-#     module: wait_for
-#     host: "{{ ansible_host }}"
-#     port: 5985
-#     delay: 10
-#     state: started
-#   register: wait_result
-
-# - name: Set a single address on the adapter named Ethernet
-#   ansible.windows.win_dns_client:
-#     adapter_names: Ethernet
-#     dns_servers: 192.168.121.155
-
 - name: Install Active Directory
-  win_feature: >
+  ansible.windows.win_feature: >
         name=AD-Domain-Services
         include_management_tools=yes
         include_sub_features=yes
@@ -43,26 +18,60 @@
   register: result
 
 - name: Create Domain
-  win_domain: >
+  ansible.windows.win_domain: >
       dns_domain_name='xyz.com'
       safe_mode_password='notAComplexPassw0rd!'
   register: ad
 
 - name: Reboot server
-  win_reboot:
+  ansible.windows.win_reboot:
     msg: "Installing AD. Rebooting..."
     pre_reboot_delay: 15
   when: ad.changed
 
 - name: Set internal DNS server
-  win_dns_client:
+  ansible.windows.win_dns_client:
     adapter_names: '*'
     ipv4_addresses:
     - '127.0.0.1'
 
 - name: Create reverse DNS zone
-  win_shell: "Add-DnsServerPrimaryZone -NetworkID 192.168.121.0/24 -ReplicationScope Forest"
+  ansible.windows.win_shell: "Add-DnsServerPrimaryZone -NetworkID 192.168.121.0/24 -ReplicationScope Forest"
   retries: 30
   delay: 60
   register: result           
   until: result is succeeded
+
+# Add Network Share
+
+- name: Add Private Share
+  ansible.windows.win_share:
+    name: internal
+    description: Top-Secret Share
+    path: C:\Users\Administrator
+    list: false
+    full: XYZ\Administrator
+    deny: xyz\Domain Users
+
+# Copy AD files into Win Server
+
+- name: Copy Scenario Files
+  ansible.windows.win_copy:
+    src: ad/code
+    dest: C:\Users\Administrator
+
+- name: Copy Flag to Private Share
+  ansible.windows.win_copy:
+    src: ad/flag.txt
+    dest: C:\Users\Administrator\.flag.txt
+
+# PS Scripts
+
+- name: Allow Remote Desktop
+  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\allow_rdp.ps1
+
+- name: Change Admin accounts' Credentials
+  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\change_admin_creds.ps1
+
+- name: Generate Vulnerable AD Configuration
+  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\gen_ad.ps1 C:\\Users\\Administrator\\code\\ad_schema.json

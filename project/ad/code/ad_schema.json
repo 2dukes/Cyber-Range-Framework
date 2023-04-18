@@ -1,0 +1,37 @@
+{
+    "domain": "xyz.com",
+
+    "groups" : [
+        {
+            "name": "Employees"
+        }
+    ],
+
+    "users": [
+
+        {
+            "local_admin": ["dc01"],
+            "name": "Alice Lice",
+            "password":"bubbles",
+            "groups": [
+                "Employees"
+            ]
+        },
+        {
+            "local_admin": ["dc01"],
+            "name": "Bob Ob",
+            "password":"ashley",
+            "groups": [
+                "Employees"
+            ]
+        },
+        {
+            "local_admin": ["dc01"],
+            "name": "Charlie Harlie",
+            "password":"P@ssw0rdABC",
+            "groups": [
+                "Employees"
+            ]
+        }
+    ]
+}
