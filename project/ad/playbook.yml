@@ -63,7 +63,7 @@
 - name: Copy Flag to Private Share
   ansible.windows.win_copy:
     src: ad/flag.txt
-    dest: C:\Users\Administrator\.flag.txt
+    dest: C:\Users\Administrator\flag.txt
 
 # PS Scripts
 

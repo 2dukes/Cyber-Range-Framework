@@ -54,7 +54,7 @@ for ( $i = 1; $i -le $UserCount; $i++ ){
 
     if ( $local_admin_indexes | Where { $_ -eq $i  } ){
         echo "user $i is local admin"
-        $new_user["local_admin"] = $true
+        $new_user["local_admin"] = @('dc01') # Hard-coded as we assume there is only a DC and no workstations
     }
 
     $users += $new_user

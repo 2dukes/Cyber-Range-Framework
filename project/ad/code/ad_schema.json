@@ -1,37 +1,80 @@
 {
-    "domain": "xyz.com",
-
-    "groups" : [
-        {
-            "name": "Employees"
-        }
-    ],
-
-    "users": [
-
-        {
-            "local_admin": ["dc01"],
-            "name": "Alice Lice",
-            "password":"bubbles",
-            "groups": [
-                "Employees"
-            ]
-        },
-        {
-            "local_admin": ["dc01"],
-            "name": "Bob Ob",
-            "password":"ashley",
-            "groups": [
-                "Employees"
-            ]
-        },
-        {
-            "local_admin": ["dc01"],
-            "name": "Charlie Harlie",
-            "password":"P@ssw0rdABC",
-            "groups": [
-                "Employees"
-            ]
-        }
-    ]
+  "domain": "xyz.com",
+  "users": [
+    {
+      "groups": "Researchers",
+      "name": "Gabrielle Davidson",
+      "password": "strawberry"
+    },
+    {
+      "groups": "Developers",
+      "name": "Simon Turner",
+      "password": "charles"
+    },
+    {
+      "groups": "Employees",
+      "name": "Thomas Churchill",
+      "password": "monkey1"
+    },
+    {
+      "groups": "Employees",
+      "name": "Dorothy Black",
+      "password": "oliver"
+    },
+    {
+      "groups": "Developers",
+      "name": "Cameron Walsh",
+      "password": "tequiero"
+    },
+    {
+      "local_admin": "dc01",
+      "groups": "Employees",
+      "name": "Edward Thomson",
+      "password": "claudia"
+    },
+    {
+      "groups": "Researchers",
+      "name": "Natalie Springer",
+      "password": "777777"
+    },
+    {
+      "groups": "Developers",
+      "name": "Rachel Taylor",
+      "password": "nicholas"
+    },
+    {
+      "groups": "Operations",
+      "name": "Sophie Nash",
+      "password": "angelica"
+    },
+    {
+      "groups": "Researchers",
+      "name": "Anthony Piper",
+      "password": "alexis"
+    },
+    {
+      "groups": "Developers",
+      "name": "Amanda Hill",
+      "password": "paola"
+    },
+    {
+      "groups": "Employees",
+      "name": "Isaac Walker",
+      "password": "robert"
+    }
+  ],
+  "groups": [
+    {
+      "name": "Operations"
+    },
+    {
+      "name": "Employees"
+    },
+    {
+      "name": "Developers"
+    },
+    {
+      "name": "Researchers"
+    }
+  ]
 }
