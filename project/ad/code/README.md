@@ -10,5 +10,6 @@
 `.\random_domain.ps1 ad_schema.json -UserCount 12 -GroupCount 4 -LocalAdminCount 1`
 
 > Refs: \
+> https://madlabber.wordpress.com/2019/09/08/creating-a-new-active-directory-forest-with-ansible/
 > https://www.youtube.com/watch?v=66ZD1J-AR2c&list=PL1H1sBF1VAKVoU6Q2u7BBGPsnkn-rajlp
 > https://github.com/WazeHell/vulnerable-AD
