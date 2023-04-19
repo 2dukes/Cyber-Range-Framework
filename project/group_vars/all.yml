@@ -2,6 +2,8 @@ general:
   images:
     - name: ubuntukvm_windowsserver
       path: ./ad
+    - name: kali_test_img
+      path: ./attacker
     - name: base_image
       path: .
   default_container_image_name: base_image
@@ -17,6 +19,11 @@ networks:
     network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
     gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
     random_byte: "{{ general.random_byte | int - 5 }}"
+  
+  external_net:
+    network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 10 }}.0.254
+    random_byte: "{{ general.random_byte | int - 10 }}"
 
 machines:
   - name: dhcp_server
@@ -56,6 +63,8 @@ machines:
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.2
+      - name: external_net
+        ipv4_address: 172.{{ networks.external_net.random_byte }}.0.1
 
   - name: dns_server
     group:
@@ -84,3 +93,15 @@ machines:
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
+
+  - name: attacker_machine
+    image: kali_test_img
+    published_ports:
+      - 5900:5900
+      - 6080:6080
+    dns: 
+      name: dns_server
+      network: dmz_net
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.30

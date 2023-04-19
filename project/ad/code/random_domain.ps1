@@ -68,4 +68,4 @@ ConvertTo-Json -InputObject @{
     "domain"= "xyz.com"
     "groups"=$groups
     "users"=$users
-} | Out-File $OutputJSONFile 
+} | Out-File $OutputJSONFile

@@ -49,9 +49,9 @@
     name: internal
     description: Top-Secret Share
     path: C:\Users\Administrator
-    list: false
-    full: XYZ\Administrator
-    deny: xyz\Domain Users
+    list: true
+    full: xyz\Domain Admins
+    # deny: xyz\Domain Users
 
 # Copy AD files into Win Server
 
@@ -68,10 +68,26 @@
 # PS Scripts
 
 - name: Allow Remote Desktop
-  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\allow_rdp.ps1
+  ansible.windows.win_shell: .\allow_rdp.ps1
+  args:
+    chdir: C:\\Users\\Administrator\\code
 
 - name: Change Admin accounts' Credentials
-  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\change_admin_creds.ps1
+  ansible.windows.win_shell: .\change_admin_creds.ps1
+  args:
+    chdir: C:\\Users\\Administrator\\code
+
+- name: Generate Random Vulnerable AD Schema
+  ansible.windows.win_shell: .\random_domain.ps1 .\ad_schema.json -UserCount 12 -GroupCount 4 -LocalAdminCount 1
+  args:
+    chdir: C:\\Users\\Administrator\\code
 
 - name: Generate Vulnerable AD Configuration
-  ansible.windows.win_shell: C:\\Users\\Administrator\\code\\gen_ad.ps1 C:\\Users\\Administrator\\code\\ad_schema.json
+  ansible.windows.win_shell: .\gen_ad.ps1 .\ad_schema.json
+  args:
+    chdir: C:\\Users\\Administrator\\code
+
+- name: Remove Code Directory
+  ansible.windows.win_file:
+    path: C:\Users\Administrator\code
+    state: absent
