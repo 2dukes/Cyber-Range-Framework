@@ -120,7 +120,7 @@ function VulnAD-RemoveServiceAccount(){
 }
 
 function VulnAD-ASREPRoasting {
-    for ($i=1; $i -le (Get-Random -Maximum 4); $i=$i+1 ) {
+    for ($i=1; $i -le (Get-Random -Minimum 1 -Maximum 3); $i=$i+1 ) {
         $userObject = (Get-Random -InputObject $Global:json.users)
         
         $name = $userObject.name
@@ -134,7 +134,7 @@ function VulnAD-ASREPRoasting {
 }
 
 function VulnAD-DnsAdmins {
-    for ($i=1; $i -le (Get-Random -Maximum 4); $i=$i+1 ) {
+    for ($i=1; $i -le (Get-Random -Minimum 1 -Maximum 3); $i=$i+1 ) {
         $userObject = (Get-Random -InputObject $Global:json.users)
 
         $name = $userObject.name
@@ -147,6 +147,40 @@ function VulnAD-DnsAdmins {
     # $randomgroup = (GetRandom -InputObject $Global:groups)
     # Add-ADGroupMember -Identity "DnsAdmins" -Members $randomgroup
     # Write-Info "DnsAdmins Nested Group : $randomgroup"
+}
+
+function VulnAD-DCSync {
+    for ($i=1; $i -le (Get-Random -Minimum 1 -Maximum 3); $i=$i+1 ) {
+        $ADObject = [ADSI]("LDAP://" + (Get-ADDomain $Global:Domain).DistinguishedName)
+        $userObject = (Get-Random -InputObject $Global:json.users)
+
+        $name = $userObject.name
+        $firstname, $lastname = $name.Split(" ")
+        $samAccountName = ($firstname[0] + $lastname).ToLower()
+        $sid = (Get-ADUser -Identity $samAccountName).sid
+        
+        # GUID Ref: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/1522b774-6464-41a3-87a5-1e5633c3fbbb
+        # DCSync Ref: https://blog.netwrix.com/2021/11/30/what-is-dcsync-an-introduction/
+
+        # Privilege: Replicating Directory Changes
+        $objectGuidGetChanges = New-Object Guid 1131f6aa-9c07-11d1-f79f-00c04fc2dcd2
+        $ACEGetChanges = New-Object DirectoryServices.ActiveDirectoryAccessRule($sid,'ExtendedRight','Allow',$objectGuidGetChanges)
+        $ADObject.psbase.Get_objectsecurity().AddAccessRule($ACEGetChanges)
+
+        # Privilege: Replicating Directory Changes All
+        $objectGuidGetChanges = New-Object Guid 1131f6ad-9c07-11d1-f79f-00c04fc2dcd2
+        $ACEGetChanges = New-Object DirectoryServices.ActiveDirectoryAccessRule($sid,'ExtendedRight','Allow',$objectGuidGetChanges)
+        $ADObject.psbase.Get_objectsecurity().AddAccessRule($ACEGetChanges)
+
+        # Privilege: Replicating Directory Changes In Filtered Set
+        $objectGuidGetChanges = New-Object Guid 89e95b76-444d-4c62-991a-0facbeda640c
+        $ACEGetChanges = New-Object DirectoryServices.ActiveDirectoryAccessRule($sid,'ExtendedRight','Allow',$objectGuidGetChanges)
+        $ADObject.psbase.Get_objectsecurity().AddAccessRule($ACEGetChanges)
+        $ADObject.psbase.CommitChanges()
+
+        Set-ADUser $samAccountName -Description "Replication Account"
+        Write-Info "Giving DCSync to : $samAccountName"
+    }
 }
 
 $Global:Spacing = "`t"
@@ -185,6 +219,9 @@ if ( -not $Undo) {
 
     VulnAD-DnsAdmins
     Write-Good "DNS Admins Done"
+
+    VulnAD-DCSync
+    Write-Good "DCSync Done"
 } else {
     StrengthenPasswordPolicy | Out-Null
 
