@@ -183,6 +183,10 @@ function VulnAD-DCSync {
     }
 }
 
+function VulnAD-DisableSMBSigning {
+    Set-SmbClientConfiguration -RequireSecuritySignature 0 -EnableSecuritySignature 0 -Confirm -Force
+}
+
 $Global:Spacing = "`t"
 $Global:PlusLine = "`t[+]"
 $Global:ErrorLine = "`t[-]"
@@ -222,6 +226,9 @@ if ( -not $Undo) {
 
     VulnAD-DCSync
     Write-Good "DCSync Done"
+
+    VulnAD-DisableSMBSigning
+    Write-Good "SMB Signing Disabled"
 } else {
     StrengthenPasswordPolicy | Out-Null
 
