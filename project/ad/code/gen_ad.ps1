@@ -53,13 +53,14 @@ function CreateADUser(){
     }
     
     # Add to local admin as needed
-    # if ( $userObject.local_admin -eq $True){
-    #     net localgroup administrators $Global:Domain\$username /add
-    # }
-    $add_command="net localgroup administrators $Global:Domain\$username /add"
-    foreach ($hostname in $userObject.local_admin){
-        echo "Invoke-Command -Computer $hostname -ScriptBlock { $add_command }" | Invoke-Expression | Out-Null
+    if ( $userObject.local_admin -eq $true){
+        net localgroup administrators $Global:Domain\$username /add
+        Write-Info "Adding $username to the Local Group Administrators"
     }
+    # $add_command="net localgroup administrators $Global:Domain\$username /add"
+    # foreach ($hostname in $userObject.local_admin){
+    #     echo "Invoke-Command -Computer $hostname -ScriptBlock { $add_command }" | Invoke-Expression | Out-Null
+    # }
 }
 
 function RemoveADUser(){
@@ -94,7 +95,7 @@ function VulnAD-Kerberoasting {
     $spn = $selected_service.split(',')[1];
     $password = (Get-Random -InputObject $Global:BadPasswords);
     Write-Info "Kerberoasting $svc $spn"
-    Try { New-ADServiceAccount -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
+    Try { New-ADServiceAccount -KerberosEncryptionType "RC4" -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
     Write-Good "Kerberoasting Done"
 
     foreach ($sv in $Global:ServicesAccountsAndSPNs) {
@@ -103,7 +104,7 @@ function VulnAD-Kerberoasting {
             $spn = $sv.split(',')[1];
             Write-Info "Creating $svc Services Account"
             $password = ([System.Web.Security.Membership]::GeneratePassword(12,2))
-            Try { New-ADServiceAccount -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
+            Try { New-ADServiceAccount -SamAccountName $svc -Name $svc -ServicePrincipalNames "$svc/$spn.$Global:Domain" -AccountPassword (ConvertTo-SecureString $password -AsPlainText -Force) -RestrictToSingleComputer -PassThru | Out-Null } Catch {}
         }
     }
 }
