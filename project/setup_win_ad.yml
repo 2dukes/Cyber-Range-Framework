@@ -60,3 +60,8 @@
   hosts: dmz
   roles:
     - dmz
+
+- name: Entrypoint Tasks
+  hosts: attacker_machine
+  roles:
+    - entrypoint

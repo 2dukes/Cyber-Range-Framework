@@ -1,0 +1,62 @@
+# Playbook used to setup containers.
+
+---
+
+# Common Network Setup
+
+- hosts: localhost
+  pre_tasks:
+    - name: Remove Stale Containers
+      ansible.builtin.include_tasks: teardown.yml
+      loop: "{{ machines }}"
+      loop_control:
+        loop_var: pc_info
+
+- name: Base Tasks
+  hosts: localhost
+  roles:
+    - base
+
+- name: DHCP Servers Tasks
+  hosts: dhcp_servers
+  roles:
+    - dhcp
+
+- name: Internal Network PCs Tasks
+  hosts: pcs
+  roles:
+    - internal_pcs
+
+- name: Internal Network Tasks
+  hosts: internal
+  roles:
+    - internal
+
+- name: DNS Servers Tasks
+  hosts: dns_servers
+  vars:
+    selected_machines: "{{ machines }}"
+  roles:
+    - dns
+
+- name: Router Tasks
+  hosts: routers
+  roles:
+    - routers
+
+# ------------------ Windows ------------------ #
+
+- hosts: localhost
+  tasks:
+    - name: Local Setup Tasks
+      ansible.builtin.include_tasks: windows/local.yml
+
+- hosts: machine
+  tasks:
+    - name: Windows Tasks
+      ansible.builtin.include_tasks: windows/playbook.yml
+
+- name: DMZ Network Tasks
+  hosts: dmz
+  roles:
+    - dmz

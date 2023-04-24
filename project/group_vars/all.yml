@@ -105,3 +105,8 @@ machines:
     networks:
       - name: dmz_net
         ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.30
+
+setup:
+    machines:
+    -   name: attacker_machine
+        setup: '{{ playbook_dir }}/ad/attacker_machine_setup/*.j2'

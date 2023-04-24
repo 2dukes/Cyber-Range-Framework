@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ip route add 192.168.121.0/24 via {{ ((machines | selectattr('name', '==', 'kvmcontainer'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }} dev eth0
