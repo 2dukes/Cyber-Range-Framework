@@ -56,6 +56,12 @@ function CreateADUser(){
     if ( $userObject.local_admin -eq $true){
         net localgroup administrators $Global:Domain\$username /add
         Write-Info "Adding $username to the Local Group Administrators"
+
+        $sharePath = "C:\Users\Administrator"
+        $acl = Get-Acl $sharePath
+        $rule = New-Object System.Security.AccessControl.FileSystemAccessRule("XYZ\$username", "ReadAndExecute", "Deny")
+        $acl.AddAccessRule($rule)
+        Set-Acl $sharePath $acl
     }
     # $add_command="net localgroup administrators $Global:Domain\$username /add"
     # foreach ($hostname in $userObject.local_admin){
