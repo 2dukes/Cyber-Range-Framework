@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    stdin_open: true
+    tty: true
+    
+  # backend:
+  #   build: 
+  #     context: ./
+  #     dockerfile: ./backend/Dockerfile
+  #   container_name: backend
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - /app/contracts
+  #     - /app/node_modules
+  #     - /app/env/
+  #     - ./backend:/app
+  #   stdin_open: true
+  #   tty: true
