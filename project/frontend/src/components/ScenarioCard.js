@@ -21,16 +21,9 @@ const ScenarioCard = () => {
                         display: '-webkit-box',
                         WebkitLineClamp: '1',
                         WebkitBoxOrient: 'vertical',
-                        mb: "1em"
                     }}>
-                        description
-                    </Typography>
-                    
-                    {/* <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <WatchLaterIcon color="disabled" /> 1
-                        <Typography variant="body2" component="div" color="text.secondary">
-                        </Typography>
-                    </Stack> */}
+                        Description
+                    </Typography>                
                 </CardContent>
             </CardActionArea>
         </Card>

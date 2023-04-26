@@ -2,6 +2,13 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import ScenarioCard from "./components/ScenarioCard";
 import PageLayout from "./components/PageLayout";
+import Pagination from '@mui/material/Pagination';
+import PaginationItem from '@mui/material/PaginationItem';
+import Stack from '@mui/material/Stack';
+
+import { styled, createTheme, ThemeProvider } from '@mui/system';
+
+const Test = styled('pagination');
 
 function App() {
     return (
@@ -17,9 +24,24 @@ function App() {
                 <Grid item xs={12} md={6}><ScenarioCard /></Grid>
                 <Grid item xs={12} md={6}><ScenarioCard /></Grid>
 
-                {/* <Grid item xs={12} display="flex" justifyContent="center">
-                        <Pagination size={isReallySmall ? "small" : "medium"} count={Math.ceil(totalCampaigns / CAMPAIGNS_PER_PAGE)} page={page} onChange={changePage} color="primary" />
-                    </Grid> */}
+                <Grid item xs={12} display="flex" justifyContent="center">
+                    <Stack spacing={2}>
+                        <Pagination
+                            count={10}
+                            renderItem={(item) => {
+                                if (item.selected)
+                                    return (<PaginationItem
+                                        sx={{ backgroundColor: "darkorange !important" }}
+                                        {...item}
+                                    />);
+                                else
+                                    return (<PaginationItem                                        
+                                        {...item}
+                                    />);
+                            }}
+                        />
+                    </Stack>
+                </Grid>
             </Grid>
         </PageLayout>
     );
