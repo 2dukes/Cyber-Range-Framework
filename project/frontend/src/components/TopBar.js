@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
@@ -13,9 +14,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const drawerWidth = 240;
-const navItems = ['Scenarios', 'Completed Scenarios'];
+const navItems = ['All Scenarios', 'Solved Scenarios'];
 
 const TopBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -26,27 +29,27 @@ const TopBar = () => {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        CR Manager
-      </Typography>
-      <Divider />
       <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item} />
+        {navItems.map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                {index % 2 === 0 ? <ExtensionIcon /> : <CheckCircleIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
+      <Divider />
     </Box>
   );
 
   const container = window.document.body;
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar component="nav">
+    <Fragment>
+      <AppBar component="nav" sx={{ backgroundColor: 'darkorange' }}>
         <Toolbar>
 
           <IconButton
@@ -99,10 +102,7 @@ const TopBar = () => {
           {drawer}
         </Drawer>
       </Box>
-      <Box component="main" sx={{ py: 5, px: 1 }}>
-        <h1>asdasd</h1>
-      </Box>
-    </Box>
+    </Fragment>
   );
 };
 
