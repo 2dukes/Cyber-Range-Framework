@@ -13,7 +13,7 @@ const Test = styled('pagination');
 function App() {
     return (
         <PageLayout>
-            <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom >
+            <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
                 All Scenarios
             </Typography>
             <Grid container
@@ -27,7 +27,7 @@ function App() {
                 <Grid item xs={12} display="flex" justifyContent="center">
                     <Stack spacing={2}>
                         <Pagination
-                            count={10}
+                            count={5}
                             renderItem={(item) => {
                                 if (item.selected)
                                     return (<PaginationItem
