@@ -1,20 +1,19 @@
 import * as React from 'react';
-import { Stack, Typography, Card, CardMedia, CardContent, CardActionArea } from '@mui/material';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import { Typography, Card, CardMedia, CardContent, CardActionArea } from '@mui/material';
 
-const ScenarioCard = ({ raisedValue, targetValue, remainingDays, imageURL, title, description, setModalOpen }) => {
+const ScenarioCard = () => {
     return (
         <Card sx={{ maxWidth: 500, margin: "auto" }}>
-            <CardActionArea onClick={() => setModalOpen(true)}>
+            <CardActionArea onClick={() => {}}>
                 <CardMedia
                     component="img"
                     height="140"
-                    image={imageURL}
-                    alt="campaign image"
+                    image="https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp"
+                    alt="scenario image"
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {title}
+                        Test title
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{
                         overflow: 'hidden',
@@ -24,17 +23,14 @@ const ScenarioCard = ({ raisedValue, targetValue, remainingDays, imageURL, title
                         WebkitBoxOrient: 'vertical',
                         mb: "1em"
                     }}>
-                        {description}
-                    </Typography>
-                    <Typography variant="body2" component="span" color="text.secondary">
-                        <b>{raisedValue} ETH</b> raised
+                        description
                     </Typography>
                     
-                    <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <WatchLaterIcon color="disabled" /> {remainingDays}
+                    {/* <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
+                        <WatchLaterIcon color="disabled" /> 1
                         <Typography variant="body2" component="div" color="text.secondary">
                         </Typography>
-                    </Stack>
+                    </Stack> */}
                 </CardContent>
             </CardActionArea>
         </Card>
