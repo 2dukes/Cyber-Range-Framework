@@ -16,12 +16,16 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Link, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 const navItems = ['Available Scenarios', 'Solved Scenarios'];
 
 const TopBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const location = useLocation();
+  const linkTo = ["/", "/solved"];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -31,14 +35,16 @@ const TopBar = () => {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <List>
         {navItems.map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <ExtensionIcon /> : <CheckCircleIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
+          <Link to={linkTo[index]} key={text} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+            <ListItem key={text} disablePadding style={{ backgroundColor: location.pathname === linkTo[index] ? 'lightgray' : 'white' }}>
+              <ListItemButton>
+                <ListItemIcon>
+                  {index % 2 === 0 ? <ExtensionIcon /> : <CheckCircleIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          </Link>
         ))}
       </List>
       <Divider />
@@ -77,10 +83,12 @@ const TopBar = () => {
           </Typography>
 
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }}>
-                {item}
-              </Button>
+            {navItems.map((item, index) => (
+              <Link to={linkTo[index]} key={item} style={{ color: 'inherit', textDecoration: 'inherit' }}>
+                <Button key={item} style={{ color: 'white', backgroundColor: location.pathname === linkTo[index] ? 'black' : 'darkorange' }}>
+                  {item}
+                </Button>
+              </Link>
             ))}
           </Box>
         </Toolbar>
@@ -102,7 +110,7 @@ const TopBar = () => {
           {drawer}
         </Drawer>
       </Box>
-    </Fragment>
+    </Fragment >
   );
 };
 
