@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { Stack, Typography, Card, CardMedia, CardContent, CardActionArea } from '@mui/material';
 import { green, yellow, red } from '@mui/material/colors';
+import Chip from '@mui/material/Chip';
 import GridViewIcon from '@mui/icons-material/GridView';
 
 const ScenarioCard = ({ setModalOpen, name, description, category, difficulty, image, author, targets, bot }) => {
     const colors = {
-        "Easy": green[500],
+        "Easy": green[700],
         "Medium": yellow[700],
-        "Hard": red[600]
+        "Hard": red[500]
     };
 
     return (
@@ -33,7 +34,9 @@ const ScenarioCard = ({ setModalOpen, name, description, category, difficulty, i
                         {description}
                     </Typography>
                     <Stack direction="row" alignItems="center" gap={1} marginTop="0.5em">
-                        <GridViewIcon sx={{ color: colors[difficulty] }} />{category}
+                        <Chip label={difficulty} sx={{ backgroundColor: colors[difficulty], color: "white" }} />
+                        <Chip label={category} sx={{ backgroundColor: "black", color: "white" }} />
+                        {/* <GridViewIcon sx={{ color: colors[difficulty] }} />{category} */}
                     </Stack>
                 </CardContent>
             </CardActionArea>

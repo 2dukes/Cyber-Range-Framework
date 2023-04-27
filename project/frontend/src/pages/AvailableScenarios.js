@@ -99,9 +99,6 @@ const AvailableScenarios = () => {
     return (
         <PageLayout>
             {selectedScenario && <ScenarioModal {...scenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
-            <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
-                Scenarios
-            </Typography>
             <Grid container
                 alignItems="center"
                 justify="center" spacing={3}>
