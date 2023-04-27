@@ -12,52 +12,64 @@ const SCENARIOS_PER_PAGE = 4;
 
 const scenarios = [
     {
-        "name": "Scenario 1",
-        "description": "Description 1",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 1",
+        description: "Description 1",
+        category: "Crypto",
+        difficulty: "Easy",
+        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     },
     {
-        "name": "Scenario 2",
-        "description": "Description 2",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 2",
+        description: "Description 2",
+        category: "Windows",
+        difficulty: "Medium",
+        image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png      ",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     },
     {
-        "name": "Scenario 3",
-        "description": "Description 3",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 3",
+        description: "Description 3",
+        category: "Misc",
+        difficulty: "Medium",
+        image: "https://www.malwarebytes.com/blog/news/2023/02/asset_upload_file45746_255998.jpg",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     },
     {
-        "name": "Scenario 4",
-        "description": "Description 4",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 4",
+        description: "Description 4",
+        category: "Web",
+        difficulty: "Hard",
+        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     },
     {
-        "name": "Scenario 5",
-        "description": "Description 5",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 5",
+        description: "Description 5",
+        category: "Crypto",
+        difficulty: "Easy",
+        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     },
     {
-        "name": "Scenario 6",
-        "description": "Description 6",
-        "image": "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        "author": "notMe",
-        "targets": "https://unfinished.mc.ax",
-        "bot": "adminbot.mc.ax"
+        name: "Scenario 6",
+        description: "Description 6",
+        category: "Log4j",
+        difficulty: "Easy",
+        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
+        author: "notMe",
+        targets: "https://unfinished.mc.ax",
+        bot: "adminbot.mc.ax"
     }
 ];
 
