@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Typography, Card, CardMedia, CardContent, CardActionArea } from '@mui/material';
 
-const ScenarioCard = () => {
+const ScenarioCard = ({ setModalOpen, name, description, image, author, targets, bot }) => {
     return (
         <Card sx={{ maxWidth: 500, margin: "auto" }}>
-            <CardActionArea onClick={() => {}}>
+            <CardActionArea onClick={() => { setModalOpen(true); }}>
                 <CardMedia
                     component="img"
                     height="140"
@@ -13,7 +13,7 @@ const ScenarioCard = () => {
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        Test title
+                        {name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{
                         overflow: 'hidden',
@@ -22,8 +22,8 @@ const ScenarioCard = () => {
                         WebkitLineClamp: '1',
                         WebkitBoxOrient: 'vertical',
                     }}>
-                        Description
-                    </Typography>                
+                        {description}
+                    </Typography>
                 </CardContent>
             </CardActionArea>
         </Card>

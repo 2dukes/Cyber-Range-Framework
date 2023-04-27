@@ -18,7 +18,7 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const drawerWidth = 240;
-const navItems = ['All Scenarios', 'Solved Scenarios'];
+const navItems = ['Available Scenarios', 'Solved Scenarios'];
 
 const TopBar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
