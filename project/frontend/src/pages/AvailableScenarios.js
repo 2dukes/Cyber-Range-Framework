@@ -19,7 +19,8 @@ const scenarios = [
         image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        // bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     },
     {
         name: "Scenario 2",
@@ -29,27 +30,30 @@ const scenarios = [
         image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png      ",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     },
     {
         name: "Scenario 3",
         description: "Description 3",
-        category: "Misc",
+        category: "Windows",
         difficulty: "Medium",
         image: "https://www.malwarebytes.com/blog/news/2023/02/asset_upload_file45746_255998.jpg",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     },
     {
         name: "Scenario 4",
         description: "Description 4",
-        category: "Web",
+        category: "Pwn",
         difficulty: "Hard",
         image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     },
     {
         name: "Scenario 5",
@@ -59,7 +63,8 @@ const scenarios = [
         image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     },
     {
         name: "Scenario 6",
@@ -69,7 +74,8 @@ const scenarios = [
         image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
-        bot: "adminbot.mc.ax"
+        bot: "https://adminbot.mc.ax",
+        downloadPath: "download.txt"
     }
 ];
 
