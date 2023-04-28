@@ -10,7 +10,7 @@ import ScenarioModal from '../components/ScenarioModal';
 
 const SCENARIOS_PER_PAGE = 4;
 
-const scenarios = [
+const scenarioList = [
     {
         name: "Scenario 1",
         description: "Description 1",
@@ -27,7 +27,7 @@ const scenarios = [
         description: "Description 2",
         category: "Windows",
         difficulty: "Medium",
-        image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png      ",
+        image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png",
         author: "notMe",
         targets: "https://unfinished.mc.ax",
         bot: "https://adminbot.mc.ax",
@@ -85,6 +85,7 @@ const AvailableScenarios = () => {
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
+    const [filteredScenarios, setFilteredScenarios] = useState(scenarioList);
 
     const updateSelectedScenario = (selectedScenario) => {
         setSelectedScenario(selectedScenario);
@@ -94,9 +95,33 @@ const AvailableScenarios = () => {
         setPage(newPage);
     };
 
+    const handleFilterChange = (checkedBoxes, setCheckedBoxes, isCategory, item) => {
+        let boxes;
+
+        if (checkedBoxes.includes(item)) // Remove Filter
+            boxes = checkedBoxes.filter(box => box !== item);
+        else // Add Filter
+            boxes = checkedBoxes.concat(item);
+
+        setCheckedBoxes(boxes);
+
+        let scenariosLen, tmpScenarios;
+
+        if (isCategory)
+            tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) || checkedDifficultyBoxes.includes(scn.difficulty));
+        else
+            tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) || boxes.includes(scn.difficulty));
+
+        scenariosLen = tmpScenarios.length;
+        setFilteredScenarios(tmpScenarios);
+
+        if (Math.ceil(scenariosLen / SCENARIOS_PER_PAGE) === 1)
+            setPage(1);
+    };
+
     let indexOfLastResult = page * SCENARIOS_PER_PAGE;
     const indexOfFirstResult = indexOfLastResult - SCENARIOS_PER_PAGE;
-    indexOfLastResult = (indexOfLastResult + 1 > scenarios.length) ? scenarios.length : indexOfLastResult;
+    indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -106,17 +131,17 @@ const AvailableScenarios = () => {
                     Scenarios
                 </Typography>
             </Box>
-            <PageLayout checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
-                {selectedScenario && <ScenarioModal {...scenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+            <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
+                {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
                 <Grid container
                     alignItems="center"
                     justify="center" spacing={3}>
-                    {scenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
+                    {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
                     <Grid item xs={12} display="flex" justifyContent="center">
                         <Stack spacing={2}>
                             <Pagination
                                 page={page}
-                                count={Math.ceil(scenarios.length / SCENARIOS_PER_PAGE)}
+                                count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
                                 onChange={changePage}
                                 renderItem={(item) => {
                                     if (item.selected)

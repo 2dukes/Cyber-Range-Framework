@@ -8,20 +8,13 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-const FilterBar = ({ isSmall, checkedCategoryBoxes, checkedDifficultyBoxes, setCheckedCategoryBoxes, setCheckedDifficultyBoxes }) => {
+const FilterBar = ({ isSmall, handleFilterChange, checkedCategoryBoxes, checkedDifficultyBoxes, setCheckedCategoryBoxes, setCheckedDifficultyBoxes }) => {
     const checkboxLabels = ['Pwn', 'Crypto', 'Misc', 'Rev', 'Windows', 'Log4j'];
     const difficultyLabels = ['Easy', 'Medium', 'Hard'];
     const colors = {
         "Easy": green[700],
         "Medium": yellow[700],
         "Hard": red[500]
-    };
-
-    const handleFilterChange = (checkedBoxes, setCheckedBoxes, item) => {
-        if (checkedBoxes.includes(item))
-            setCheckedBoxes(checkedBoxes.filter(box => box !== item));
-        else
-            setCheckedBoxes(checkedBoxes.concat(item));
     };
 
     return (
@@ -38,7 +31,7 @@ const FilterBar = ({ isSmall, checkedCategoryBoxes, checkedDifficultyBoxes, setC
                     <FormGroup>
                         {checkboxLabels.map(item => (
                             <FormControlLabel key={item} control={<Checkbox
-                                onChange={handleFilterChange.bind(null, checkedCategoryBoxes, setCheckedCategoryBoxes, item)}
+                                onChange={handleFilterChange.bind(null, checkedCategoryBoxes, setCheckedCategoryBoxes, true, item)}
                                 sx={{
                                     color: 'black',
                                     '&.Mui-checked': {
@@ -62,7 +55,7 @@ const FilterBar = ({ isSmall, checkedCategoryBoxes, checkedDifficultyBoxes, setC
                     <FormGroup>
                         {difficultyLabels.map(item => (
                             <FormControlLabel key={item} control={<Checkbox
-                                onChange={handleFilterChange.bind(null, checkedDifficultyBoxes, setCheckedDifficultyBoxes, item)}
+                                onChange={handleFilterChange.bind(null, checkedDifficultyBoxes, setCheckedDifficultyBoxes, false, item)}
                                 sx={{
                                     color: colors[item],
                                     '&.Mui-checked': {
