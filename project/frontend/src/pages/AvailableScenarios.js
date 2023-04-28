@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import { Box, Grid, Typography } from '@mui/material';
+import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
 import PageLayout from "../components/PageLayout";
 import Pagination from '@mui/material/Pagination';
@@ -82,6 +82,8 @@ const scenarios = [
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedScenario, setSelectedScenario] = useState(null);
+    const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
+    const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
 
     const updateSelectedScenario = (selectedScenario) => {
@@ -97,34 +99,42 @@ const AvailableScenarios = () => {
     indexOfLastResult = (indexOfLastResult + 1 > scenarios.length) ? scenarios.length : indexOfLastResult;
 
     return (
-        <PageLayout>
-            {selectedScenario && <ScenarioModal {...scenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
-            <Grid container
-                alignItems="center"
-                justify="center" spacing={3}>
-                {scenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
-                <Grid item xs={12} display="flex" justifyContent="center">
-                    <Stack spacing={2}>
-                        <Pagination
-                            page={page}
-                            count={Math.ceil(scenarios.length / SCENARIOS_PER_PAGE)}
-                            onChange={changePage}
-                            renderItem={(item) => {
-                                if (item.selected)
-                                    return (<PaginationItem
-                                        sx={{ backgroundColor: "darkorange !important" }}
-                                        {...item}
-                                    />);
-                                else
-                                    return (<PaginationItem
-                                        {...item}
-                                    />);
-                            }}
-                        />
-                    </Stack>
+        <Box sx={{ flexGrow: 1 }}>
+            <TopBar />
+            <Box sx={{ boxShadow: 5, mt: '-0.5em', mx: -1, p: '0.1em' }}>
+                <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
+                    Scenarios
+                </Typography>
+            </Box>
+            <PageLayout checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
+                {selectedScenario && <ScenarioModal {...scenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+                <Grid container
+                    alignItems="center"
+                    justify="center" spacing={3}>
+                    {scenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
+                    <Grid item xs={12} display="flex" justifyContent="center">
+                        <Stack spacing={2}>
+                            <Pagination
+                                page={page}
+                                count={Math.ceil(scenarios.length / SCENARIOS_PER_PAGE)}
+                                onChange={changePage}
+                                renderItem={(item) => {
+                                    if (item.selected)
+                                        return (<PaginationItem
+                                            sx={{ backgroundColor: "darkorange !important" }}
+                                            {...item}
+                                        />);
+                                    else
+                                        return (<PaginationItem
+                                            {...item}
+                                        />);
+                                }}
+                            />
+                        </Stack>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </PageLayout>
+            </PageLayout>
+        </Box>
     );
 };
 
