@@ -4,6 +4,7 @@ import re
 import shutil
 import yaml
 import pymongo
+import json
 from yaml.loader import SafeLoader
 from textwrap import dedent
 
@@ -171,143 +172,36 @@ def parse_admin_file(path):
             f.write(contents)
 
 
-metaInfo = {
-    "baby-solana": {
-        "description": "OtterWorld (but easier).",
-        "difficulty": "Medium",
-    },
-    "bbbb": {
-        "description": "I prefer LCGs over QCGs to be honest...\nBased off BBB from SECCON CTF 2022.",
-        "difficulty": "Easy",
-    },
-    "bop": {
-        "description": "No description provided.",
-        "difficulty": "Easy",
-    },
-    "chessrs": {
-        "description": "Blazingfast rust wasm chess (the flag is in the admin bot's cookie).",
-        "difficulty": "Hard",
-    },
-    "codebox": {
-        "description": "Strellic makes csp challs, maybe i should try one sometime.",
-        "difficulty": "Medium",
-    },
-    "dicer-visor": {
-        "description": "Welcome to DiceGang's newest hypervisor-based security solution, Dicer-Visor.",
-        "difficulty": "Medium",
-    },
-    "disc-pwn": {
-        "description": "DISC: Diced Instruction Set Computer.\nNow pwn it!\n(This is the same binary as rev/disc-rev, you may want to try that first)\nNote: remote flag will be the same size as template flag in binary.",
-        "difficulty": "Hard",
-    },
-    "geminiblog": {
-        "description": "I wrote my own client and server for the gemini protocol. Come try it out!",
-        "difficulty": "Hard",
-    },
-    "gift": {
-        "description": "Send money to all your friends! Can you get enough balance to see /flag?",
-        "difficulty": "Hard",
-    },
-    "impossible-xss": {
-        "description": "GET YOUR FREE XSS HERE!",
-        "difficulty": "Hard",
-    },
-    "jnotes": {
-        "description": "I made this note site before I learned about XSS... can you break it? Thankfully my cookies are HttpOnly.",
-        "difficulty": "Medium",
-    },
-    "jwtjail": {
-        "description": "A simple tool to verify your JWTs! Oh, that CVE? Don't worry, we're running the latest version.",
-        "difficulty": "Hard",
-    },
-    "mlog": {
-        "description": "The future of log lines is here! Get your ML infused log lines and never worry about missing information in your logs. NOTE: this challenge uses a heavy PoW because unfortunately OpenAI is expensive. Please use your own OpenAI API key to test; then once you are confident, try against the remote server. Quickstart: install poetry, then run poetry install and OPENAI_KEY=<your key here> poetry run mlog.",
-        "difficulty": "Easy",
-    },
-    "otterworld": {
-        "description": "Otter World!",
-        "difficulty": "Medium",
-    },
-    "pike": {
-        "description": "Surely this time, my calculator app will be safe! After starting the instance, use socat tcp-listen:1337,fork,reuseaddr openssl:<ip>:<port> to create an SSL proxy to the server - socat >=1.7.4.0 is required.",
-        "difficulty": "Easy",
-    },
-    "prison-reform": {
-        "description": "Due to unprecedented levels of contrivedness, I am calling for the CTF community to abolish private pyjails. But first, try this one.",
-        "difficulty": "Hard",
-    },
-    "provably-secure-2": {
-        "description": "Now with less cheese! Still pretty simple though.",
-        "difficulty": "Easy",
-    },
-    "provably-secure": {
-        "description": "I proved this cryptographic combiner to be super secure (specifically IND-CCA2) on my graduate cryptography final exam, but just to be safe, I'm making you break it with both primitives being computationally secure!",
-        "difficulty": "Easy",
-    },
-    "recursive-csp": {
-        "description": "The nonce isn't random, so how hard could this be?\n(The flag is in the admin bot's cookie).",
-        "difficulty": "Easy",
-    },
-    "scorescope": {
-        "description": "I'm really struggling in this class. Care to give me a hand?",
-        "difficulty": "Easy",
-    },
-    "seaside": {
-        "description": "You've heard of being caught between a rock and a hard place, but what about the land and sea? Try to break this oblivious transfer protocol.",
-        "difficulty": "Medium",
-    },
-    "sice-supervisor": {
-        "description": "No description provided.",
-        "difficulty": "Hard",
-    },
-    "term-zelda": {
-        "description": "Try out my cool new zelda game!!\nsocat file:$(tty),raw,echo=0 tcp:url:port",
-        "difficulty": "Hard",
-    },
-    "unfinished": {
-        "description": "It's the day of the CTF and I haven't finished writing this challenge... Well, unfinished doesn't mean unsolvable.",
-        "difficulty": "Medium",
-    },
-    "vinaigrette": {
-        "description": "Welcome to Dice Bistro, where every bite is an adventure in flavor. Our secret vinaigrette recipe is closely guarded, ensuring that its tantalizing taste remains a mystery to all but the most skilled cryptographers.",
-        "difficulty": "Hard",
-    },
-    "log4j": {
-        "name": "Log4j",
-        "author": "2dukes",
-        "description": "Simple Log4j scenario.",
-        "category": "Log4j",
-        "difficulty": "Medium",
-    },
-    "ad": {
-        "name": "Active Directory",
-        "author": "2dukes",
-        "description": "Simple AD Windows scenario.",
-        "category": "Windows",
-        "difficulty": "Medium",
-        "targets": "https://example-domain.ui.com",
-    },
-    "ransomware": {
-        "name": "Ransomware",
-        "author": "2dukes",
-        "description": "Simple Ransomware Windows scenario.",
-        "category": "Windows",
-        "difficulty": "Medium",
-    },
-}
-
-
 def insertIntoMongo(data, cat, chal):
     list = {
         "name": data["name"],
         "author": data["author"],
         "description": metaInfo[chal]['description'],
-        "category": cat,
+        "category": cat.capitalize(),
         "difficulty": metaInfo[chal]['difficulty'],
-        "targets": chal + ".mc.ax",
+        "targets": "https://" + chal + ".mc.ax",
         "downloadPath": "download.txt",
     }
 
+    if "adminbot" in data:
+        list["bot"] = "https://adminbot.mc.ax"
+
+    scenariosCollection.insert_one(list)
+
+
+def insertCustomScenarios(data):
+    list = {
+        "name": data["name"],
+        "author": data["author"],
+        "description": data['description'],
+        "category": data['category'],
+        "difficulty": data['difficulty'],
+        # "targets": "https://" + data['targets'] + ".mc.ax",
+        "downloadPath": "download.txt",
+    }
+
+    if "targets" in data:
+        list["targets"] = data["targets"]
     if "adminbot" in data:
         list["bot"] = "https://adminbot.mc.ax"
 
@@ -582,6 +476,12 @@ def lookup_challenges(current_dir):
             # print(
             #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
 
+    if connectToDB:
+        custom_scenarios = ["log4j", "ad", "ransomware"]
+
+        for scn in custom_scenarios:
+            insertCustomScenarios(metaInfo[scn])
+
 
 github_repositories = [
     {
@@ -591,16 +491,21 @@ github_repositories = [
 ]
 
 parent_dir = os.getcwd()
+metaInfo = None
 connectToDB = True
 
 try:
     dbClient = pymongo.MongoClient(
         "mongodb://admin:UTJtbKxUzoxQ3arP@localhost:27017/?authMechanism=DEFAULT")
     dbClient.server_info()
+
     db = dbClient["DB"]
     scenariosCollection = db["scenarios"]
     scenariosCollection.drop()
-except:
+
+    with open('scenarios.json') as f:
+        metaInfo = json.load(f)
+except Exception as e:
     connectToDB = False
     print("Connection Error to MongoDB.")
 
