@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
@@ -96,7 +96,7 @@ const AvailableScenarios = () => {
     };
 
     const handleFilterChange = (checkedBoxes, setCheckedBoxes, isCategory, item) => {
-        let boxes;
+        let boxes, scenariosLen, tmpScenarios;
 
         if (checkedBoxes.includes(item)) // Remove Filter
             boxes = checkedBoxes.filter(box => box !== item);
@@ -105,12 +105,16 @@ const AvailableScenarios = () => {
 
         setCheckedBoxes(boxes);
 
-        let scenariosLen, tmpScenarios;
-
         if (isCategory)
-            tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) || checkedDifficultyBoxes.includes(scn.difficulty));
+            if (boxes.length === 0 && checkedDifficultyBoxes.length === 0)
+                tmpScenarios = scenarioList;
+            else
+                tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) || checkedDifficultyBoxes.includes(scn.difficulty));
         else
-            tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) || boxes.includes(scn.difficulty));
+            if (boxes.length === 0 && checkedCategoryBoxes.length === 0)
+                tmpScenarios = scenarioList;
+            else
+                tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) || boxes.includes(scn.difficulty));
 
         scenariosLen = tmpScenarios.length;
         setFilteredScenarios(tmpScenarios);
@@ -132,32 +136,39 @@ const AvailableScenarios = () => {
                 </Typography>
             </Box>
             <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
-                {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
-                <Grid container
-                    alignItems="center"
-                    justify="center" spacing={3}>
-                    {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
-                    <Grid item xs={12} display="flex" justifyContent="center">
-                        <Stack spacing={2}>
-                            <Pagination
-                                page={page}
-                                count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
-                                onChange={changePage}
-                                renderItem={(item) => {
-                                    if (item.selected)
-                                        return (<PaginationItem
-                                            sx={{ backgroundColor: "darkorange !important" }}
-                                            {...item}
-                                        />);
-                                    else
-                                        return (<PaginationItem
-                                            {...item}
-                                        />);
-                                }}
-                            />
-                        </Stack>
-                    </Grid>
-                </Grid>
+                {filteredScenarios.length !== 0 ? (
+                    <Fragment>
+                        {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+                        <Grid container
+                            alignItems="center"
+                            justify="center" spacing={3}>
+                            {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
+                            <Grid item xs={12} display="flex" justifyContent="center">
+                                <Stack spacing={2}>
+                                    <Pagination
+                                        page={page}
+                                        count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
+                                        onChange={changePage}
+                                        renderItem={(item) => {
+                                            if (item.selected)
+                                                return (<PaginationItem
+                                                    sx={{ backgroundColor: "darkorange !important" }}
+                                                    {...item}
+                                                />);
+                                            else
+                                                return (<PaginationItem
+                                                    {...item}
+                                                />);
+                                        }}
+                                    />
+                                </Stack>
+                            </Grid>
+                        </Grid></Fragment>) : (
+                    <Typography variant="h4" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
+                        No items to show.
+                    </Typography>
+                )}
+
             </PageLayout>
         </Box>
     );
