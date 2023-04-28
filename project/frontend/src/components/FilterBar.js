@@ -7,8 +7,11 @@ import { green, yellow, red } from '@mui/material/colors';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import { useState } from 'react';
 
 const FilterBar = ({ isSmall, handleFilterChange, checkedCategoryBoxes, checkedDifficultyBoxes, setCheckedCategoryBoxes, setCheckedDifficultyBoxes }) => {
+    const [openCatAccordion, setOpenCatAccordion] = useState(true);
+    const [openDifAccordion, setOpenDifAccordion] = useState(true);
     const checkboxLabels = ['Pwn', 'Crypto', 'Misc', 'Rev', 'Windows', 'Log4j'];
     const difficultyLabels = ['Easy', 'Medium', 'Hard'];
     const colors = {
@@ -19,10 +22,11 @@ const FilterBar = ({ isSmall, handleFilterChange, checkedCategoryBoxes, checkedD
 
     return (
         <Container sx={{ marginTop: !isSmall ? "5em" : "2em" }}>
-            <Accordion>
+            <Accordion expanded={openCatAccordion}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
+                    onClick={() => { setOpenCatAccordion(!openCatAccordion); }}
                     id="panel1a-header"
                 >
                     <Typography>Category</Typography>
@@ -43,10 +47,11 @@ const FilterBar = ({ isSmall, handleFilterChange, checkedCategoryBoxes, checkedD
                     </FormGroup>
                 </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion expanded={openDifAccordion}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
+                    onClick={() => { setOpenDifAccordion(!openDifAccordion); }}
                     id="panel1a-header"
                 >
                     <Typography>Difficulty</Typography>
