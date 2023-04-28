@@ -56,8 +56,7 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
         },
         {
             header: "Description",
-            description:
-                "Number of people who have already donated to this campaign.Number of people who have already donated to this campaign.Number of people who have already donated to this campaign.Number of people who have already donated to this campaign.Number of people who have already donated to this campaign.Number of people who have already donated to this campaign.",
+            description: description,
             size: 12
         },
     ];

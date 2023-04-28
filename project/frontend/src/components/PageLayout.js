@@ -1,15 +1,35 @@
-import { Box, Grid, Typography, Container } from '@mui/material';
+import { Box, Grid, Typography, Container, useMediaQuery } from '@mui/material';
 import TopBar from './TopBar';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { green, yellow, red } from '@mui/material/colors';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { useState } from 'react';
 
 const PageLayout = ({ children }) => {
+    const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
+    const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('xl'));
+    const checkboxLabels = ['Pwn', 'Crypto', 'Misc', 'Rev', 'Windows', 'Log4j'];
+    const difficultyLabels = ['Easy', 'Medium', 'Hard'];
+    const colors = {
+        "Easy": green[700],
+        "Medium": yellow[700],
+        "Hard": red[500]
+    };
+
+    const handleFilterChange = (checkedBoxes, setCheckedBoxes, item) => {
+        if (checkedBoxes.includes(item))
+            setCheckedBoxes(checkedBoxes.filter(box => box !== item));
+        else
+            setCheckedBoxes(checkedBoxes.concat(item));
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -29,13 +49,45 @@ const PageLayout = ({ children }) => {
                                 aria-controls="panel1a-content"
                                 id="panel1a-header"
                             >
-                                <Typography>Accordion 1</Typography>
+                                <Typography>Category</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
-                                </Typography>
+                                <FormGroup>
+                                    {checkboxLabels.map(item => (
+                                        <FormControlLabel control={<Checkbox
+                                            onChange={handleFilterChange.bind(null, checkedCategoryBoxes, setCheckedCategoryBoxes, item)}
+                                            sx={{
+                                                color: 'black',
+                                                '&.Mui-checked': {
+                                                    color: 'black',
+                                                },
+                                            }} />} label={item} />
+
+                                    ))}
+                                </FormGroup>
+                            </AccordionDetails>
+                        </Accordion>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>Difficulty</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <FormGroup>
+                                    {difficultyLabels.map(item => (
+                                        <FormControlLabel control={<Checkbox
+                                            onChange={handleFilterChange.bind(null, checkedDifficultyBoxes, setCheckedDifficultyBoxes, item)}
+                                            sx={{
+                                                color: colors[item],
+                                                '&.Mui-checked': {
+                                                    color: colors[item],
+                                                },
+                                            }} />} label={item} />
+                                    ))}
+                                </FormGroup>
                             </AccordionDetails>
                         </Accordion>
                     </Container>
