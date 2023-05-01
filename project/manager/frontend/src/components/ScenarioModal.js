@@ -3,6 +3,7 @@ import { Card, CardContent, Grid, Box, Button, Typography, Modal, TextField, use
 import { useTheme } from '@mui/material/styles';
 import ScenarioInfoCard from "./ScenarioInfoCard";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import Link from '@mui/material/Link';
 
 const style = {
@@ -132,6 +133,9 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
                                             Files
                                         </Button>
                                     </Box>
+                                    <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', marginTop: '1em' }} variant="contained" component="span">
+                                        Launch Scenario
+                                    </Button>
                                 </Box>
                             </Box>
                         </Grid>
