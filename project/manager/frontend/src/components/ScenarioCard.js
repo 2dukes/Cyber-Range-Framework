@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Stack, Typography, Card, CardMedia, CardContent, CardActionArea } from '@mui/material';
 import { green, yellow, red } from '@mui/material/colors';
 import Chip from '@mui/material/Chip';
-import GridViewIcon from '@mui/icons-material/GridView';
 
 const ScenarioCard = ({ setModalOpen, name, description, category, difficulty, image, author, targets, bot }) => {
     const colors = {
