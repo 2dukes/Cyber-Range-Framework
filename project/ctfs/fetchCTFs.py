@@ -208,6 +208,19 @@ def insertCustomScenarios(data):
     scenariosCollection.insert_one(list)
 
 
+def gatherDownloadFiles(path, provide):
+    dst_path = f"{path}/download"
+    os.mkdir(dst_path)
+
+    for file in provide:
+        if isinstance(file, dict) and 'file' in file:
+            src_path = f"{path}/{file['file']}"
+        else:
+            src_path = f"{path}/{file}"
+
+        shutil.copy(src_path, dst_path)
+
+
 def parse_challenge(cat, path, chal, has_jail_img):
     challenge_description_path = f"{path}/challenge.yaml" if os.path.exists(
         f"{path}/challenge.yaml") else f"{path}/challenge.yml"
@@ -218,6 +231,9 @@ def parse_challenge(cat, path, chal, has_jail_img):
         if "containers" not in data:
             remove_dir(path)
             return
+
+        if 'provide' in data:
+            gatherDownloadFiles(path, data['provide'])
 
         if connectToDB:
             insertIntoMongo(data, cat, chal)
