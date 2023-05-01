@@ -34,7 +34,7 @@ const MONGODB_URI = `mongodb://admin:UTJtbKxUzoxQ3arP@mongodb:27017/?authMechani
 
 mongoose.set("strictQuery", false);
 mongoose
-    .connect(MONGODB_URI)
+    .connect(MONGODB_URI, { dbName: 'DB'})
     .then((_) => {
         console.log(
             `Listening at: http://localhost:${port}`

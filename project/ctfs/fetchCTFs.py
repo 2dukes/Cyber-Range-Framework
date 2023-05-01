@@ -180,7 +180,6 @@ def insertIntoMongo(data, cat, chal):
         "category": cat.capitalize(),
         "difficulty": metaInfo[chal]['difficulty'],
         "targets": "https://" + chal + ".mc.ax",
-        "downloadPath": "download.txt",
     }
 
     if "adminbot" in data:
@@ -197,7 +196,6 @@ def insertCustomScenarios(data):
         "category": data['category'],
         "difficulty": data['difficulty'],
         # "targets": "https://" + data['targets'] + ".mc.ax",
-        "downloadPath": "download.txt",
     }
 
     if "targets" in data:
