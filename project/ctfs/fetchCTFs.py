@@ -184,7 +184,7 @@ def insertIntoMongo(data, cat, chal, flag):
 
     if "adminbot" in data:
         list["bot"] = "https://adminbot.mc.ax"
-    
+
     list["flag"] = flag.strip()
 
     scenariosCollection.insert_one(list)
@@ -209,7 +209,7 @@ def insertCustomScenarios(data):
     scenariosCollection.insert_one(list)
 
 
-def gatherDownloadFiles(path, provide):
+def gatherDownloadFiles(path, provide, chal):
     dst_path = f"{path}/download"
     os.mkdir(dst_path)
 
@@ -220,6 +220,10 @@ def gatherDownloadFiles(path, provide):
             src_path = f"{path}/{file}"
 
         shutil.copy(src_path, dst_path)
+
+    backend_path = f"{os.getcwd()}/../manager/backend/public/{chal}_download"
+    # copy_dir(dst_path, backend_path)
+    shutil.make_archive(backend_path, 'zip', dst_path)
 
 
 def parse_challenge(cat, path, chal, has_jail_img):
@@ -234,15 +238,14 @@ def parse_challenge(cat, path, chal, has_jail_img):
             return
 
         if 'provide' in data:
-            gatherDownloadFiles(path, data['provide'])
-
+            gatherDownloadFiles(path, data['provide'], chal)
 
         if "file" in data["flag"]:
             with open(f"{path}/{data['flag']['file']}") as f:
                 flag = f.read()
         else:
             flag = data["flag"]
-        
+
         if connectToDB:
             insertIntoMongo(data, cat, chal, flag)
 
