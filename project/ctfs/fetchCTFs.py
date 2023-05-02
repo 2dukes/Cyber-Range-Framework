@@ -484,6 +484,12 @@ def parse_challenge(cat, path, chal, has_jail_img):
 def lookup_challenges(current_dir):
     categories = os.listdir(current_dir)
 
+    if connectToDB:
+        custom_scenarios = ["log4j", "ad", "ransomware"]
+
+        for scn in custom_scenarios:
+            insertCustomScenarios(metaInfo[scn])
+
     for cat in [f for f in categories if os.path.isdir(f"{current_dir}/{f}")]:
         category_path = f"{current_dir}/{cat}"
         challenges = os.listdir(category_path)
@@ -501,12 +507,6 @@ def lookup_challenges(current_dir):
 
             # print(
             #     f"Category[{cat}] | Challenge[{chal}] => {has_docker_build}")
-
-    if connectToDB:
-        custom_scenarios = ["log4j", "ad", "ransomware"]
-
-        for scn in custom_scenarios:
-            insertCustomScenarios(metaInfo[scn])
 
 
 github_repositories = [
