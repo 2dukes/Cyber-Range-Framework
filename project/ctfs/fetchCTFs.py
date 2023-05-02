@@ -175,6 +175,7 @@ def parse_admin_file(path):
 def insertIntoMongo(data, cat, chal, flag, hasDownloadableFiles):
     list = {
         "name": chal,
+        "image": "diceCTF.png",
         "author": data["author"],
         "description": metaInfo[chal]['description'],
         "category": cat.capitalize(),
@@ -194,6 +195,7 @@ def insertIntoMongo(data, cat, chal, flag, hasDownloadableFiles):
 def insertCustomScenarios(data):
     list = {
         "name": data["name"],
+        "image": data["image"],
         "author": data["author"],
         "description": data['description'],
         "category": data['category'],
@@ -223,7 +225,7 @@ def gatherDownloadFiles(path, provide, chal):
 
         shutil.copy(src_path, dst_path)
 
-    backend_path = f"{os.getcwd()}/../manager/backend/public/{chal}_download"
+    backend_path = f"{os.getcwd()}/../manager/backend/public/download/{chal}_download"
     # copy_dir(dst_path, backend_path)
     shutil.make_archive(backend_path, 'zip', dst_path)
 

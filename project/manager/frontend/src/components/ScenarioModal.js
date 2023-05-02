@@ -19,7 +19,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, difficulty, image, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -64,7 +64,7 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
 
     const onDownload = () => {
         const link = document.createElement("a");
-        link.href = `http://localhost:8000/${name}_download.zip`;
+        link.href = `http://localhost:8000/download/${name}_download.zip`;
         link.click();
     };
 

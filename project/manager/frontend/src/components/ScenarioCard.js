@@ -16,7 +16,7 @@ const ScenarioCard = ({ setModalOpen, name, description, category, difficulty, i
                 <CardMedia
                     component="img"
                     height="140"
-                    image={image}
+                    image={`http://localhost:8000/images/${image}`}
                     alt="scenario image"
                 />
                 <CardContent>

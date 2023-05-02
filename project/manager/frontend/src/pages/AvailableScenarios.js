@@ -141,7 +141,7 @@ const AvailableScenarios = () => {
         scenariosLen = tmpScenarios.length;
         setFilteredScenarios(tmpScenarios);
 
-        if (Math.ceil(scenariosLen / SCENARIOS_PER_PAGE) === 1)
+        if (Math.ceil(scenariosLen / SCENARIOS_PER_PAGE) < page)
             setPage(1);
     };
 
