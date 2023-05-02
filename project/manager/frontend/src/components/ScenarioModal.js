@@ -129,11 +129,11 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
                                         <Button sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} onClick={() => { }} variant="contained" component="span">
                                             Submit
                                         </Button>
-                                        <Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%' }} variant="contained" component="span">
+                                        <Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Files
                                         </Button>
                                     </Box>
-                                    <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', marginTop: '1em' }} variant="contained" component="span">
+                                    <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         Launch Scenario
                                     </Button>
                                 </Box>

@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
@@ -7,10 +7,11 @@ import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const SCENARIOS_PER_PAGE = 4;
 
-const scenarioList = [
+let scenarioList = [
     {
         name: "Scenario 1",
         description: "Description 1",
@@ -79,13 +80,34 @@ const scenarioList = [
     }
 ];
 
+const fetchScenarios = async () => {
+    const scenarioResult = await fetch("http://localhost:8000/scenarios");
+    const scenarioResultJSON = await scenarioResult.json();
+
+    return {
+        scenarios: scenarioResultJSON.scenarios
+    };
+};
+
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
-    const [filteredScenarios, setFilteredScenarios] = useState(scenarioList);
+    const [filteredScenarios, setFilteredScenarios] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            scenarioList = (await fetchScenarios()).scenarios;
+            setFilteredScenarios(scenarioList);
+            setIsLoading(false);
+        };
+
+        fetchData();
+    }, []);
 
     const updateSelectedScenario = (selectedScenario) => {
         setSelectedScenario(selectedScenario);
@@ -135,41 +157,42 @@ const AvailableScenarios = () => {
                     Scenarios
                 </Typography>
             </Box>
-            <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
-                {filteredScenarios.length !== 0 ? (
-                    <Fragment>
-                        {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
-                        <Grid container
-                            alignItems="center"
-                            justify="center" spacing={3}>
-                            {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
-                            <Grid item xs={12} display="flex" justifyContent="center">
-                                <Stack spacing={2}>
-                                    <Pagination
-                                        page={page}
-                                        count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
-                                        onChange={changePage}
-                                        renderItem={(item) => {
-                                            if (item.selected)
-                                                return (<PaginationItem
-                                                    sx={{ backgroundColor: "darkorange !important" }}
-                                                    {...item}
-                                                />);
-                                            else
-                                                return (<PaginationItem
-                                                    {...item}
-                                                />);
-                                        }}
-                                    />
-                                </Stack>
-                            </Grid>
-                        </Grid></Fragment>) : (
-                    <Typography variant="h4" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
-                        No items to show.
-                    </Typography>
-                )}
+            {isLoading ? <LoadingSpinner /> : (
+                <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
+                    {filteredScenarios.length !== 0 ? (
+                        <Fragment>
+                            {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+                            <Grid container
+                                alignItems="center"
+                                justify="center" spacing={3}>
+                                {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
+                                <Grid item xs={12} display="flex" justifyContent="center">
+                                    <Stack spacing={2}>
+                                        <Pagination
+                                            page={page}
+                                            count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
+                                            onChange={changePage}
+                                            renderItem={(item) => {
+                                                if (item.selected)
+                                                    return (<PaginationItem
+                                                        sx={{ backgroundColor: "darkorange !important" }}
+                                                        {...item}
+                                                    />);
+                                                else
+                                                    return (<PaginationItem
+                                                        {...item}
+                                                    />);
+                                            }}
+                                        />
+                                    </Stack>
+                                </Grid>
+                            </Grid></Fragment>) : (
+                        <Typography variant="h4" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
+                            No items to show.
+                        </Typography>
+                    )}
 
-            </PageLayout>
+                </PageLayout>)}
         </Box>
     );
 };
