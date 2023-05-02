@@ -88,23 +88,18 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
                         </Grid>
                         <Grid item xs={12} md={3}>
                             <Box display="flex" flexDirection="column" justifyContent="space-between" sx={{ height: '100%' }}>
-                                {/* <Grid item key={"test"} xs={12} sx={{heigth: '80%'}}> */}
                                 <Card>
-                                    <CardContent sx={{ p: 1, }}>
+                                    <CardContent sx={{ p: 1 }}>
                                         <Typography noWrap variant={isSmall ? "h6" : "h5"} component="div">
                                             Services
                                         </Typography>
-                                        {/* <Typography sx={{ mb: isSmall ? 0 : 1.5 }} color="text.secondary">
-                                            Exposed Services
-                                        </Typography> */}
                                         <Typography variant="body2" sx={{ mt: isSmall ? 0 : 1.5, lineHeight: 1.55 }} color="text.secondary">
-                                            <Link href="#" sx={{ color: 'darkorange', textDecoration: 'inherit' }} onClick={(e) => e.preventDefault()}>{targets}</Link>
+                                            <Link href="#" sx={{ color: 'darkorange', textDecoration: 'inherit' }} onClick={(e) => e.preventDefault()}>{targets || "No exposed services' information."}</Link>
                                             <br />
                                             {bot !== undefined ? (<Link href="#" sx={{ color: 'darkorange', textDecoration: 'inherit' }} onClick={(e) => e.preventDefault()}>{bot}</Link>) : (!isSmall && <br />)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
-                                {/* </Grid> */}
                                 <Box>
                                     <Typography variant="body1" fontWeight="bold" marginTop="1em" sx={{ mb: 0 }}>
                                         Flag
