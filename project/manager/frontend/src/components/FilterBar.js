@@ -12,7 +12,7 @@ import { useState } from 'react';
 const FilterBar = ({ isSmall, handleFilterChange, checkedCategoryBoxes, checkedDifficultyBoxes, setCheckedCategoryBoxes, setCheckedDifficultyBoxes }) => {
     const [openCatAccordion, setOpenCatAccordion] = useState(true);
     const [openDifAccordion, setOpenDifAccordion] = useState(true);
-    const checkboxLabels = ['Pwn', 'Crypto', 'Misc', 'Rev', 'Windows', 'Log4j'];
+    const checkboxLabels = ['Pwn', 'Crypto', 'Misc', 'Web', 'Windows', 'Log4j'];
     const difficultyLabels = ['Easy', 'Medium', 'Hard'];
     const colors = {
         "Easy": green[700],
