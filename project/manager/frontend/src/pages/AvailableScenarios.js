@@ -140,6 +140,7 @@ const AvailableScenarios = () => {
 
         scenariosLen = tmpScenarios.length;
         setFilteredScenarios(tmpScenarios);
+        setSelectedScenario(null);
 
         if (Math.ceil(scenariosLen / SCENARIOS_PER_PAGE) < page)
             setPage(1);
@@ -148,6 +149,9 @@ const AvailableScenarios = () => {
     let indexOfLastResult = page * SCENARIOS_PER_PAGE;
     const indexOfFirstResult = indexOfLastResult - SCENARIOS_PER_PAGE;
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
+
+    // console.log(filteredScenarios)
+    // console.log(filteredScenarios.find(scenario => scenario.name === selectedScenario))
 
     return (
         <Box sx={{ flexGrow: 1 }}>
