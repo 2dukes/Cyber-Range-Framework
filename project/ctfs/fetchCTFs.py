@@ -181,7 +181,8 @@ def insertIntoMongo(data, cat, chal, flag, hasDownloadableFiles):
         "category": cat.capitalize(),
         "difficulty": metaInfo[chal]['difficulty'],
         "targets": "https://" + chal + ".mc.ax",
-        "hasDownloadableFiles": hasDownloadableFiles
+        "hasDownloadableFiles": hasDownloadableFiles,
+        "solved": False
     }
 
     if "adminbot" in data:
@@ -201,7 +202,8 @@ def insertCustomScenarios(data):
         "category": data['category'],
         "difficulty": data['difficulty'],
         "flag": data["flag"],
-        "hasDownloadableFiles": data['hasDownloadableFiles']
+        "hasDownloadableFiles": data['hasDownloadableFiles'],
+        "solved": False
         # "targets": "https://" + data['targets'] + ".mc.ax",
     }
 

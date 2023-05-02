@@ -8,86 +8,11 @@ import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
+import fetchScenarios from '../utils/fetchData';
 
 const SCENARIOS_PER_PAGE = 4;
 
-let scenarioList = [
-    {
-        name: "Scenario 1",
-        description: "Description 1",
-        category: "Crypto",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        // bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 2",
-        description: "Description 2",
-        category: "Windows",
-        difficulty: "Medium",
-        image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 3",
-        description: "Description 3",
-        category: "Windows",
-        difficulty: "Medium",
-        image: "https://www.malwarebytes.com/blog/news/2023/02/asset_upload_file45746_255998.jpg",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 4",
-        description: "Description 4",
-        category: "Pwn",
-        difficulty: "Hard",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 5",
-        description: "Description 5",
-        category: "Crypto",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 6",
-        description: "Description 6",
-        category: "Log4j",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    }
-];
-
-const fetchScenarios = async () => {
-    const scenarioResult = await fetch("http://localhost:8000/scenarios");
-    const scenarioResultJSON = await scenarioResult.json();
-
-    return {
-        scenarios: scenarioResultJSON.scenarios
-    };
-};
+let scenarioList;
 
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -101,7 +26,7 @@ const AvailableScenarios = () => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            scenarioList = (await fetchScenarios()).scenarios;
+            scenarioList = (await fetchScenarios(false)).scenarios;
             setFilteredScenarios(scenarioList);
             setIsLoading(false);
         };
@@ -127,8 +52,6 @@ const AvailableScenarios = () => {
 
         setCheckedBoxes(boxes);
 
-        // if (boxes.length === 0 && checkedCategoryBoxes.length === 0 && checkedDifficultyBoxes.length === 0)
-        //     tmpScenarios = scenarioList;
         if (isCategory) {
             if (boxes.length === 0 && checkedDifficultyBoxes.length === 0)
                 tmpScenarios = scenarioList;

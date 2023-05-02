@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
@@ -7,85 +7,33 @@ import Pagination from '@mui/material/Pagination';
 import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
+import LoadingSpinner from '../components/LoadingSpinner';
+import fetchScenarios from '../utils/fetchData';
+
 
 const SCENARIOS_PER_PAGE = 4;
 
-const scenarioList = [
-    {
-        name: "Scenario 1",
-        description: "Description 1",
-        category: "Crypto",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        // bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 2",
-        description: "Description 2",
-        category: "Windows",
-        difficulty: "Medium",
-        image: "https://jumpcloud.com/wp-content/uploads/2016/07/AD1.png",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 3",
-        description: "Description 3",
-        category: "Windows",
-        difficulty: "Medium",
-        image: "https://www.malwarebytes.com/blog/news/2023/02/asset_upload_file45746_255998.jpg",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 4",
-        description: "Description 4",
-        category: "Pwn",
-        difficulty: "Hard",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 5",
-        description: "Description 5",
-        category: "Crypto",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    },
-    {
-        name: "Scenario 6",
-        description: "Description 6",
-        category: "Log4j",
-        difficulty: "Easy",
-        image: "https://www.lansweeper.com/wp-content/uploads/2021/12/Vulnerability-Apache-Log4j.png.webp",
-        author: "notMe",
-        targets: "https://unfinished.mc.ax",
-        bot: "https://adminbot.mc.ax",
-        downloadPath: "download.txt"
-    }
-];
+let scenarioList;
 
 const SolvedScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
-    const [filteredScenarios, setFilteredScenarios] = useState(scenarioList);
+    const [filteredScenarios, setFilteredScenarios] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            scenarioList = (await fetchScenarios(true)).scenarios;
+            setFilteredScenarios(scenarioList);
+            setIsLoading(false);
+        };
+
+        fetchData();
+    }, []);
 
     const updateSelectedScenario = (selectedScenario) => {
         setSelectedScenario(selectedScenario);
@@ -105,12 +53,12 @@ const SolvedScenarios = () => {
 
         setCheckedBoxes(boxes);
 
-        // if (boxes.length === 0 && checkedCategoryBoxes.length === 0 && checkedDifficultyBoxes.length === 0)
-        //     tmpScenarios = scenarioList;
         if (isCategory) {
             if (boxes.length === 0 && checkedDifficultyBoxes.length === 0)
                 tmpScenarios = scenarioList;
-            else if (checkedDifficultyBoxes.length > 0)
+            else if (checkedDifficultyBoxes.length > 0 && boxes.length === 0)
+                tmpScenarios = scenarioList.filter(scn => checkedDifficultyBoxes.includes(scn.difficulty));
+            else if (checkedDifficultyBoxes.length > 0 && boxes.length > 0)
                 tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) && checkedDifficultyBoxes.includes(scn.difficulty));
             else
                 tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) || checkedDifficultyBoxes.includes(scn.difficulty));
@@ -144,44 +92,45 @@ const SolvedScenarios = () => {
             <TopBar />
             <Box sx={{ boxShadow: 5, mt: '-0.5em', mx: -1, p: '0.1em' }}>
                 <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
-                    Solved Scenarios
+                    Scenarios
                 </Typography>
             </Box>
-            <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
-                {filteredScenarios.length !== 0 ? (
-                    <Fragment>
-                        {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
-                        <Grid container
-                            alignItems="center"
-                            justify="center" spacing={3}>
-                            {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
-                            <Grid item xs={12} display="flex" justifyContent="center">
-                                <Stack spacing={2}>
-                                    <Pagination
-                                        page={page}
-                                        count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
-                                        onChange={changePage}
-                                        renderItem={(item) => {
-                                            if (item.selected)
-                                                return (<PaginationItem
-                                                    sx={{ backgroundColor: "darkorange !important" }}
-                                                    {...item}
-                                                />);
-                                            else
-                                                return (<PaginationItem
-                                                    {...item}
-                                                />);
-                                        }}
-                                    />
-                                </Stack>
-                            </Grid>
-                        </Grid></Fragment>) : (
-                    <Typography variant="h4" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
-                        No items to show.
-                    </Typography>
-                )}
+            {isLoading ? <LoadingSpinner /> : (
+                <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
+                    {filteredScenarios.length !== 0 ? (
+                        <Fragment>
+                            {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+                            <Grid container
+                                alignItems="center"
+                                justify="center" spacing={3}>
+                                {filteredScenarios.slice(indexOfFirstResult, indexOfLastResult).map(scenario => <Grid item xs={12} md={6} key={scenario.name} onClick={updateSelectedScenario.bind(null, scenario.name)}><ScenarioCard {...scenario} setModalOpen={setModalOpen} /></Grid>)}
+                                <Grid item xs={12} display="flex" justifyContent="center">
+                                    <Stack spacing={2}>
+                                        <Pagination
+                                            page={page}
+                                            count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
+                                            onChange={changePage}
+                                            renderItem={(item) => {
+                                                if (item.selected)
+                                                    return (<PaginationItem
+                                                        sx={{ backgroundColor: "darkorange !important" }}
+                                                        {...item}
+                                                    />);
+                                                else
+                                                    return (<PaginationItem
+                                                        {...item}
+                                                    />);
+                                            }}
+                                        />
+                                    </Stack>
+                                </Grid>
+                            </Grid></Fragment>) : (
+                        <Typography variant="h4" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
+                            No items to show.
+                        </Typography>
+                    )}
 
-            </PageLayout>
+                </PageLayout>)}
         </Box>
     );
 };
