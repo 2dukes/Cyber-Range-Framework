@@ -21,7 +21,7 @@ const ScenarioCard = ({ setModalOpen, name, description, category, difficulty, i
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {name}
+                        {name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{
                         overflow: 'hidden',

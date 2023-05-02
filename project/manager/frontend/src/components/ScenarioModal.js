@@ -19,7 +19,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, difficulty, image, author, targets, bot, downloadPath }) => {
+const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, difficulty, image, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -27,7 +27,7 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
 
     const items = [
         {
-            header: name,
+            header: name.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' '),
             meta: "Name",
             description:
                 "Scenario's name.",
@@ -64,8 +64,7 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
 
     const onDownload = () => {
         const link = document.createElement("a");
-        link.download = downloadPath;
-        link.href = `/${downloadPath}`;
+        link.href = `http://localhost:8000/${name}_download.zip`;
         link.click();
     };
 
@@ -126,12 +125,12 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
                                         alignItems="center"
                                         flexDirection={isGettingSmaller ? "column" : "row"}
                                     >
-                                        <Button sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} onClick={() => { }} variant="contained" component="span">
+                                        <Button sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} onClick={() => { }} variant="contained" component="span">
                                             Submit
                                         </Button>
-                                        <Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
+                                        {hasDownloadableFiles && (<Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Files
-                                        </Button>
+                                        </Button>)}
                                     </Box>
                                     <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         Launch Scenario

@@ -172,14 +172,15 @@ def parse_admin_file(path):
             f.write(contents)
 
 
-def insertIntoMongo(data, cat, chal, flag):
+def insertIntoMongo(data, cat, chal, flag, hasDownloadableFiles):
     list = {
-        "name": data["name"],
+        "name": chal,
         "author": data["author"],
         "description": metaInfo[chal]['description'],
         "category": cat.capitalize(),
         "difficulty": metaInfo[chal]['difficulty'],
         "targets": "https://" + chal + ".mc.ax",
+        "hasDownloadableFiles": hasDownloadableFiles
     }
 
     if "adminbot" in data:
@@ -197,7 +198,8 @@ def insertCustomScenarios(data):
         "description": data['description'],
         "category": data['category'],
         "difficulty": data['difficulty'],
-        "flag": data["flag"]
+        "flag": data["flag"],
+        "hasDownloadableFiles": data['hasDownloadableFiles']
         # "targets": "https://" + data['targets'] + ".mc.ax",
     }
 
@@ -237,7 +239,8 @@ def parse_challenge(cat, path, chal, has_jail_img):
             remove_dir(path)
             return
 
-        if 'provide' in data:
+        hasDownloadableFiles = 'provide' in data
+        if hasDownloadableFiles:
             gatherDownloadFiles(path, data['provide'], chal)
 
         if "file" in data["flag"]:
@@ -247,7 +250,7 @@ def parse_challenge(cat, path, chal, has_jail_img):
             flag = data["flag"]
 
         if connectToDB:
-            insertIntoMongo(data, cat, chal, flag)
+            insertIntoMongo(data, cat, chal, flag, hasDownloadableFiles)
 
         # vulnerables["flag"] = flag
 
