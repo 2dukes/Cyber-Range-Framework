@@ -105,19 +105,31 @@ const SolvedScenarios = () => {
 
         setCheckedBoxes(boxes);
 
-        if (isCategory)
+        // if (boxes.length === 0 && checkedCategoryBoxes.length === 0 && checkedDifficultyBoxes.length === 0)
+        //     tmpScenarios = scenarioList;
+        if (isCategory) {
             if (boxes.length === 0 && checkedDifficultyBoxes.length === 0)
                 tmpScenarios = scenarioList;
+            else if (checkedDifficultyBoxes.length > 0)
+                tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) && checkedDifficultyBoxes.includes(scn.difficulty));
             else
                 tmpScenarios = scenarioList.filter(scn => boxes.includes(scn.category) || checkedDifficultyBoxes.includes(scn.difficulty));
-        else
+        } else {
             if (boxes.length === 0 && checkedCategoryBoxes.length === 0)
                 tmpScenarios = scenarioList;
-            else
-                tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) || boxes.includes(scn.difficulty));
+            else if (boxes.length === 0)
+                tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category));
+            else {
+                if (checkedCategoryBoxes.length > 0)
+                    tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) && boxes.includes(scn.difficulty));
+                else
+                    tmpScenarios = scenarioList.filter(scn => checkedCategoryBoxes.includes(scn.category) || boxes.includes(scn.difficulty));
+            }
+        }
 
         scenariosLen = tmpScenarios.length;
         setFilteredScenarios(tmpScenarios);
+        setSelectedScenario(null);
 
         if (Math.ceil(scenariosLen / SCENARIOS_PER_PAGE) < page)
             setPage(1);
