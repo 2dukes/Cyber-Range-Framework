@@ -5,6 +5,7 @@ import ScenarioInfoCard from "./ScenarioInfoCard";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import Link from '@mui/material/Link';
+import { useSnackbar } from 'notistack';
 
 const style = {
     position: 'absolute',
@@ -19,8 +20,9 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ modalOpen, setModalOpen, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
     const isGettingSmaller = useMediaQuery(theme.breakpoints.down('lg'));
@@ -78,9 +80,17 @@ const ScenarioModal = ({ modalOpen, setModalOpen, _id, name, description, catego
             },
             body: JSON.stringify(data)
         });
-        
+
         const flagResultJSON = await flagResult.json();
-        console.log(flagResultJSON)
+
+        if (flagResultJSON.status) {
+            enqueueSnackbar('Challenge Solved!', { variant: "success", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+            await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s
+            setModalOpen(false);
+            setSelectedScenario(null);
+            removeSolvedScenario(_id);
+        } else
+            enqueueSnackbar('Incorrect flag! Please try again.', { variant: "error", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
 
         return flagResultJSON.status;
     };

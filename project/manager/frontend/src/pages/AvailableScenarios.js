@@ -38,6 +38,10 @@ const AvailableScenarios = () => {
         setSelectedScenario(selectedScenario);
     };
 
+    const removeSolvedScenario = (id) => {
+        setFilteredScenarios(filteredScenarios.filter(scn => scn._id !== id));
+    };
+
     const changePage = (_, newPage) => {
         setPage(newPage);
     };
@@ -98,7 +102,7 @@ const AvailableScenarios = () => {
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
                     {filteredScenarios.length !== 0 ? (
                         <Fragment>
-                            {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScenarioModal>}
+                            {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
                             <Grid container
                                 alignItems="center"
                                 justify="center" spacing={3}>
