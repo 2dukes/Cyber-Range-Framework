@@ -19,7 +19,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ modalOpen, setModalOpen, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('md'));
@@ -66,6 +66,23 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
         const link = document.createElement("a");
         link.href = `http://localhost:8000/download/${name}_download.zip`;
         link.click();
+    };
+
+    const onFlagSubmit = async () => {
+        const data = { flag };
+
+        const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const flagResultJSON = await flagResult.json();
+        console.log(flagResultJSON)
+
+        return flagResultJSON.status;
     };
 
     return (
@@ -120,7 +137,7 @@ const ScenarioModal = ({ modalOpen, setModalOpen, name, description, category, d
                                         alignItems="center"
                                         flexDirection={isGettingSmaller ? "column" : "row"}
                                     >
-                                        <Button sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} onClick={() => { }} variant="contained" component="span">
+                                        <Button onClick={onFlagSubmit} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Submit
                                         </Button>
                                         {hasDownloadableFiles && (<Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">

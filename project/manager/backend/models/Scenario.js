@@ -6,6 +6,10 @@ const scenarioSchema = new Schema({
         type: String,
         required: true,
     },
+    image: {
+        type: String,
+        required: true,
+    },
     author: {
         type: String,
         required: true,
@@ -22,14 +26,26 @@ const scenarioSchema = new Schema({
         type: String,
         required: true,
     },
-    targets: {
+    flag: {
         type: String,
         required: true,
     },
+    targets: {
+        type: String,
+        required: false,
+    },
     bot: {
         type: String,
+        required: false,
+    },
+    hasDownloadableFiles: {
+        type: Boolean,
         required: true,
-    }
+    },
+    solved: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 const Scenario = mongoose.model("Scenario", scenarioSchema);

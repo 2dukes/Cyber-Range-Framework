@@ -92,7 +92,7 @@ const SolvedScenarios = () => {
             <TopBar />
             <Box sx={{ boxShadow: 5, mt: '-0.5em', mx: -1, p: '0.1em' }}>
                 <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
-                    Scenarios
+                    Solved Scenarios
                 </Typography>
             </Box>
             {isLoading ? <LoadingSpinner /> : (

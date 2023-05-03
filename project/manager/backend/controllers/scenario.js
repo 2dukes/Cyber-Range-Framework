@@ -4,7 +4,7 @@ const getScenarios = async (req, res, next) => {
     const { solved } = req.query;
 
     try {
-        const scenarios = await Scenario.find({ solved: solved === 'true'});
+        const scenarios = await Scenario.find({ solved: solved === 'true' });
 
         return res.status(200).json({
             status: true,
@@ -17,13 +17,20 @@ const getScenarios = async (req, res, next) => {
 
 const checkFlag = async (req, res, next) => {
     const id = req.params.scenarioID;
-    const flag = req.query.flag;
+    const { flag } = req.body;
 
     try {
-        const scenario = await Scenario.findOne({ id });
-        
+        const scenario = await Scenario.findOne({ _id: id });
+
+        const flagCheck = scenario.flag === flag;
+
+        if (flagCheck) {
+            scenario.solved = true;
+            await scenario.save();
+        }
+
         return res.status(200).json({
-            status: scenario.flag === flag
+            status: flagCheck
         });
     } catch (err) {
         next(err);
