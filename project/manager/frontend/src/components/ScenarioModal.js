@@ -20,7 +20,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -128,16 +128,17 @@ const ScenarioModal = ({ modalOpen, setModalOpen, removeSolvedScenario, setSelec
                                     </CardContent>
                                 </Card>
                                 <Box>
-                                    <Typography variant="body1" fontWeight="bold" marginTop="1em" sx={{ mb: 0 }}>
+                                    {!solved && (<Fragment><Typography variant="body1" fontWeight="bold" marginTop="1em" sx={{ mb: 0 }}>
                                         Flag
                                     </Typography>
-                                    <TextField
-                                        sx={{ width: "100%", ':focus-within fieldset': { borderColor: 'darkorange !important' } }}
-                                        id="minimum-contribution"
-                                        type="text"
-                                        value={flag}
-                                        onChange={(event) => setFlag(event.target.value)}
-                                    />
+                                        <TextField
+                                            sx={{ width: "100%", ':focus-within fieldset': { borderColor: 'darkorange !important' } }}
+                                            id="minimum-contribution"
+                                            type="text"
+                                            value={flag}
+                                            onChange={(event) => setFlag(event.target.value)}
+                                        /></Fragment>)}
+
 
                                     <Box
                                         component="span"
@@ -147,15 +148,16 @@ const ScenarioModal = ({ modalOpen, setModalOpen, removeSolvedScenario, setSelec
                                         alignItems="center"
                                         flexDirection={isGettingSmaller ? "column" : "row"}
                                     >
-                                        <Button onClick={onFlagSubmit} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
+                                        {!solved && (<Button onClick={onFlagSubmit} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Submit
-                                        </Button>
-                                        {hasDownloadableFiles && (<Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
+                                        </Button>)}
+
+                                        {hasDownloadableFiles && (<Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller && !solved ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Files
                                         </Button>)}
                                     </Box>
                                     <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
-                                        Launch Scenario
+                                        { !isGettingSmaller ? "Launch Scenario" : "Launch" }
                                     </Button>
                                 </Box>
                             </Box>

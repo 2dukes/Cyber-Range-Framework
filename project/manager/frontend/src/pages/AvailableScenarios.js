@@ -102,7 +102,7 @@ const AvailableScenarios = () => {
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
                     {filteredScenarios.length !== 0 ? (
                         <Fragment>
-                            {selectedScenario && <ScenarioModal {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
+                            {selectedScenario && <ScenarioModal solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
                             <Grid container
                                 alignItems="center"
                                 justify="center" spacing={3}>
@@ -111,6 +111,7 @@ const AvailableScenarios = () => {
                                     <Stack spacing={2}>
                                         <Pagination
                                             page={page}
+                                            siblingCount={0}
                                             count={Math.ceil(filteredScenarios.length / SCENARIOS_PER_PAGE)}
                                             onChange={changePage}
                                             renderItem={(item) => {
