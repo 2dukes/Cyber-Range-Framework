@@ -1,4 +1,6 @@
 const { Scenario } = require("../models/Scenario");
+const { exec } = require("node:child_process");
+const fs = require('fs');
 
 const getScenarios = async (req, res, next) => {
     const { solved } = req.query;
@@ -37,4 +39,49 @@ const checkFlag = async (req, res, next) => {
     }
 };
 
-module.exports = { getScenarios, checkFlag };
+const runScenario = async (req, res, next) => {
+    const { scenario_name } = req.body;
+
+    try {
+        const dataJSON = JSON.parse(fs.readFileSync("scenarios.json"));
+        const challenge_names = Object.keys(dataJSON)
+
+        // Prevent Malicious Crafted Strings
+        if (!challenge_names.includes(scenario_name))
+            throw new Error("Invalid scenario name.");
+
+        exec(`echo 'cd ..; ./switch_challenge.sh ${scenario_name}; cd manager' > mypipe`, (err, output) => {
+            // once the command has completed, the callback function is called
+            if (err) {
+                // log and return if we encounter an error
+                console.error("Could not execute command: ", err);
+                return;
+            }
+        });
+
+        let playbook_name;
+        if (scenario_name === "ad")
+            playbook_name = "setup_win_ad.yml"
+        else if (scenario_name === "ransomware")
+            playbook_name = "setup_win_ransomware.yml"
+        else
+            playbook_name = "setup_containers.yml"
+
+        exec(`echo 'cd ..; ansible-playbook ${playbook_name}' > mypipe`, (err, output) => {
+            // once the command has completed, the callback function is called
+            if (err) {
+                // log and return if we encounter an error
+                console.error("Could not execute command: ", err);
+                return;
+            }
+        })
+
+        return res.status(200).json({
+            status: true
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+module.exports = { getScenarios, checkFlag, runScenario };

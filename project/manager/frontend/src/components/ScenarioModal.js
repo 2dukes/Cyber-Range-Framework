@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Card, CardContent, Grid, Box, Button, Typography, Modal, TextField, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ScenarioInfoCard from "./ScenarioInfoCard";
@@ -73,7 +73,7 @@ const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, 
     const onFlagSubmit = async () => {
         const data = { flag };
 
-        const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+        const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -94,6 +94,26 @@ const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, 
 
         return flagResultJSON.status;
     };
+
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        // Create a new WebSocket instance
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Handle incoming messages from the server
+        ws.onmessage = (event) => {
+            setData(event.data);
+            console.log(event.data)
+        };
+
+        // Clean up the WebSocket connection when the component unmounts
+        return () => {
+            ws.close();
+        };
+    }, []);
+
+    // console.log(data);
 
     return (
         <Fragment>
@@ -157,7 +177,7 @@ const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, 
                                         </Button>)}
                                     </Box>
                                     <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
-                                        { !isGettingSmaller ? "Launch Scenario" : "Launch" }
+                                        {!isGettingSmaller ? "Launch Scenario" : "Launch"}
                                     </Button>
                                 </Box>
                             </Box>

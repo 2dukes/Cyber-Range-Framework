@@ -1,0 +1,112 @@
+general:
+  images:
+    - name: ubuntukvm_windowsserver
+      path: ./ad
+    - name: kali_test_img
+      path: ./attacker
+    - name: base_image
+      path: .
+  default_container_image_name: base_image
+  random_byte: "{{ 254 | random(start=30, seed=11) }}"
+
+networks:
+  internal_net:
+    network_addr: 172.{{ general.random_byte }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte }}.0.254
+    random_byte: "{{ general.random_byte }}"
+
+  dmz_net:
+    network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
+    random_byte: "{{ general.random_byte | int - 5 }}"
+  
+  external_net:
+    network_addr: 172.{{ general.random_byte | int - 10 }}.0.0/24
+    gateway_addr: 172.{{ general.random_byte | int - 10 }}.0.254
+    random_byte: "{{ general.random_byte | int - 10 }}"
+
+machines:
+  - name: dhcp_server
+    group:
+      - dhcp_servers
+    networks:
+      - name: internal_net
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.3
+
+  - name: internal_pc_1
+    group:
+      - pcs
+    networks:
+      - name: internal_net
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.2
+
+  - name: internal_router
+    group:
+      - routers
+      - firewalls
+    dns: 
+      name: dns_server
+      network: dmz_net
+    networks:
+      - name: internal_net
+        ipv4_address: 172.{{ networks.internal_net.random_byte }}.0.1
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.1
+
+  - name: edge_router
+    group:
+      - routers
+      - firewalls
+    dns:
+      name: dns_server
+      network: dmz_net
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.2
+      - name: external_net
+        ipv4_address: 172.{{ networks.external_net.random_byte }}.0.1
+
+  - name: dns_server
+    group:
+      - dns_servers
+    exposed_ports:
+      - 53/tcp
+      - 53/udp
+      - 953
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.20
+
+  - name: kvmcontainer
+    image: ubuntukvm_windowsserver
+    privileged: true
+    group:
+      - custom_machines
+    dns: 
+      name: dns_server
+      network: dmz_net
+    volumes:
+      - "/sys/fs/cgroup:/sys/fs/cgroup:rw"
+    devices:
+      - "/dev/net/tun"
+      - "/dev/kvm"
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.40
+
+  - name: attacker_machine
+    image: kali_test_img
+    published_ports:
+      - 5900:5900
+      - 6080:6080
+    dns: 
+      name: dns_server
+      network: dmz_net
+    networks:
+      - name: dmz_net
+        ipv4_address: 172.{{ networks.dmz_net.random_byte }}.0.30
+
+setup:
+    machines:
+    -   name: attacker_machine
+        setup: '{{ playbook_dir }}/ad/attacker_machine_setup/*.j2'
