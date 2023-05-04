@@ -12,4 +12,9 @@ const fetchScenarios = async (solved) => {
     };
 };
 
-export default fetchScenarios;
+const getCookie = (key) => {
+    const value = document.cookie.match("(^|;)\\s*" + key + "\\s*=\\s*([^;]+)")
+    return value ? value.pop() : "";
+}
+
+export { fetchScenarios, getCookie };

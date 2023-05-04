@@ -44,7 +44,7 @@ const runScenario = async (req, res, next) => {
 
     try {
         const dataJSON = JSON.parse(fs.readFileSync("scenarios.json"));
-        const challenge_names = Object.keys(dataJSON)
+        const challenge_names = Object.keys(dataJSON);
 
         // Prevent Malicious Crafted Strings
         if (!challenge_names.includes(scenario_name))
@@ -61,11 +61,11 @@ const runScenario = async (req, res, next) => {
 
         let playbook_name;
         if (scenario_name === "ad")
-            playbook_name = "setup_win_ad.yml"
+            playbook_name = "setup_win_ad.yml";
         else if (scenario_name === "ransomware")
-            playbook_name = "setup_win_ransomware.yml"
+            playbook_name = "setup_win_ransomware.yml";
         else
-            playbook_name = "setup_containers.yml"
+            playbook_name = "setup_containers.yml";
 
         exec(`echo 'cd ..; ansible-playbook ${playbook_name}' > mypipe`, (err, output) => {
             // once the command has completed, the callback function is called
@@ -74,9 +74,9 @@ const runScenario = async (req, res, next) => {
                 console.error("Could not execute command: ", err);
                 return;
             }
-        })
+        });
 
-        return res.status(200).json({
+        return res.status(200).cookie('scenario', 'text', { maxAge: 9000000, httpOnly: false }).json({
             status: true
         });
     } catch (err) {

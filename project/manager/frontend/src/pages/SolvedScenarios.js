@@ -8,7 +8,7 @@ import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import fetchScenarios from '../utils/fetchData';
+import { fetchScenarios } from '../utils/fetchData';
 
 
 const SCENARIOS_PER_PAGE = 4;

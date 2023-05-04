@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useRef } from "react";
+import { Fragment, useState } from "react";
 import { Card, CardContent, Grid, Box, Button, Typography, Modal, TextField, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ScenarioInfoCard from "./ScenarioInfoCard";
@@ -20,7 +20,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ infoRef, launchData, solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario, infoRef, launchData, solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -95,6 +95,25 @@ const ScenarioModal = ({ infoRef, launchData, solved, modalOpen, setModalOpen, r
         return flagResultJSON.status;
     };
 
+    const launchChallenge = async () => {
+        const data = { scenario_name: 'log4j' }; // Hard-coded 4now
+
+        const launchResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+            method: "POST",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        });
+
+        const launchResultJSON = await launchResult.json();
+
+        console.log(launchResultJSON);
+
+        setLaunchedScenario(name);
+    };
+
     return (
         <Fragment>
             <Modal
@@ -156,13 +175,13 @@ const ScenarioModal = ({ infoRef, launchData, solved, modalOpen, setModalOpen, r
                                             Files
                                         </Button>)}
                                     </Box>
-                                    <Button startIcon={<RocketLaunchIcon />} onClick={() => { }} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                    <Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         {!isGettingSmaller ? "Launch Scenario" : "Launch"}
                                     </Button>
                                 </Box>
                             </Box>
                         </Grid>
-                        {!isSmall && (<Grid item xs={12} sx={{ mt: 1 }}> {/* When in small devices, spacing = 0*/}
+                        {!isSmall && launchedScenario === selectedScenario && (<Grid item xs={12} sx={{ mt: 1 }}>
                             <Card style={{ height: '120px', backgroundColor: 'black', overflowX: 'hidden', overflowY: 'scroll' }}>
                                 <CardContent sx={{ p: 1 }} >
                                     {launchData.map((txt, idx) => <Typography key={idx} sx={{ color: 'white' }} color="text.secondary">{txt}</Typography>)}

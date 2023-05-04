@@ -8,7 +8,7 @@ import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import fetchScenarios from '../utils/fetchData';
+import { fetchScenarios, getCookie } from '../utils/fetchData';
 
 const SCENARIOS_PER_PAGE = 4;
 
@@ -17,6 +17,7 @@ let scenarioList;
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [launchData, setLaunchData] = useState([]);
+    const [launchedScenario, setLaunchedScenario] = useState(getCookie("scenario") || null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
@@ -107,7 +108,7 @@ const AvailableScenarios = () => {
         // Clean up the WebSocket connection when the component unmounts
         return () => {
             ws.close();
-            console.log("Closing WS")
+            console.log("Closing WS");
         };
     }, []);
 
@@ -127,7 +128,7 @@ const AvailableScenarios = () => {
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
                     {filteredScenarios.length !== 0 ? (
                         <Fragment>
-                            {selectedScenario && <ScenarioModal infoRef={infoRef} launchData={launchData} solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
+                            {selectedScenario && <ScenarioModal selectedScenario={selectedScenario} launchedScenario={launchedScenario} setLaunchedScenario={setLaunchedScenario} infoRef={infoRef} launchData={launchData} solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
                             <Grid container
                                 alignItems="center"
                                 justify="center" spacing={3}>
