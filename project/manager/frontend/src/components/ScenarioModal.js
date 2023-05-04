@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useRef } from "react";
 import { Card, CardContent, Grid, Box, Button, Typography, Modal, TextField, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import ScenarioInfoCard from "./ScenarioInfoCard";
@@ -20,7 +20,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ infoRef, launchData, solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -95,26 +95,6 @@ const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, 
         return flagResultJSON.status;
     };
 
-    const [data, setData] = useState(null);
-
-    useEffect(() => {
-        // Create a new WebSocket instance
-        const ws = new WebSocket('ws://localhost:8080');
-
-        // Handle incoming messages from the server
-        ws.onmessage = (event) => {
-            setData(event.data);
-            console.log(event.data)
-        };
-
-        // Clean up the WebSocket connection when the component unmounts
-        return () => {
-            ws.close();
-        };
-    }, []);
-
-    // console.log(data);
-
     return (
         <Fragment>
             <Modal
@@ -182,6 +162,14 @@ const ScenarioModal = ({ solved, modalOpen, setModalOpen, removeSolvedScenario, 
                                 </Box>
                             </Box>
                         </Grid>
+                        {!isSmall && (<Grid item xs={12} sx={{ mt: 1 }}> {/* When in small devices, spacing = 0*/}
+                            <Card style={{ height: '120px', backgroundColor: 'black', overflowX: 'hidden', overflowY: 'scroll' }}>
+                                <CardContent sx={{ p: 1 }} >
+                                    {launchData.map((txt, idx) => <Typography key={idx} sx={{ color: 'white' }} color="text.secondary">{txt}</Typography>)}
+                                    <div ref={infoRef} />
+                                </CardContent>
+                            </Card >
+                        </Grid>)}
                     </Grid>
                 </Box>
             </Modal>

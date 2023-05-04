@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
@@ -16,12 +16,14 @@ let scenarioList;
 
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
+    const [launchData, setLaunchData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
     const [filteredScenarios, setFilteredScenarios] = useState([]);
+    const infoRef = useRef(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -90,6 +92,29 @@ const AvailableScenarios = () => {
     const indexOfFirstResult = indexOfLastResult - SCENARIOS_PER_PAGE;
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
 
+    useEffect(() => {
+        // Create a new WebSocket instance
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Handle incoming messages from the server
+        ws.onmessage = (event) => {
+            if (event.data.length > 0) {
+                setLaunchData((prev) => [...prev, event.data]);
+                scrollToBottom();
+            }
+        };
+
+        // Clean up the WebSocket connection when the component unmounts
+        return () => {
+            ws.close();
+            console.log("Closing WS")
+        };
+    }, []);
+
+    const scrollToBottom = () => {
+        infoRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <TopBar />
@@ -102,7 +127,7 @@ const AvailableScenarios = () => {
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
                     {filteredScenarios.length !== 0 ? (
                         <Fragment>
-                            {selectedScenario && <ScenarioModal solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
+                            {selectedScenario && <ScenarioModal infoRef={infoRef} launchData={launchData} solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
                             <Grid container
                                 alignItems="center"
                                 justify="center" spacing={3}>
