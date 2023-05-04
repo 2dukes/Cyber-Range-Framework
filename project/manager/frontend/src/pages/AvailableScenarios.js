@@ -94,16 +94,27 @@ const AvailableScenarios = () => {
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
 
     useEffect(() => {
-        // Create a new WebSocket instance
-        const ws = new WebSocket('ws://localhost:8080');
+        let ws;
 
-        // Handle incoming messages from the server
-        ws.onmessage = (event) => {
-            if (event.data.length > 0) {
-                setLaunchData((prev) => [...prev, event.data]);
-                scrollToBottom();
-            }
+        const setupWS = () => {
+            // Create a new WebSocket instance
+            ws = new WebSocket('ws://localhost:8080');
+
+            // Handle incoming messages from the server
+            ws.onmessage = (event) => {
+                if (event.data.length > 0) {
+                    setLaunchData((prev) => [...prev, event.data]);
+                    scrollToBottom();
+                }
+            };
+
+            ws.onclose = () => {
+                console.log("Server closed WS");
+                setTimeout(() => setupWS(), 3000);
+            };
         };
+
+        setupWS();
 
         // Clean up the WebSocket connection when the component unmounts
         return () => {

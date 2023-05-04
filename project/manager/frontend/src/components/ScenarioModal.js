@@ -175,9 +175,12 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
                                             Files
                                         </Button>)}
                                     </Box>
-                                    <Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                    {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                        Cancel
+                                    </Button>) : (<Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         {!isGettingSmaller ? "Launch Scenario" : "Launch"}
-                                    </Button>
+                                    </Button>)}
+
                                 </Box>
                             </Box>
                         </Grid>
