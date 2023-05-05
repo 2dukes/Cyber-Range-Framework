@@ -20,7 +20,7 @@ const style = {
     p: 4
 };
 
-const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario, infoRef, launchData, solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
+const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedScenario, setLaunchedScenario, infoRef, launchData, solved, modalOpen, setModalOpen, removeSolvedScenario, setSelectedScenario, _id, name, description, category, difficulty, author, targets, bot, hasDownloadableFiles }) => {
     const [flag, setFlag] = useState("");
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme();
@@ -73,26 +73,30 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
     const onFlagSubmit = async () => {
         const data = { flag };
 
-        const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
+        if (wsConnected) {
+            const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
 
-        const flagResultJSON = await flagResult.json();
+            const flagResultJSON = await flagResult.json();
 
-        if (flagResultJSON.status) {
-            enqueueSnackbar('Challenge Solved!', { variant: "success", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
-            await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s
-            setModalOpen(false);
-            setSelectedScenario(null);
-            removeSolvedScenario(_id);
-        } else
-            enqueueSnackbar('Incorrect flag! Please try again.', { variant: "error", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+            if (flagResultJSON.status) {
+                enqueueSnackbar('Challenge Solved!', { variant: "success", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+                await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s
+                setModalOpen(false);
+                setSelectedScenario(null);
+                removeSolvedScenario(_id);
+            } else
+                enqueueSnackbar('Incorrect flag! Please try again.', { variant: "error", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
 
-        return flagResultJSON.status;
+            return flagResultJSON.status;
+        }
+
+        return false;
     };
 
     const launchChallenge = async () => {
@@ -109,9 +113,10 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
 
         const launchResultJSON = await launchResult.json();
 
-        console.log(launchResultJSON);
-
-        setLaunchedScenario(name);
+        if (launchResultJSON.status) {
+            setLaunchedScenario(name);
+            enqueueSnackbar('Scenario successfully launched!', { variant: "success", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+        }
     };
 
     const cancelChallenge = async () => {
@@ -122,9 +127,11 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
 
         const cancelResultJSON = await cancelResult.json();
 
-        console.log(cancelResultJSON);
-
-        setLaunchedScenario(null);
+        if (cancelResultJSON.status) {
+            setLaunchedScenario(null);
+            setLaunchData([]);
+            enqueueSnackbar('Scenario execution canceled.', { variant: "error", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+        }
     };
 
     return (
@@ -190,7 +197,7 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
                                     </Box>
                                     {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         Cancel
-                                    </Button>) : (<Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                    </Button>) : (<Button disabled={!wsConnected} startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         {!isGettingSmaller ? "Launch Scenario" : "Launch"}
                                     </Button>)}
 

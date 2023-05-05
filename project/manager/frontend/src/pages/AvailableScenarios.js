@@ -12,7 +12,7 @@ import { fetchScenarios, getCookie } from '../utils/fetchData';
 
 const SCENARIOS_PER_PAGE = 4;
 
-let scenarioList;
+let scenarioList, ws;
 
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -23,6 +23,7 @@ const AvailableScenarios = () => {
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
+    const [wsConnected, setWSConnected] = useState(false);
     const [filteredScenarios, setFilteredScenarios] = useState([]);
     const infoRef = useRef(null);
 
@@ -94,14 +95,17 @@ const AvailableScenarios = () => {
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
 
     useEffect(() => {
-        let ws;
-
         const setupWS = () => {
             // Create a new WebSocket instance
-            ws = new WebSocket('ws://localhost:8080');
+            let ws = new WebSocket('ws://localhost:8080');
+
+            ws.onopen = () => {
+                console.log("connected");
+                setWSConnected(true);
+            };
 
             // Handle incoming messages from the server
-            ws.onmessage = (event) => {
+            ws.onmessage = async (event) => {
                 if (event.data.length > 0) {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();
@@ -110,15 +114,18 @@ const AvailableScenarios = () => {
 
             ws.onclose = () => {
                 console.log("Server closed WS");
-                setTimeout(() => setupWS(), 3000);
+                setWSConnected(false);
+                setTimeout(() => setupWS(), 1000);
             };
+
+            return ws;
         };
 
-        setupWS();
+        const wsResult = setupWS();
 
         // Clean up the WebSocket connection when the component unmounts
         return () => {
-            ws.close();
+            wsResult.close();
             console.log("Closing WS");
         };
     }, []);
@@ -139,7 +146,7 @@ const AvailableScenarios = () => {
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
                     {filteredScenarios.length !== 0 ? (
                         <Fragment>
-                            {selectedScenario && <ScenarioModal selectedScenario={selectedScenario} launchedScenario={launchedScenario} setLaunchedScenario={setLaunchedScenario} infoRef={infoRef} launchData={launchData} solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
+                            {selectedScenario && <ScenarioModal wsConnected={wsConnected} setLaunchData={setLaunchData} selectedScenario={selectedScenario} launchedScenario={launchedScenario} setLaunchedScenario={setLaunchedScenario} infoRef={infoRef} launchData={launchData} solved={false} {...filteredScenarios.find(scenario => scenario.name === selectedScenario)} modalOpen={modalOpen} setModalOpen={setModalOpen} removeSolvedScenario={removeSolvedScenario} setSelectedScenario={setSelectedScenario}></ScenarioModal>}
                             <Grid container
                                 alignItems="center"
                                 justify="center" spacing={3}>

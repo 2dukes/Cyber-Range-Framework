@@ -69,15 +69,6 @@ const runScenario = async (req, res, next) => {
         if (!challenge_names.includes(scenario_name))
             throw new Error("Invalid scenario name.");
 
-        exec(`echo 'cd ..; ./switch_challenge.sh ${scenario_name}; cd manager' > mypipe`, (err, output) => {
-            // once the command has completed, the callback function is called
-            if (err) {
-                // log and return if we encounter an error
-                console.error("Could not execute command: ", err);
-                return;
-            }
-        });
-
         let playbook_name;
         if (scenario_name === "ad")
             playbook_name = "setup_win_ad.yml";
@@ -86,7 +77,7 @@ const runScenario = async (req, res, next) => {
         else
             playbook_name = "setup_containers.yml";
 
-        exec(`echo 'cd ..; ansible-playbook ${playbook_name}' > mypipe`, (err, output) => {
+        exec(`echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe`, (err, output) => {
             // once the command has completed, the callback function is called
             if (err) {
                 // log and return if we encounter an error
@@ -95,7 +86,7 @@ const runScenario = async (req, res, next) => {
             }
         });
 
-        return res.status(200).cookie('scenario', 'text', { maxAge: 9000000, httpOnly: false }).json({
+        return res.status(200).cookie('scenario', scenario_name, { maxAge: 9000000, httpOnly: false }).json({
             status: true
         });
     } catch (err) {
