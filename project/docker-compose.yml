@@ -20,6 +20,7 @@ services:
         - /app/node_modules
         - ./manager/backend:/app
         - ./manager/mypipe:/app/mypipe
+        - ./manager/cancel_mypipe:/app/cancel_mypipe
         - ./ctfs/scenarios.json:/app/scenarios.json
       stdin_open: true
       tty: true

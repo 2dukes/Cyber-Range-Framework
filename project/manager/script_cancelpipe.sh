@@ -3,7 +3,7 @@
 curr_dir=$(pwd)
 
 while true; do
-    read cmd < "${curr_dir}/mypipe"
+    read cmd < "${curr_dir}/cancel_mypipe"
     if [ -z "$cmd" ]; then
         break
     fi

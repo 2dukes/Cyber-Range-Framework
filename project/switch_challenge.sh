@@ -5,7 +5,7 @@
 scenario_name=$1
 
 # Remove all pending containers except from website
-docker ps -a | grep -Ev "mongodb|backend|frontend|CONTAINER" | cut -d ' ' -f1 1>/dev/null 2>&1
+docker rm -f $(docker ps -a | grep -Ev "mongodb|backend|frontend|CONTAINER" | cut -d ' ' -f1) 1>/dev/null 2>&1
 
 ln -sf /dev/null group_vars/scenario.yml
 ln -sf /dev/null host_vars/localhost.yml

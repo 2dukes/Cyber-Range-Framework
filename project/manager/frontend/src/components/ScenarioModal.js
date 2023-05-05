@@ -114,6 +114,19 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
         setLaunchedScenario(name);
     };
 
+    const cancelChallenge = async () => {
+        const cancelResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+            method: "DELETE",
+            credentials: 'include'
+        });
+
+        const cancelResultJSON = await cancelResult.json();
+
+        console.log(cancelResultJSON);
+
+        setLaunchedScenario(null);
+    };
+
     return (
         <Fragment>
             <Modal
@@ -175,7 +188,7 @@ const ScenarioModal = ({ selectedScenario, launchedScenario, setLaunchedScenario
                                             Files
                                         </Button>)}
                                     </Box>
-                                    {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                    {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         Cancel
                                     </Button>) : (<Button startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         {!isGettingSmaller ? "Launch Scenario" : "Launch"}
