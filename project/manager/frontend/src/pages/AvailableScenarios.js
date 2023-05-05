@@ -12,12 +12,12 @@ import { fetchScenarios, getCookie } from '../utils/fetchData';
 
 const SCENARIOS_PER_PAGE = 4;
 
-let scenarioList, ws;
+let scenarioList;
 
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [launchData, setLaunchData] = useState([]);
-    const [launchedScenario, setLaunchedScenario] = useState(getCookie("scenario") || null);
+    const [launchedScenario, setLaunchedScenario] = useState((getCookie("scenario") === "null" ? null : getCookie("scenario")) || null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
@@ -100,20 +100,20 @@ const AvailableScenarios = () => {
             let ws = new WebSocket('ws://localhost:8080');
 
             ws.onopen = () => {
-                console.log("connected");
                 setWSConnected(true);
             };
 
             // Handle incoming messages from the server
             ws.onmessage = async (event) => {
-                if (event.data.length > 0) {
+                if (event.data === "Process Exited With Status Code: 127") {
+                    setLaunchedScenario(null);
+                } if (event.data.length > 0) {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();
                 }
             };
 
             ws.onclose = () => {
-                console.log("Server closed WS");
                 setWSConnected(false);
                 setTimeout(() => setupWS(), 1000);
             };
@@ -126,7 +126,6 @@ const AvailableScenarios = () => {
         // Clean up the WebSocket connection when the component unmounts
         return () => {
             wsResult.close();
-            console.log("Closing WS");
         };
     }, []);
 
