@@ -52,7 +52,7 @@ const cancelScenario = async (req, res, next) => {
             }
         });
 
-        return res.status(200).cookie('scenario', 'null', { maxAge: 9000000, httpOnly: false }).json({
+        return res.status(200).json({
             status: true
         });
     } catch (err) {
@@ -88,7 +88,7 @@ const runScenario = async (req, res, next) => {
             }
         });
 
-        return res.status(200).cookie('scenario', scenario_name, { maxAge: 9000000, httpOnly: false }).json({
+        return res.status(200).json({
             status: true
         });
     } catch (err) {

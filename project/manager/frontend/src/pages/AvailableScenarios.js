@@ -8,7 +8,7 @@ import PaginationItem from '@mui/material/PaginationItem';
 import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { fetchScenarios, getCookie } from '../utils/fetchData';
+import { fetchScenarios } from '../utils/fetchData';
 import { useSnackbar } from 'notistack';
 import { keyframes } from '@mui/system';
 
@@ -31,7 +31,7 @@ const switchColor = keyframes`
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [launchData, setLaunchData] = useState([]);
-    const [launchedScenario, setLaunchedScenario] = useState((getCookie("scenario") === "null" ? null : getCookie("scenario")) || null);
+    const [launchedScenario, setLaunchedScenario] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
@@ -124,8 +124,7 @@ const AvailableScenarios = () => {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();
                 }
-                if (/^Process Exited With Status Code: [1-9][0-9]{1,2}$/.test(event.data)) {
-                    document.cookie = `scenario=null`;
+                if (/^Process Exited With Status Code: [1-9][0-9]{0,2}$/.test(event.data)) {
                     enqueueSnackbar('An error occurred while executing scenario. Please try again.', { variant: "error", preventDuplicate: true, style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
                     setTimeout(() => window.location.reload(), 2000);
                 }
