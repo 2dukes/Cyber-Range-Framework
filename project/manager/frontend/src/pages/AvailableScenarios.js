@@ -124,7 +124,7 @@ const AvailableScenarios = () => {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();
                 }
-                if (event.data === "Process Exited With Status Code: 127") {
+                if (/^Process Exited With Status Code: [1-9][0-9]{1,2}$/.test(event.data)) {
                     document.cookie = `scenario=null`;
                     enqueueSnackbar('An error occurred while executing scenario. Please try again.', { variant: "error", preventDuplicate: true, style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
                     setTimeout(() => window.location.reload(), 2000);

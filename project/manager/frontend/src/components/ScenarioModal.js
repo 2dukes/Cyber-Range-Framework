@@ -232,7 +232,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
                                 </Box>
                             </Box>
                         </Grid>
-                        {!isSmall && launchedScenario === selectedScenario && launchedScenario !== undefined && (<Grid item xs={12} sx={{ mt: 1 }}>
+                        {!isSmall && launchedScenario === selectedScenario && launchedScenario !== undefined && launchData.length > 0 && (<Grid item xs={12} sx={{ mt: 1 }}>
                             <Card style={{ height: '120px', backgroundColor: 'black', overflowX: 'hidden', overflowY: 'scroll' }}>
                                 <CardContent sx={{ p: 1 }} >
                                     {launchData.map((txt, idx) => <Typography key={idx} sx={{ color: 'white' }} color="text.secondary">{txt}</Typography>)}
