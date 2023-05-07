@@ -10,7 +10,7 @@ docker rm -f $(docker ps -a | grep -Ev "mongodb|backend|frontend|CONTAINER" | cu
 ln -sf /dev/null group_vars/scenario.yml
 ln -sf /dev/null host_vars/localhost.yml
 
-if [[ "$scenario_name" == "ad" ]]
+if [[ "$scenario_name" == "active-directory" ]]
 then
     ln -sf all_windows_server.yml group_vars/all.yml
 elif [[ "$scenario_name" == "ransomware" ]]

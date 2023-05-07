@@ -12,7 +12,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '50%',
+    width: '55%',
     bgcolor: 'background.paper',
     border: '2px solid rgba(0, 0, 0, 0.23)',
     borderRadius: '20px',
@@ -100,7 +100,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     };
 
     const launchChallenge = async () => {
-        const data = { scenario_name: 'log4j' }; // Hard-coded 4now
+        const data = { scenario_name: name }; // Hard-coded 4now
 
         const launchResult = await fetch(`http://localhost:8000/scenarios`, {
             method: "POST",
@@ -149,7 +149,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
                     <Grid container>
                         <Grid item xs={12} md={9}> {/* When in small devices, spacing = 0*/}
                             <Grid container spacing={1} pr={isSmall ? "0em" : "1em"}>
-                                {items.map(item => (<Grid item key={item.name + item.header} xs={item.size}><ScenarioInfoCard {...item} isSmall={isSmall} /></Grid>))}
+                                {items.map(item => (<Grid item key={item.description} xs={item.size}><ScenarioInfoCard {...item} isSmall={isSmall} /></Grid>))}
                             </Grid>
                         </Grid>
                         <Grid item xs={12} md={3}>

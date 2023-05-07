@@ -70,7 +70,7 @@ const runScenario = async (req, res, next) => {
             throw new Error("Invalid scenario name.");
 
         let playbook_name;
-        if (scenario_name === "ad")
+        if (scenario_name === "active-directory")
             playbook_name = "setup_win_ad.yml";
         else if (scenario_name === "ransomware")
             playbook_name = "setup_win_ransomware.yml";

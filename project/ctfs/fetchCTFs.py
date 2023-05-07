@@ -487,7 +487,7 @@ def lookup_challenges(current_dir):
     categories = os.listdir(current_dir)
 
     if connectToDB:
-        custom_scenarios = ["log4j", "ad", "ransomware"]
+        custom_scenarios = ["log4j", "active-directory", "ransomware"]
 
         for scn in custom_scenarios:
             insertCustomScenarios(metaInfo[scn])
