@@ -10,10 +10,23 @@ import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchScenarios, getCookie } from '../utils/fetchData';
 import { useSnackbar } from 'notistack';
+import { keyframes } from '@mui/system';
 
 const SCENARIOS_PER_PAGE = 4;
 
 let scenarioList;
+
+const switchColor = keyframes`
+  0% {
+    background-color: red;
+  }
+  50% {
+    background-color: black;
+  }
+  100% {
+    background-color: red;
+  }
+`;
 
 const AvailableScenarios = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -107,25 +120,14 @@ const AvailableScenarios = () => {
 
             // Handle incoming messages from the server
             ws.onmessage = async (event) => {
-                if (event.data === "Process Exited With Status Code: 127") {
-                    const data = { scenario_name: 'log4j' }; // Hard-coded 4now                
-
-                    const launchResult = await fetch(`http://localhost:8000/scenarios/123`, {
-                        method: "POST",
-                        credentials: 'include',
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(data)
-                    });
-
-                    const launchResultJSON = await launchResult.json();
-
-                    if (launchResultJSON.status)
-                        setLaunchedScenario('Apache Log4j');
-                } if (event.data.length > 0) {
+                if (event.data.length > 0) {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();
+                }
+                if (event.data === "Process Exited With Status Code: 127") {
+                    document.cookie = `scenario=null`;
+                    enqueueSnackbar('An error occurred while executing scenario. Please try again.', { variant: "error", preventDuplicate: true, style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+                    setTimeout(() => window.location.reload(), 2000);
                 }
             };
 
@@ -143,14 +145,14 @@ const AvailableScenarios = () => {
         return () => {
             wsResult.close();
         };
-    }, []);
+    }, [enqueueSnackbar]);
 
     const scrollToBottom = () => {
         infoRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const cancelChallenge = async () => {
-        const cancelResult = await fetch(`http://localhost:8000/scenarios/123`, {
+        const cancelResult = await fetch(`http://localhost:8000/scenarios`, {
             method: "DELETE",
             credentials: 'include'
         });
@@ -171,7 +173,7 @@ const AvailableScenarios = () => {
                 <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom>
                     Scenarios
                 </Typography>
-                {wsConnected && launchedScenario !== null && (<Button onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%' }} variant="contained" component="span">
+                {wsConnected && launchedScenario !== null && (<Button onClick={cancelChallenge} sx={{ animation: `${switchColor} 1.5s infinite ease`, fontWeight: "bold", width: '100%' }} variant="contained" component="span">
                     Cancel {launchedScenario} Scenario...
                 </Button>)}
             </Box>

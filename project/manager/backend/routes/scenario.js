@@ -7,8 +7,8 @@ router.get('/', getScenarios);
 
 router.post('/:scenarioID/flag', checkFlag);
 
-router.post('/:scenarioID', runScenario);
+router.post('/', runScenario);
 
-router.delete('/:scenarioID', cancelScenario);
+router.delete('/', cancelScenario);
 
 module.exports = router;

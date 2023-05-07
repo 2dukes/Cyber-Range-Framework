@@ -102,7 +102,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     const launchChallenge = async () => {
         const data = { scenario_name: 'log4j' }; // Hard-coded 4now
 
-        const launchResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+        const launchResult = await fetch(`http://localhost:8000/scenarios`, {
             method: "POST",
             credentials: 'include',
             headers: {
@@ -120,7 +120,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     };
 
     const cancelChallenge = async () => {
-        const cancelResult = await fetch(`http://localhost:8000/scenarios/${_id}`, {
+        const cancelResult = await fetch(`http://localhost:8000/scenarios`, {
             method: "DELETE",
             credentials: 'include'
         });
