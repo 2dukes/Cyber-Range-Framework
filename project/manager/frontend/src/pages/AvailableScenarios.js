@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect, useRef } from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography, Button } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
 import PageLayout from "../components/PageLayout";
@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import ScenarioModal from '../components/ScenarioModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchScenarios, getCookie } from '../utils/fetchData';
+import { useSnackbar } from 'notistack';
 
 const SCENARIOS_PER_PAGE = 4;
 
@@ -26,6 +27,7 @@ const AvailableScenarios = () => {
     const [wsConnected, setWSConnected] = useState(false);
     const [filteredScenarios, setFilteredScenarios] = useState([]);
     const infoRef = useRef(null);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -147,13 +149,31 @@ const AvailableScenarios = () => {
         infoRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const cancelChallenge = async () => {
+        const cancelResult = await fetch(`http://localhost:8000/scenarios/123`, {
+            method: "DELETE",
+            credentials: 'include'
+        });
+
+        const cancelResultJSON = await cancelResult.json();
+
+        if (cancelResultJSON.status) {
+            setLaunchedScenario(null);
+            setLaunchData([]);
+            enqueueSnackbar('Scenario execution canceled.', { variant: "error", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+        }
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <TopBar />
             <Box sx={{ boxShadow: 5, mt: '-0.5em', mx: -1, p: '0.1em' }}>
-                <Typography variant="h3" marginTop="2em" marginBottom="0.5em" textAlign="center" gutterBottom >
+                <Typography variant="h3" marginTop="2em" textAlign="center" gutterBottom>
                     Scenarios
                 </Typography>
+                {wsConnected && launchedScenario !== null && (<Button onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%' }} variant="contained" component="span">
+                    Cancel {launchedScenario} Scenario...
+                </Button>)}
             </Box>
             {isLoading ? <LoadingSpinner /> : (
                 <PageLayout handleFilterChange={handleFilterChange} checkedCategoryBoxes={checkedCategoryBoxes} checkedDifficultyBoxes={checkedDifficultyBoxes} setCheckedCategoryBoxes={setCheckedCategoryBoxes} setCheckedDifficultyBoxes={setCheckedDifficultyBoxes}>
