@@ -26,10 +26,12 @@ const checkFlag = async (req, res, next) => {
 
         const flagCheck = scenario.flag === flag;
 
-        if (flagCheck) {
+        if (flagCheck)
             scenario.solved = true;
-            await scenario.save();
-        }
+        else
+            scenario.solved = false;
+
+        await scenario.save();
 
         return res.status(200).json({
             status: flagCheck

@@ -99,6 +99,30 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
         return false;
     };
 
+    const markAsUnsolved = async () => {
+        const data = { flag: "" };
+
+        const unsolvedResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const unsolvedResultJSON = await unsolvedResult.json();
+
+        if (!unsolvedResultJSON.status) {
+            enqueueSnackbar('Challenge marked as unsolved!', { variant: "success", style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
+            await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s
+            setModalOpen(false);
+            setSelectedScenario(null);
+            removeSolvedScenario(_id);
+        }
+
+        return unsolvedResultJSON.status;
+    };
+
     const launchChallenge = async () => {
         const data = { scenario_name: name }; // Hard-coded 4now
 
@@ -178,17 +202,18 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
                                             onChange={(event) => setFlag(event.target.value)}
                                         /></Fragment>)}
 
-
                                     <Box
                                         component="span"
                                         mt={1}
                                         display="flex"
                                         justifyContent="space-between"
                                         alignItems="center"
-                                        flexDirection={isGettingSmaller ? "column" : "row"}
+                                        flexDirection={isGettingSmaller || solved ? "column" : "row"}
                                     >
-                                        {!solved && (<Button onClick={onFlagSubmit} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
+                                        {!solved ? (<Button onClick={onFlagSubmit} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkorange', fontWeight: "bold", width: !isGettingSmaller && hasDownloadableFiles ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
                                             Submit
+                                        </Button>) : (<Button onClick={markAsUnsolved} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'darkgreen', fontWeight: "bold", width: '100%', mb: isGettingSmaller || hasDownloadableFiles ? 1 : 0 }} variant="contained" component="span">
+                                            Mark as Unsolved
                                         </Button>)}
 
                                         {hasDownloadableFiles && (<Button startIcon={<FileDownloadIcon />} onClick={onDownload} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'gray', fontWeight: "bold", width: !isGettingSmaller && !solved ? 'auto' : '100%', mb: isGettingSmaller ? 1 : 0 }} variant="contained" component="span">
@@ -196,16 +221,18 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
                                         </Button>)}
                                     </Box>
 
-                                    {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
-                                        Cancel
-                                    </Button>) : (<Button disabled={!wsConnected || (wsConnected && launchedScenario !== selectedScenario && launchedScenario !== null)} startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
-                                        {!isGettingSmaller ? "Launch Scenario" : "Launch"}
-                                    </Button>)}
+                                    {!solved && (<Fragment>
+                                        {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                            Cancel
+                                        </Button>) : (<Button disabled={!wsConnected || (wsConnected && launchedScenario !== selectedScenario && launchedScenario !== null)} startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                            {!isGettingSmaller ? "Launch Scenario" : "Launch"}
+                                        </Button>)}
+                                    </Fragment>)}
 
                                 </Box>
                             </Box>
                         </Grid>
-                        {!isSmall && launchedScenario === selectedScenario && (<Grid item xs={12} sx={{ mt: 1 }}>
+                        {!isSmall && launchedScenario === selectedScenario && launchedScenario !== undefined && (<Grid item xs={12} sx={{ mt: 1 }}>
                             <Card style={{ height: '120px', backgroundColor: 'black', overflowX: 'hidden', overflowY: 'scroll' }}>
                                 <CardContent sx={{ p: 1 }} >
                                     {launchData.map((txt, idx) => <Typography key={idx} sx={{ color: 'white' }} color="text.secondary">{txt}</Typography>)}
