@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useRef } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Box, Grid, Typography, Button } from '@mui/material';
 import TopBar from '../components/TopBar';
 import ScenarioCard from "../components/ScenarioCard";
@@ -28,18 +28,14 @@ const switchColor = keyframes`
   }
 `;
 
-const AvailableScenarios = () => {
+const AvailableScenarios = ({ infoRef, wsConnected, launchedScenario, setLaunchedScenario, launchData, setLaunchData }) => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [launchData, setLaunchData] = useState([]);
-    const [launchedScenario, setLaunchedScenario] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedScenario, setSelectedScenario] = useState(null);
     const [checkedCategoryBoxes, setCheckedCategoryBoxes] = useState([]);
     const [checkedDifficultyBoxes, setCheckedDifficultyBoxes] = useState([]);
     const [page, setPage] = useState(1);
-    const [wsConnected, setWSConnected] = useState(false);
     const [filteredScenarios, setFilteredScenarios] = useState([]);
-    const infoRef = useRef(null);
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
@@ -108,47 +104,6 @@ const AvailableScenarios = () => {
     let indexOfLastResult = page * SCENARIOS_PER_PAGE;
     const indexOfFirstResult = indexOfLastResult - SCENARIOS_PER_PAGE;
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
-
-    useEffect(() => {
-        const setupWS = () => {
-            // Create a new WebSocket instance
-            let ws = new WebSocket('ws://localhost:8080');
-
-            ws.onopen = () => {
-                setWSConnected(true);
-            };
-
-            // Handle incoming messages from the server
-            ws.onmessage = async (event) => {
-                if (event.data.length > 0) {
-                    setLaunchData((prev) => [...prev, event.data]);
-                    scrollToBottom();
-                }
-                if (/^Process Exited With Status Code: [1-9][0-9]{0,2}$/.test(event.data)) {
-                    enqueueSnackbar('An error occurred while executing scenario. Please try again.', { variant: "error", preventDuplicate: true, style: { fontFamily: "Roboto, Helvetica, Arial, sans-serif" } });
-                    setTimeout(() => window.location.reload(), 2000);
-                }
-            };
-
-            ws.onclose = () => {
-                setWSConnected(false);
-                setTimeout(() => setupWS(), 1000);
-            };
-
-            return ws;
-        };
-
-        const wsResult = setupWS();
-
-        // Clean up the WebSocket connection when the component unmounts
-        return () => {
-            wsResult.close();
-        };
-    }, [enqueueSnackbar]);
-
-    const scrollToBottom = () => {
-        infoRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
 
     const cancelChallenge = async () => {
         const cancelResult = await fetch(`http://localhost:8000/scenarios`, {
