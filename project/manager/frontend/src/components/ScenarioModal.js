@@ -198,7 +198,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
 
                                     {launchedScenario === selectedScenario ? (<Button startIcon={<RocketLaunchIcon />} onClick={cancelChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'red', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         Cancel
-                                    </Button>) : (<Button disabled={(wsConnected && launchedScenario !== selectedScenario && launchedScenario !== null)} startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
+                                    </Button>) : (<Button disabled={!wsConnected || (wsConnected && launchedScenario !== selectedScenario && launchedScenario !== null)} startIcon={<RocketLaunchIcon />} onClick={launchChallenge} sx={{ ':hover': { bgcolor: 'black' }, backgroundColor: 'green', fontWeight: "bold", width: '100%', mt: isGettingSmaller ? 0 : 1 }} variant="contained" component="span">
                                         {!isGettingSmaller ? "Launch Scenario" : "Launch"}
                                     </Button>)}
 

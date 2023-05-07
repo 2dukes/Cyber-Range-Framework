@@ -106,7 +106,21 @@ const AvailableScenarios = () => {
             // Handle incoming messages from the server
             ws.onmessage = async (event) => {
                 if (event.data === "Process Exited With Status Code: 127") {
-                    setLaunchedScenario(null);
+                    const data = { scenario_name: 'log4j' }; // Hard-coded 4now                
+
+                    const launchResult = await fetch(`http://localhost:8000/scenarios/123`, {
+                        method: "POST",
+                        credentials: 'include',
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const launchResultJSON = await launchResult.json();
+
+                    if (launchResultJSON.status)
+                        setLaunchedScenario('Apache Log4j');
                 } if (event.data.length > 0) {
                     setLaunchData((prev) => [...prev, event.data]);
                     scrollToBottom();

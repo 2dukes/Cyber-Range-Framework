@@ -192,3 +192,9 @@ V	330402165413Z		10BE	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
 V	330502163429Z		10BF	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330502180825Z		10C0	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330502180827Z		10C1	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330504083908Z		10C2	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330504083911Z		10C3	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330504084323Z		10C4	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330504084327Z		10C5	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330504102714Z		10C6	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330504102717Z		10C7	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax

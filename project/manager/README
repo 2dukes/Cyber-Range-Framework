@@ -1,0 +1,10 @@
+## Commands
+
+`mkfifo mypipe`
+`mkfifo cancel_mypipe`
+
+`sudo apt install websocketd`
+
+`./runWS.sh`
+
+Start website with `docker-compose up`
