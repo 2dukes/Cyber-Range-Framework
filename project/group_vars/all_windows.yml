@@ -5,18 +5,18 @@ general:
     - name: base_image
       path: .
   default_container_image_name: base_image
-  random_byte: "{{ 254 | random(start=30, seed=11) }}"
+  # random_byte: "{{ 254 | random(start=30, seed=11) }}"
 
 networks:
   internal_net:
-    network_addr: 172.{{ general.random_byte }}.0.0/24
-    gateway_addr: 172.{{ general.random_byte }}.0.254
-    random_byte: "{{ general.random_byte }}"
+    network_addr: 172.{{ random_byte }}.0.0/24
+    gateway_addr: 172.{{ random_byte }}.0.254
+    random_byte: "{{ random_byte }}"
 
   dmz_net:
-    network_addr: 172.{{ general.random_byte | int - 5 }}.0.0/24
-    gateway_addr: 172.{{ general.random_byte | int - 5 }}.0.254
-    random_byte: "{{ general.random_byte | int - 5 }}"
+    network_addr: 172.{{ random_byte | int - 5 }}.0.0/24
+    gateway_addr: 172.{{ random_byte | int - 5 }}.0.254
+    random_byte: "{{ random_byte | int - 5 }}"
 
 machines:
   - name: dhcp_server
