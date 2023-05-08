@@ -1,10 +1,9 @@
 ## Commands
 
-`mkfifo mypipe`
-`mkfifo cancel_mypipe`
-
-`sudo apt install websocketd`
-
-`./runWS.sh`
+- Create commands' FIFO: `mkfifo mypipe`
+- Create cancel scenario FIFO: `mkfifo cancel_mypipe`
+- Install websocketd: `sudo apt install websocketd`
+- Run infinite loop of bash script echoing output via Web Socket: `./runWS.sh`
+- Run cancel scenario bash script: `./runCancel.sh`
 
 Start website with `docker-compose up`
