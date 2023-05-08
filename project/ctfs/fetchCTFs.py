@@ -8,6 +8,7 @@ import json
 from yaml.loader import SafeLoader
 from textwrap import dedent
 from dotenv import load_dotenv
+from operator import itemgetter
 
 load_dotenv()
 
@@ -273,9 +274,20 @@ def parse_challenge(cat, path, chal, has_jail_img):
 
         last_ip_byte = 50
 
+        REVERSE_PROXY_CONTAINER_NAME, REVERSE_PROXY_IMAGE_NAME, REVERSE_PROXY_PATH, REVERSE_PROXY_PORT = itemgetter(
+            'REVERSE_PROXY_CONTAINER_NAME', 'REVERSE_PROXY_IMAGE_NAME', 'REVERSE_PROXY_PATH', 'REVERSE_PROXY_PORT')(os.environ)
+        DMZ_NET_NAME, EXTERNAL_NET_NAME = itemgetter(
+            'DMZ_NET_NAME', 'EXTERNAL_NET_NAME')(os.environ)
+        ATTACKER_MACHINE_CONTAINER_NAME, DNS_SERVER_CONTAINER_NAME, EDGE_ROUTER_CONTAINER_NAME = itemgetter(
+            'ATTACKER_MACHINE_CONTAINER_NAME', 'DNS_SERVER_CONTAINER_NAME', 'EDGE_ROUTER_CONTAINER_NAME')(os.environ)
+        REVERSE_PROXIES_GROUP, CUSTOM_MACHINES_GROUP = itemgetter(
+            'REVERSE_PROXIES_GROUP', 'CUSTOM_MACHINES_GROUP')(os.environ)
+        ADMIN_BOT_FRONTEND_PATH, ADMIN_BOT_API_PATH, ADMIN_BOT_API_IMAGE_NAME, ADMIN_BOT_FRONTEND_IMAGE_NAME, ADMIN_BOT_API_URL, ADMIN_BOT_FRONTEND_URL, ADMIN_BOT_API_CONTAINER_NAME, ADMIN_BOT_FRONTEND_CONTAINER_NAME, ADMIN_BOT_FRONTEND_PORT, ADMIN_BOT_API_PORT = itemgetter(
+            'ADMIN_BOT_FRONTEND_PATH', 'ADMIN_BOT_API_PATH', 'ADMIN_BOT_API_IMAGE_NAME', 'ADMIN_BOT_FRONTEND_IMAGE_NAME', 'ADMIN_BOT_API_URL', 'ADMIN_BOT_FRONTEND_URL', 'ADMIN_BOT_API_CONTAINER_NAME', 'ADMIN_BOT_FRONTEND_CONTAINER_NAME', 'ADMIN_BOT_FRONTEND_PORT', 'ADMIN_BOT_API_PORT')(os.environ)
+
         # Reverse Proxy Image (ALWAYS needed)
-        images.append({"name": os.getenv('REVERSE_PROXY_IMAGE_NAME'),
-                       "path": os.getenv('REVERSE_PROXY_PATH'),
+        images.append({"name": REVERSE_PROXY_IMAGE_NAME,
+                       "path": REVERSE_PROXY_PATH,
                        })
 
         # Reverse Proxy Machine (ALWAYS needed)
@@ -286,7 +298,7 @@ def parse_challenge(cat, path, chal, has_jail_img):
             "domain": f"{chal}.mc.ax",
             "targets": [{
                 "name": f"vuln_service_{chal}_{first_container_name}",
-                "network": os.getenv('DMZ_NET_NAME'),
+                "network": DMZ_NET_NAME,
                 "port": data["containers"][first_container_name]["ports"][0]
             }]
         }]
@@ -300,11 +312,11 @@ def parse_challenge(cat, path, chal, has_jail_img):
                     "domain": container_names[idx],
                     "internal": {
                         "machine": f"vuln_service_{chal}_{container_names[idx]}",
-                        "network": os.getenv('DMZ_NET_NAME')
+                        "network": DMZ_NET_NAME
                     },
                     "external": {
                         "machine": f"vuln_service_{chal}_{container_names[idx]}",
-                        "network": os.getenv('DMZ_NET_NAME')
+                        "network": DMZ_NET_NAME
                     },
                 })
 
@@ -312,106 +324,106 @@ def parse_challenge(cat, path, chal, has_jail_img):
             "domain": f"{chal}.mc.ax",
             "internal": {
                 "machine": f"vuln_service_{chal}_{first_container_name}",
-                "network": os.getenv('DMZ_NET_NAME')
+                "network": DMZ_NET_NAME
             },
             "external": {
-                "machine": os.getenv('EDGE_ROUTER_CONTAINER_NAME'),
-                "network": os.getenv('EXTERNAL_NET_NAME')
+                "machine": EDGE_ROUTER_CONTAINER_NAME,
+                "network": EXTERNAL_NET_NAME
             }
         })
 
         # Port Forwarding (ALWAYS needed)
         port_forwarding.append({
-            "destination_port": int(os.getenv('REVERSE_PROXY_PORT')),
-            "to_machine": os.getenv('REVERSE_PROXY_CONTAINER_NAME'),
-            "to_network": os.getenv('DMZ_NET_NAME'),
-            "to_port": int(os.getenv('REVERSE_PROXY_PORT'))
+            "destination_port": int(REVERSE_PROXY_PORT),
+            "to_machine": REVERSE_PROXY_CONTAINER_NAME,
+            "to_network": DMZ_NET_NAME,
+            "to_port": int(REVERSE_PROXY_PORT)
         })
 
         if admin_file_exists(path):
             # DNS
             dns.append({
-                "domain": os.getenv('ADMIN_BOT_FRONTEND_URL'),
+                "domain": ADMIN_BOT_FRONTEND_URL,
                 "internal": {
-                    "machine": os.getenv('REVERSE_PROXY_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME')
+                    "machine": REVERSE_PROXY_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME
                 },
                 "external": {
-                    "machine": os.getenv('EDGE_ROUTER_CONTAINER_NAME'),
-                    "network": os.getenv('EXTERNAL_NET_NAME')
+                    "machine": EDGE_ROUTER_CONTAINER_NAME,
+                    "network": EXTERNAL_NET_NAME
                 }
             })
 
             dns.append({
-                "domain": os.getenv('ADMIN_BOT_API_URL'),
+                "domain": ADMIN_BOT_API_URL,
                 "internal": {
-                    "machine": os.getenv('REVERSE_PROXY_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME')
+                    "machine": REVERSE_PROXY_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME
                 },
                 "external": {
-                    "machine": os.getenv('EDGE_ROUTER_CONTAINER_NAME'),
-                    "network": os.getenv('EXTERNAL_NET_NAME')
+                    "machine": EDGE_ROUTER_CONTAINER_NAME,
+                    "network": EXTERNAL_NET_NAME
                 }
             })
 
             # Reverse Proxy
             reverse_proxy_vars.append({
-                "domain": os.getenv('ADMIN_BOT_FRONTEND_URL'),
+                "domain": ADMIN_BOT_FRONTEND_URL,
                 "targets": [{
-                    "name": os.getenv('ADMIN_BOT_FRONTEND_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME'),
-                    "port": int(os.getenv('ADMIN_BOT_FRONTEND_PORT'))
+                    "name": ADMIN_BOT_FRONTEND_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME,
+                    "port": int(ADMIN_BOT_FRONTEND_PORT)
                 }]
             })
 
             reverse_proxy_vars.append({
-                "domain": os.getenv('ADMIN_BOT_API_URL'),
+                "domain": ADMIN_BOT_API_URL,
                 "targets": [{
-                    "name": os.getenv('ADMIN_BOT_API_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME'),
-                    "port": int(os.getenv('ADMIN_BOT_API_PORT'))
+                    "name": ADMIN_BOT_API_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME,
+                    "port": int(ADMIN_BOT_API_PORT)
                 }]
             })
 
             machines.append({
-                "name": os.getenv('ADMIN_BOT_FRONTEND_CONTAINER_NAME'),
-                "image": os.getenv('ADMIN_BOT_FRONTEND_IMAGE_NAME'),
-                "group": [os.getenv('CUSTOM_MACHINES_GROUP')],
+                "name": ADMIN_BOT_FRONTEND_CONTAINER_NAME,
+                "image": ADMIN_BOT_FRONTEND_IMAGE_NAME,
+                "group": [CUSTOM_MACHINES_GROUP],
                 "dns": {
-                    "name": os.getenv('DNS_SERVER_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME')
+                    "name": DNS_SERVER_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME
                 },
                 "networks": [{
-                    "name": os.getenv('DMZ_NET_NAME'),
-                    "ipv4_address": f"172.{{{{ networks.{os.getenv('DMZ_NET_NAME')}.random_byte }}}}.0.42"
+                    "name": DMZ_NET_NAME,
+                    "ipv4_address": f"172.{{{{ networks.{DMZ_NET_NAME}.random_byte }}}}.0.42"
                 }],
             })
 
             machines.append({
-                "name": os.getenv('ADMIN_BOT_API_CONTAINER_NAME'),
-                "image": os.getenv('ADMIN_BOT_API_IMAGE_NAME'),
-                "group": [os.getenv('CUSTOM_MACHINES_GROUP')],
+                "name": ADMIN_BOT_API_CONTAINER_NAME,
+                "image": ADMIN_BOT_API_IMAGE_NAME,
+                "group": [CUSTOM_MACHINES_GROUP],
                 "dns": {
-                    "name": os.getenv('DNS_SERVER_CONTAINER_NAME'),
-                    "network": os.getenv('DMZ_NET_NAME')
+                    "name": DNS_SERVER_CONTAINER_NAME,
+                    "network": DMZ_NET_NAME
                 },
                 "networks": [{
-                    "name": os.getenv('DMZ_NET_NAME'),
-                    "ipv4_address": f"172.{{{{ networks.{os.getenv('DMZ_NET_NAME')}.random_byte }}}}.0.43"
+                    "name": DMZ_NET_NAME,
+                    "ipv4_address": f"172.{{{{ networks.{DMZ_NET_NAME}.random_byte }}}}.0.43"
                 }],
             })
 
             # Images
             images.append({
-                "name": os.getenv('ADMIN_BOT_API_IMAGE_NAME'),
-                "path": os.getenv('ADMIN_BOT_API_PATH'),
+                "name": ADMIN_BOT_API_IMAGE_NAME,
+                "path": ADMIN_BOT_API_PATH,
             })
 
             images.append({
-                "name": os.getenv('ADMIN_BOT_FRONTEND_IMAGE_NAME'),
-                "path": os.getenv('ADMIN_BOT_FRONTEND_PATH'),
+                "name": ADMIN_BOT_FRONTEND_IMAGE_NAME,
+                "path": ADMIN_BOT_FRONTEND_PATH,
                 "args": {
-                    "api": os.getenv('ADMIN_BOT_API_URL')
+                    "api": ADMIN_BOT_API_URL
                 }
             })
 
@@ -423,7 +435,7 @@ def parse_challenge(cat, path, chal, has_jail_img):
 
         # Import CA
         setup.append({
-            "name": os.getenv('ATTACKER_MACHINE_CONTAINER_NAME'),
+            "name": ATTACKER_MACHINE_CONTAINER_NAME,
             "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/attacker_machine_setup/*.j2"
         })
 
@@ -432,16 +444,16 @@ def parse_challenge(cat, path, chal, has_jail_img):
 
         # Machines
         machines.append({
-            "name": os.getenv('REVERSE_PROXY_CONTAINER_NAME'),
-            "image": os.getenv('REVERSE_PROXY_IMAGE_NAME'),
-            "group": [os.getenv('REVERSE_PROXIES_GROUP')],
+            "name": REVERSE_PROXY_CONTAINER_NAME,
+            "image": REVERSE_PROXY_IMAGE_NAME,
+            "group": [REVERSE_PROXIES_GROUP],
             "dns": {
-                "name": os.getenv('DNS_SERVER_CONTAINER_NAME'),
-                "network": os.getenv('DMZ_NET_NAME')
+                "name": DNS_SERVER_CONTAINER_NAME,
+                "network": DMZ_NET_NAME
             },
             "networks": [{
-                "name": os.getenv('DMZ_NET_NAME'),
-                "ipv4_address": f"172.{{{{ networks.{os.getenv('DMZ_NET_NAME')}.random_byte }}}}.0.40"
+                "name": DMZ_NET_NAME,
+                "ipv4_address": f"172.{{{{ networks.{DMZ_NET_NAME}.random_byte }}}}.0.40"
             }],
             "vars": reverse_proxy_vars
         })
@@ -472,13 +484,13 @@ def parse_challenge(cat, path, chal, has_jail_img):
             # Machines
             machines.append({"name": f"vuln_service_{chal}_{container_name}",
                              "image": images[-1]["name"],
-                             "group": [os.getenv('CUSTOM_MACHINES_GROUP')],
-                             "dns": {"name": os.getenv('DNS_SERVER_CONTAINER_NAME'), "network": os.getenv('DMZ_NET_NAME')},
+                             "group": [CUSTOM_MACHINES_GROUP],
+                             "dns": {"name": DNS_SERVER_CONTAINER_NAME, "network": DMZ_NET_NAME},
                              "exposed_ports": container_info["ports"] if "ports" in container_info else [],
                              "env": container_info["environment"] if "environment" in container_info else {},
                              "networks": [{
-                                 "name": os.getenv('DMZ_NET_NAME'),
-                                 "ipv4_address": f"172.{{{{ networks.{os.getenv('DMZ_NET_NAME')}.random_byte }}}}.0." + f"{last_ip_byte}"
+                                 "name": DMZ_NET_NAME,
+                                 "ipv4_address": f"172.{{{{ networks.{DMZ_NET_NAME}.random_byte }}}}.0." + f"{last_ip_byte}"
                              }],
                              "privileged": has_jail_img
                              })

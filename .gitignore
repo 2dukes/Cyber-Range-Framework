@@ -13,12 +13,7 @@ unifi/geckodriver.log
 
 # CTFs folder
 
-ctfs/
-!ctfs/*.py
-!ctfs/.env
-!ctfs/scenarios.json
-!ctfs/requirements.txt
-!ctfs/attacker_machine_setup/
+ctfs/dicectf-2023-challenges
 
 # CA 
 
