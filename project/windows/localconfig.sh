@@ -7,8 +7,10 @@ docker cp kvmcontainer:/root/.ssh/id_rsa ~/.ssh/privKVM.rsa
 # Optional
 docker cp kvmcontainer:/root/.vagrant.d/insecure_private_key ~/.ssh/privWindows.rsa
 
+kvmcontainer_ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kvmcontainer)
+
 ssh_config1="Host kvm
-  HostName 172.140.0.40
+  HostName ${kvmcontainer_ip}
   StrictHostKeyChecking no
   IdentityFile ~/.ssh/privKVM.rsa
   IdentitiesOnly yes
