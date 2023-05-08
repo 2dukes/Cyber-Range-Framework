@@ -56,11 +56,16 @@ def add_pack_dockerfile(path):
         data = f.read()
 
         # Pwn Jail Docker image
-        if re.search("pwn.red/jail:0.3.1", data):
-            is_jail = True
-            new_data = re.sub("pwn.red/jail:0.3.1", "2dukes/pwnred_jail", data)
-            f.seek(0)
-            f.write(new_data)
+        match_pwn_expressions = [
+            "pwn.red/jail:0.3.1", "redpwn/jail:0.1.3", "redpwn/jail@.*", "redpwn/jail"]
+        for pwn_exp in match_pwn_expressions:
+            if re.search(pwn_exp, data):
+                is_jail = True
+                new_data = re.sub(pwn_exp,
+                                  "2dukes/pwnred_jail", data)
+                f.seek(0)
+                f.write(new_data)
+                break
 
         # Install python3 and iproute2 packages
         match_pos = [i for i in findall('FROM', new_data if is_jail else data)]
@@ -138,21 +143,6 @@ def parse_admin_file(path):
         with open(admin_file_path) as f:
             contents = f.read()
 
-            var = "flag"
-            if not re.search("import flag from '(.*flag.txt)'", contents):
-                var = "token"
-
-            match = re.search("import .* '(.*.txt)'", contents)
-            flag_path = match.group(1)
-            sub_flag_string = "const fs = require('fs');\n" \
-                "const path = require('path');\n" \
-                "const {var} = fs.readFileSync(path.resolve(__dirname, '{flag_path}'), 'utf8');".format(
-                    var=var, flag_path=flag_path)
-
-            # Import flag
-            contents = re.sub("import .* from '.*.txt'",
-                              sub_flag_string, contents)
-
             # Module export
             contents = re.sub("export default", "module.exports =", contents)
 
@@ -160,7 +150,22 @@ def parse_admin_file(path):
             setup_path = f"{path}/setup"
             os.mkdir(setup_path)
 
-            with open(f"{setup_path}/entrypoint.sh", 'w') as f:
+            if re.search("import .* from", contents):
+                var = "flag"
+                if not re.search("import flag from '(.*flag.txt)'", contents):
+                    var = "token"
+
+                match = re.search("import .* '(.*.txt)'", contents)
+                flag_path = match.group(1)
+                sub_flag_string = "const fs = require('fs');\n" \
+                    "const path = require('path');\n" \
+                    "const {var} = fs.readFileSync(path.resolve(__dirname, '{flag_path}'), 'utf8');".format(
+                        var=var, flag_path=flag_path)
+
+                # Import flag
+                contents = re.sub("import .* from '.*.txt'",
+                                  sub_flag_string, contents)
+
                 code = dedent("""\
                 #!/bin/bash
                 
@@ -173,6 +178,20 @@ def parse_admin_file(path):
                 # Reload Docker container
                 docker restart {admin_bot_api_container_name}
                 """.format(flag_path=flag_path, admin_bot_filename=admin_bot_filename, admin_bot_api_container_name=os.getenv('ADMIN_BOT_API_CONTAINER_NAME')))
+            else:
+                code = dedent("""\
+                    #!/bin/bash
+                    
+                    cd "$( dirname "$0" )"
+                    
+                    # Copy adminbot.js and flag file to Admin Bot API
+                    docker cp ../{admin_bot_filename} {admin_bot_api_container_name}:/backend/controllers
+
+                    # Reload Docker container
+                    docker restart {admin_bot_api_container_name}
+                    """.format(admin_bot_filename=admin_bot_filename, admin_bot_api_container_name=os.getenv('ADMIN_BOT_API_CONTAINER_NAME')))
+
+            with open(f"{setup_path}/entrypoint.sh", 'w') as f:
                 f.write(code)
 
         with open(admin_file_path, 'w') as f:
@@ -294,6 +313,11 @@ def parse_challenge(cat, path, chal, has_jail_img):
         # Optimistic approach because we only consider the first container as the one exposed by a domain.
         container_names = list(data["containers"].keys())
         first_container_name = container_names[0]
+
+        if "ports" not in data["containers"][first_container_name]:
+            remove_dir(path)
+            return
+
         reverse_proxy_vars = [{
             "domain": f"{chal}.mc.ax",
             "targets": [{
@@ -533,7 +557,14 @@ github_repositories = [
     {
         "url": "https://github.com/dicegang/dicectf-2023-challenges.git",
         "name": "dicectf-2023-challenges"
-    }
+    },
+    # {
+    #     "url": "https://github.com/dicegang/dicectf-2022-challenges.git",
+    #     "name": "dicectf-2022-challenges",
+    #     "vars": {
+    #         "DEFAULT_ADMINBOT_FILENAME": "admin-bot.js"
+    #     }
+    # }
 ]
 
 parent_dir = os.getcwd()
@@ -563,5 +594,10 @@ for repo in github_repositories:
 
     git.Git(".").clone(repo["url"])
     remove_dir(f"{repo_path}/.git")
+
+    if "vars" in repo:
+        for key in repo["vars"]:
+            os.environ[key] = repo["vars"][key]
+
     lookup_challenges(repo_path)
     remove_dir(f"{repo_path}")
