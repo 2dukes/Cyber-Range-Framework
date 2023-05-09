@@ -96,6 +96,8 @@ machines:
 
   - name: attacker_machine
     image: kali_test_img
+    volumes:
+      - "/dev/net/tun:/dev/net/tun"
     published_ports:
       - 5900:5900
       - 6080:6080
