@@ -86,3 +86,10 @@
   hosts: localhost
   roles:
     - entrypoint
+
+# ------------------ Mesh ------------------ #
+
+- name: Mesh Network Tasks
+  hosts: mesh
+  roles:
+    - mesh

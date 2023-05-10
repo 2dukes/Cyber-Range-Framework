@@ -73,6 +73,11 @@ machines:
     privileged: true
     group:
       - custom_machines
+      - mesh
+    exposed_ports:
+      - 3389
+      - 5985
+      - 5986
     dns: 
       name: dns_server
       network: dmz_net

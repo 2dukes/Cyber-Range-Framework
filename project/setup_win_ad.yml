@@ -62,6 +62,13 @@
     - dmz
 
 - name: Entrypoint Tasks
-  hosts: attacker_machine
+  hosts: attackermachine
   roles:
     - entrypoint
+
+# ------------------ Mesh ------------------ #
+
+- name: Mesh Network Tasks
+  hosts: mesh
+  roles:
+    - mesh

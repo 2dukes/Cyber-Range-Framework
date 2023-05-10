@@ -60,3 +60,10 @@
   hosts: dmz
   roles:
     - dmz
+
+# ------------------ Mesh ------------------ #
+
+- name: Mesh Network Tasks
+  hosts: mesh
+  roles:
+    - mesh

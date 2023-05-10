@@ -4,6 +4,7 @@ import argparse
 import random
 import json
 
+
 class ExampleInventory(object):
 
     def __init__(self):
@@ -35,10 +36,7 @@ class ExampleInventory(object):
 
             },
             "pcs": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
+                "hosts": []
             },
             "routers": {
                 "hosts": [],
@@ -47,16 +45,10 @@ class ExampleInventory(object):
                 }
             },
             "dhcp_servers": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
+                "hosts": []
             },
             "dns_servers": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
+                "hosts": []
             },
             "custom_machines": {
                 "hosts": [],
@@ -64,23 +56,8 @@ class ExampleInventory(object):
                     "random_byte": self.random_value
                 }
             },
-            "internal": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
-            },
-            "dmz": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
-            },
             "firewalls": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
+                "hosts": []
             },
             "external": {
                 "hosts": [],
@@ -89,10 +66,7 @@ class ExampleInventory(object):
                 }
             },
             "reverse_proxies": {
-                "hosts": [],
-                "vars": {
-                    "random_byte": self.random_value
-                }
+                "hosts": []
             },
             "internal": {
                 "children": ["pcs", "dhcp_servers"],
@@ -104,6 +78,12 @@ class ExampleInventory(object):
                 "children": ["dns_servers", "custom_machines", "reverse_proxies"],
                 "vars": {
                     "random_byte": self.random_value
+                }
+            },
+            "mesh": {
+                "hosts": [],
+                "vars": {
+                    "tailscale_auth_key": "tskey-auth-kTSJzw2CNTRL-KJ6cnQoUQWdurbahKkpHXdqZ25nFMeRb"
                 }
             },
             "scenario": {
@@ -119,8 +99,7 @@ class ExampleInventory(object):
                     "ansible_password": "vagrant",
                     "ansible_connection": "psrp",
                     "ansible_psrp_protocol": "http",
-                    "ansible_psrp_proxy": "socks5h://localhost:1234",
-                    "random_byte": self.random_value
+                    "ansible_psrp_proxy": "socks5h://localhost:1234"
                 }
             }
         }
@@ -135,5 +114,6 @@ class ExampleInventory(object):
         parser.add_argument('--list', action='store_true')
         parser.add_argument('--host', action='store')
         self.args = parser.parse_args()
+
 
 ExampleInventory()

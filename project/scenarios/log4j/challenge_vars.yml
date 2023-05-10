@@ -113,5 +113,5 @@ port_forwarding:
 
 setup:
   machines:
-    - name: attacker_machine
+    - name: attackermachine
       setup: "{{ playbook_dir }}/scenarios/log4j/setup/*.j2"
