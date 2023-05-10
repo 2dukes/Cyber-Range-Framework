@@ -13,7 +13,7 @@ port_forwarding:
     to_port: 443
 setup:
     machines:
-    -   name: attacker_machine
+    -   name: attackermachine
         setup: '{{ playbook_dir }}/scenarios/mlog/attacker_machine_setup/*.j2'
 vulnerables:
     images:

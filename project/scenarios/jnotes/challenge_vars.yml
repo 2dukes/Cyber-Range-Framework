@@ -29,7 +29,7 @@ setup:
     machines:
     -   name: localhost
         setup: '{{ playbook_dir }}/scenarios/jnotes/setup/'
-    -   name: attacker_machine
+    -   name: attackermachine
         setup: '{{ playbook_dir }}/scenarios/jnotes/attacker_machine_setup/*.j2'
 vulnerables:
     images:
