@@ -106,7 +106,7 @@ const AvailableScenarios = ({ infoRef, wsConnected, launchedScenario, setLaunche
     indexOfLastResult = (indexOfLastResult + 1 > filteredScenarios.length) ? filteredScenarios.length : indexOfLastResult;
 
     const cancelChallenge = async () => {
-        const cancelResult = await fetch(`http://localhost:8000/scenarios`, {
+        const cancelResult = await fetch(`http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/scenarios`, {
             method: "DELETE",
             credentials: 'include'
         });

@@ -66,7 +66,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
 
     const onDownload = () => {
         const link = document.createElement("a");
-        link.href = `http://localhost:8000/download/${name}_download.zip`;
+        link.href = `http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/download/${name}_download.zip`;
         link.click();
     };
 
@@ -74,7 +74,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
         const data = { flag };
 
         if (wsConnected) {
-            const flagResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
+            const flagResult = await fetch(`http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/scenarios/${_id}/flag`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -102,7 +102,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     const markAsUnsolved = async () => {
         const data = { flag: "" };
 
-        const unsolvedResult = await fetch(`http://localhost:8000/scenarios/${_id}/flag`, {
+        const unsolvedResult = await fetch(`http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/scenarios/${_id}/flag`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -126,7 +126,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     const launchChallenge = async () => {
         const data = { scenario_name: name }; // Hard-coded 4now
 
-        const launchResult = await fetch(`http://localhost:8000/scenarios`, {
+        const launchResult = await fetch(`http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/scenarios`, {
             method: "POST",
             credentials: 'include',
             headers: {
@@ -144,7 +144,7 @@ const ScenarioModal = ({ wsConnected, setLaunchData, selectedScenario, launchedS
     };
 
     const cancelChallenge = async () => {
-        const cancelResult = await fetch(`http://localhost:8000/scenarios`, {
+        const cancelResult = await fetch(`http://${process.env.REACT_APP_MACHINE_HOSTNAME}:8000/scenarios`, {
             method: "DELETE",
             credentials: 'include'
         });
