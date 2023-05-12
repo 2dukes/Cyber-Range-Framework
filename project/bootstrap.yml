@@ -48,10 +48,23 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
+          - docker-compose
         update_cache: true
 
+    # - name: Add user to docker group
+    #   ansible.builtin.shell: sudo usermod -aG docker ${USER}
+
     - name: Add user to docker group
-      ansible.builtin.shell: sudo usermod -aG docker ${USER}
+      user:
+        name: "{{ lookup('env', 'USER') }}"
+        groups: docker
+        append: yes
+
+    - name: Install docker-compose v1.29.2
+      ansible.builtin.get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: "0744"
 
     - name: Install pypsrp python package
       ansible.builtin.pip:

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="20.13.19.69"
+remote_ip="20.199.42.253"
 remote_user="admin_user"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
@@ -19,9 +19,9 @@ ssh_config1="Host ${remote_ssh}
   Port 22
 "
 
-ssh_config_res=$(cat ~/.ssh/config | grep "${remote_ip}")
+ssh_config_res1=$(cat ~/.ssh/config | grep "${remote_ip}")
 
-if [ -z "$ssh_config_res" ]
+if [ -z "$ssh_config_res1" ]
 then
     echo "$ssh_config1" >> ~/.ssh/config
 fi
@@ -41,8 +41,22 @@ rsync "$local_github_key" "$remote_ssh":~/.ssh/id_rsa
 # Remove Already Existing Github Repository
 ssh "$remote_ssh" 'rm -rf PROJ_Thesis_2223'
 
+ssh_config2="Host github.com
+  StrictHostKeyChecking no
+  IdentityFile ~/.ssh/id_rsa
+"
+
+ssh_config_res2=$(ssh "$remote_ssh" 'cat ~/.ssh/config | grep "${remote_ip}"')
+
+if [ -z "$ssh_config_res2" ]
+then
+    ssh "$remote_ssh" "echo '${ssh_config2}' >> ~/.ssh/config"
+fi
+
 # Pull Github Repository
 ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
 
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
 ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml"
+
+# ssh "$remote_ssh" "sudo usermod -aG docker \${USER}"
