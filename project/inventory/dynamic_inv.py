@@ -31,7 +31,8 @@ class ExampleInventory(object):
             "all": {
                 "vars": {
                     "ansible_python_interpreter": "/usr/bin/python3",
-                    "random_byte": self.random_value
+                    "random_byte": self.random_value,
+                    "tailscale_auth_key": "tskey-auth-kTSJzw2CNTRL-KJ6cnQoUQWdurbahKkpHXdqZ25nFMeRb"
                 },
 
             },

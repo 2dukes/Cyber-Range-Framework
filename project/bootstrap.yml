@@ -50,6 +50,9 @@
           - docker-compose-plugin
         update_cache: true
 
+    - name: Add user to docker group
+      ansible.builtin.shell: sudo usermod -aG docker ${USER}
+
     - name: Install pypsrp python package
       ansible.builtin.pip:
         name: pypsrp
@@ -58,10 +61,12 @@
       ansible.builtin.pip:
         name: requests[socks]
 
-    - name: Mesh Tasks
-      hosts: localhost
-      roles:
-        - mesh
+# ------------------ Mesh ------------------ #
+
+- name: Mesh Network Tasks
+  hosts: localhost
+  roles:
+    - mesh
 
     # - name: Create keys/ directory
     #   ansible.builtin.file:

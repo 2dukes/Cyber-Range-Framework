@@ -9,3 +9,8 @@
 
 - name: Join Tailscale Network
   ansible.builtin.shell: "tailscale up --auth-key={{ tailscale_auth_key }} --hostname={{ inventory_hostname }}"
+  when: inventory_hostname != "localhost"
+
+- name: Join Tailscale Network (localhost)
+  ansible.builtin.shell: "sudo tailscale up --auth-key={{ tailscale_auth_key }} --hostname=local"
+  when: inventory_hostname == "localhost"
