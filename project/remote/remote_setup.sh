@@ -57,6 +57,6 @@ fi
 ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
 
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml"
+ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
 
 # ssh "$remote_ssh" "sudo usermod -aG docker \${USER}"

@@ -48,7 +48,7 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
-          - docker-compose
+          - websocketd
         update_cache: true
 
     # - name: Add user to docker group
@@ -63,8 +63,8 @@
     - name: Install docker-compose v1.29.2
       ansible.builtin.get_url:
         url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
-        dest: /usr/local/bin/docker-compose
-        mode: "0744"
+        dest: /usr/bin/docker-compose
+        mode: "0755"
 
     - name: Install pypsrp python package
       ansible.builtin.pip:
@@ -73,6 +73,16 @@
     - name: Install requests[socks] python package
       ansible.builtin.pip:
         name: requests[socks]
+
+    - name: Create Named Pipes
+      block:
+        - name: cancel_mypipe
+          ansible.builtin.command:
+            cmd: mkfifo manager/cancel_mypipe
+
+        - name: mypipe
+          ansible.builtin.command:
+            cmd: mkfifo manager/mypipe
 
 # ------------------ Mesh ------------------ #
 
