@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require("path");
 const mongoose = require("mongoose");
 const express = require('express');
@@ -11,10 +12,12 @@ const scenarioRoutes = require("./routes/scenario");
 
 const errorMiddleware = require("./middleware/error");
 
+const allowOriginDomain = process.env.ENVIRONMENT === "development" ? "localhost" : "http://local.rhino-duck.ts.net:3000" 
+
 app.use((req, res, next) => {
     res.setHeader(
         "Access-Control-Allow-Origin",
-        "http://local.rhino-duck.ts.net:3000"
+        allowOriginDomain
     ); // * could be replaced by a domain. Allow different origins to access our data.
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE"); // Allow origins to use specific HTTP methods.
     res.setHeader("Access-Control-Allow-Credentials", true);

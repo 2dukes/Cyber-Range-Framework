@@ -9,7 +9,7 @@ id_key.pub
 # Unifi Logs & Private Key
 
 unifi/geckodriver.log
-**/privkey.pem
+# **/privkey.pem
 
 # CTFs folder
 
@@ -22,3 +22,4 @@ ctfs/dicectf-2023-challenges
 **/index.txt.attr
 **/index.txt.attr.old
 **/serial.old
+!**/privkey.pem

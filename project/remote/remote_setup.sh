@@ -1,7 +1,7 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="20.199.9.184"
+remote_ip="20.199.9.175"
 remote_user="admin_user"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 

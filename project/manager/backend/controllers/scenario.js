@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Scenario } = require("../models/Scenario");
 const { exec } = require("node:child_process");
 const fs = require('fs');
@@ -79,7 +80,8 @@ const runScenario = async (req, res, next) => {
         else
             playbook_name = "setup_containers.yml";
 
-        exec(`echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe`, (err, output) => {
+        const cmd = process.env.ENVIRONMENT === "development" ? `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe` : `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && $PWD/../../.local/bin/ansible-playbook ${playbook_name} && cd manager' > mypipe`
+        exec(cmd, (err, output) => {
             // once the command has completed, the callback function is called
             if (err) {
                 // log and return if we encounter an error
