@@ -1,7 +1,7 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="20.199.42.253"
+remote_ip="20.199.9.184"
 remote_user="admin_user"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
@@ -29,11 +29,11 @@ fi
 # Update Indexes
 ssh "$remote_ssh" 'sudo apt-get update'
 
-# Install Python 3
+# Install Python 3 & rsync
 ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip rsync'
 
 # Install Ansible
-ssh "$remote_ssh" 'python3 -m pip install --user ansible'
+ssh "$remote_ssh" 'pip install --user ansible'
 
 # Copy SSH Repository Key (Deploy Key added specifically to this repository)
 rsync "$local_github_key" "$remote_ssh":~/.ssh/id_rsa
@@ -58,5 +58,3 @@ ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
 
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
 ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
-
-# ssh "$remote_ssh" "sudo usermod -aG docker \${USER}"

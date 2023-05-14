@@ -74,6 +74,10 @@
       ansible.builtin.pip:
         name: requests[socks]
 
+    - name: Install dotenv python package
+      ansible.builtin.pip:
+        name: python-dotenv
+
     - name: Create Named Pipes
       block:
         - name: cancel_mypipe

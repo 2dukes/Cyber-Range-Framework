@@ -14,7 +14,7 @@ const errorMiddleware = require("./middleware/error");
 app.use((req, res, next) => {
     res.setHeader(
         "Access-Control-Allow-Origin",
-        "*"
+        "http://local.rhino-duck.ts.net:3000"
     ); // * could be replaced by a domain. Allow different origins to access our data.
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE"); // Allow origins to use specific HTTP methods.
     res.setHeader("Access-Control-Allow-Credentials", true);
