@@ -1,7 +1,7 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="20.199.9.125"
+remote_ip="40.66.41.145"
 remote_user="admin_user"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
@@ -27,7 +27,7 @@ then
 fi
 
 # Update Indexes
-ssh "$remote_ssh" 'sudo apt-get update'
+ssh "$remote_ssh" 'sudo apt-get update && sudo apt-get -y upgrade'
 
 # Install Python 3 & rsync
 ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip rsync git openssh-client'

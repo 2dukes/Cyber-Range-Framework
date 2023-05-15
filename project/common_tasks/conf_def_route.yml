@@ -1,6 +1,5 @@
 - name: Remove Default Route
   ansible.builtin.command: ip r del default
-  ignore_errors: true
 
 - name: Add New Default Route
   ansible.builtin.command: "ip r add default via
