@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 720
+sleep 900
 
 docker cp kvmcontainer:/root/.ssh/id_rsa ~/.ssh/privKVM.rsa
 

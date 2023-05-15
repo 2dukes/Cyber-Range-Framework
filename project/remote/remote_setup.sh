@@ -1,7 +1,7 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="20.199.9.175"
+remote_ip="20.199.9.125"
 remote_user="admin_user"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
@@ -30,7 +30,7 @@ fi
 ssh "$remote_ssh" 'sudo apt-get update'
 
 # Install Python 3 & rsync
-ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip rsync'
+ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip rsync git openssh-client'
 
 # Install Ansible
 ssh "$remote_ssh" 'pip install --user ansible'
@@ -46,7 +46,7 @@ ssh_config2="Host github.com
   IdentityFile ~/.ssh/id_rsa
 "
 
-ssh_config_res2=$(ssh "$remote_ssh" 'cat ~/.ssh/config | grep "${remote_ip}"')
+ssh_config_res2=$(ssh "$remote_ssh" "cat ~/.ssh/config | grep 'github.com'")
 
 if [ -z "$ssh_config_res2" ]
 then
@@ -58,3 +58,7 @@ ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
 
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
 ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
+
+# Enable ip_tables & ip6_tables kernel module (Cloud Machine)
+ssh "$remote_ssh" "sudo insmod /lib/modules/\$(uname -r)/kernel/net/ipv4/netfilter/ip_tables.ko"
+ssh "$remote_ssh" "sudo insmod /lib/modules/\$(uname -r)/kernel/net/ipv6/netfilter/ip6_tables.ko"
