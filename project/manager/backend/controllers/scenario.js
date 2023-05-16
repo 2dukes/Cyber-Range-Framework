@@ -80,7 +80,7 @@ const runScenario = async (req, res, next) => {
         else
             playbook_name = "setup_containers.yml";
 
-        const cmd = process.env.ENVIRONMENT === "development" ? `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe` : `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && $PWD/../../.local/bin/ansible-playbook ${playbook_name} && cd manager' > mypipe`
+        const cmd = process.env.ENVIRONMENT === "development" ? `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe` : `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ~/.local/bin/ansible-playbook ${playbook_name} && cd manager' > mypipe`
         exec(cmd, (err, output) => {
             // once the command has completed, the callback function is called
             if (err) {

@@ -83,18 +83,6 @@
         path: "manager/mypipe"
       register: result
 
-    - name: Create Named Pipes
-      block:
-        - name: FIFO cancel_mypipe
-          ansible.builtin.command:
-            cmd: mkfifo manager/cancel_mypipe
-          when: not result.stat.exists
-
-        - name: FIFO mypipe
-          ansible.builtin.command:
-            cmd: mkfifo manager/mypipe
-          when: not result.stat.exists
-
     - name: Install Fetch CTFs dependencies
       ansible.builtin.pip:
         requirements: "$PWD/ctfs/requirements.txt"

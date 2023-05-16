@@ -56,6 +56,10 @@ fi
 # Pull Github Repository
 ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
 
+# Create named FIFOs
+ssh "$remote_ssh" "mkfifo PROJ_Thesis_2223/project/manager/mypipe"
+ssh "$remote_ssh" "mkfifo PROJ_Thesis_2223/project/manager/cancel_mypipe"
+
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
 ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
 
