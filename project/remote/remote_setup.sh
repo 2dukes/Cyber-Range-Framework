@@ -1,8 +1,8 @@
 #!/bin/sh
 
 remote_ssh="remote_machine"
-remote_ip="40.66.41.145"
-remote_user="admin_user"
+remote_ip="20.199.9.125"
+remote_user="azureuser"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
 # chmod 400 <private_key_path> | Private Key from Azure

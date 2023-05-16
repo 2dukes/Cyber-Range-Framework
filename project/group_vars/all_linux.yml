@@ -2,7 +2,6 @@ general:
   images:
     - name: kali_test_img
       path: ./attacker
-      dockerfile: KaliDockerfile
     - name: base_image
       path: .
   default_container_image_name: base_image
