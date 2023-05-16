@@ -1,16 +1,22 @@
+- name: Check Tailscale Installed
+  ansible.builtin.shell: tailscale
+  register: tailres
+
 - name: Install Tailscale
   ansible.builtin.shell: curl -fsSL https://tailscale.com/install.sh | sh 2>/dev/null 1>&2
   ignore_errors: true
   register: cmdln
   failed_when: "cmdln.rc == 2"
+  when: tailres.rc > 0
 
 - name: Start Tailscale
   ansible.builtin.shell: tailscaled --state=tailscaled.state &
+  when: tailres.rc > 0
 
 - name: Join Tailscale Network
   ansible.builtin.shell: "tailscale up --auth-key={{ tailscale_auth_key }} --hostname={{ inventory_hostname }}"
-  when: inventory_hostname != "localhost"
+  when: inventory_hostname != "localhost" and tailres.rc > 0
 
 - name: Join Tailscale Network (localhost)
   ansible.builtin.shell: "sudo tailscale up --auth-key={{ tailscale_auth_key }} --hostname=local"
-  when: inventory_hostname == "localhost"
+  when: inventory_hostname == "localhost" and tailres.rc > 0
