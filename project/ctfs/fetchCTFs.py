@@ -32,9 +32,13 @@ def findall(p, s):
 
 def add_pack_dockerfile(path):
     is_jail = False
-
+    data = ""
     with open(path, 'r+') as f:
         data = f.read()
+
+        uses_apt = True
+        if re.search("alpine", data):
+            uses_apt = False
 
         # Dockerfile with "COPY --chmod=755 <path1> <path2>" restriction
         if re.search("COPY --chmod=\d{3} .*\s.*", data):
@@ -74,9 +78,21 @@ def add_pack_dockerfile(path):
             write_pos = data.find("\n", match_pos[-1]) + 1
             f.seek(write_pos)
             after_write_data = f.read()
-            to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
+            if uses_apt:
+                to_write_data = "\nRUN apt-get update && apt-get install -y iproute2 python3\n" + after_write_data
+            else:
+                to_write_data = "\nRUN apk update && apk add iproute2 python3\n" + after_write_data
             f.seek(write_pos)
             f.write(to_write_data)
+        
+        f.seek(0)
+        data = f.read()
+        
+    if re.search("buildpack-deps:stretch-scm", data):
+        with open(path, 'w') as f:
+            new_data = re.sub("buildpack-deps:stretch-scm", r"node", data)
+            f.write(new_data)
+
 
     return is_jail
 

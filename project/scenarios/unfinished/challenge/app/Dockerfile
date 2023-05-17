@@ -1,4 +1,4 @@
-FROM buildpack-deps:stretch-scm AS builder
+FROM node AS builder
 
 WORKDIR /tmp
 

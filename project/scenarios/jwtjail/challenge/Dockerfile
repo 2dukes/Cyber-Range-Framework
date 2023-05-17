@@ -1,6 +1,6 @@
 FROM node:19-alpine3.16
 
-RUN apt-get update && apt-get install -y iproute2 python3
+RUN apk update && apk add iproute2 python3
 
 WORKDIR /app
 COPY package.json ./
