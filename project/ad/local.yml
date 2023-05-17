@@ -1,5 +1,5 @@
 - name: Setup SSH and SOCKS server for WinRM Connection
-  ansible.builtin.shell: sh ad/localconfig.sh
+  ansible.builtin.shell: sh ad/localconfig.sh {{ ansible_user_id }}
 
 - name: Fetch Windows Vagrant Box IP
   ansible.builtin.shell: cat tmp_file
