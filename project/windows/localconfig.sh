@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 660
+sleep 900
 
 user=$1
 
