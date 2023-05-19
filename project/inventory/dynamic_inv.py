@@ -11,6 +11,7 @@ class ExampleInventory(object):
         self.inventory = {}
         self.read_cli_args()
         self.random_value = random.randint(30, 254)
+        self.tailscale_auth_key = "tskey-auth-kTSJzw2CNTRL-KJ6cnQoUQWdurbahKkpHXdqZ25nFMeRb"
 
         # Called with `--list`.
         if self.args.list:
@@ -32,7 +33,7 @@ class ExampleInventory(object):
                 "vars": {
                     "ansible_python_interpreter": "/usr/bin/python3",
                     "random_byte": self.random_value,
-                    "tailscale_auth_key": "tskey-auth-kTSJzw2CNTRL-KJ6cnQoUQWdurbahKkpHXdqZ25nFMeRb"
+                    "tailscale_auth_key": self.tailscale_auth_key
                 },
 
             },
@@ -84,7 +85,7 @@ class ExampleInventory(object):
             "mesh": {
                 "hosts": [],
                 "vars": {
-                    "tailscale_auth_key": "tskey-auth-kTSJzw2CNTRL-KJ6cnQoUQWdurbahKkpHXdqZ25nFMeRb"
+                    "tailscale_auth_key": self.tailscale_auth_key
                 }
             },
             "scenario": {
