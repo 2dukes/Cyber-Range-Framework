@@ -1,0 +1,33 @@
+\chapter{Introduction} \label{chap:intro}
+
+\minitoc
+
+\section{Context} \label{sec:context}
+
+The evolution of cybersecurity during the twenty-first century brought many challenges to professionals in the field. Recent events involving data breaches, phishing attacks, ransomware, insider threats, DoS attacks, among many others, pose risks to businesses, organizations, and society \citep{cyber_warfare_ref}. Cyber attacks, as part of cybercrime, are estimated to cost companies worldwide an estimated \$10.5 trillion annually by 2025\footnote{\url{https://www.embroker.com/blog/cyber-attack-statistics/}}. Unfortunately, global spending on protection against cyber attacks is much lower than the damage they cause. Consequently, victims face financial losses, reputation damage, and sometimes legal actions against them, claiming there were insufficient security mechanisms before the attack was inflicted \citep{cyber_challenges_ref}.
+
+The knowledge needed to face these cutting-edge challenges needs to be improved in the current cybersecurity workforce and is predicted to widen over the coming years, according to studies \citep{cyber_range_nist_reg}. To invert this trend, practical training in this field is required. Therefore, cyber ranges provide hands-on and specialized education and training for cybersecurity professionals via realistic testing environments with purposely vulnerable services aiming to improve the preparation and awareness of the cybersecurity workforce \citep{cr_and_security_testbeds_ref, leaf_ref}. More related to education, this type of training is also suited for academic purposes, for instance, on courses that want to introduce the concept of Ethical Hacking via hands-on experiments.
+
+\section{Problem} \label{sec:problem}
+
+Preparing cybersecurity professionals to better respond to incidents using cyber ranges is costly due to the infrastructure complexity these setups may require and because the development of new scenarios is mostly a manual process. With paper and pencil training, it is possible to go over a vulnerable scenario, but details on how systems respond to incidents are often lost to the trainee. Moreover, many cyber range deployments are based on old case-driven methodologies that rely on hardware \cite{national_cr_ref} and preconfigured virtualization through Virtual Machines \cite{cyris_ref, cytrone_ref, leaf_ref}. Containerization is starting to emerge \cite{dsp_ref, cyexec_ref} as a more lightweight approach, but configuration management and deployment of these containers is often very specific to each implementation, turning the solution unscalable. For this reason, expanding the current cyber range platforms to diversify scenarios continues to be an issue.
+
+Another possible development regarding cyber ranges is building networks that include containers, and Virtual Machines \cite{capturing_flags_ref}. This allows exploration of both generic and kernel vulnerabilities as, contrary to what happens with containers, Virtual Machines do not share the kernel with the host system.
+
+\section{Motivation} \label{sec:motivation}
+
+With all the above situations in mind, the presented work focuses on developing and deploying a cyber range and exploring the creation of complex scenarios that the cybersecurity workforce will find helpful in refining their skills. There is a clear need to evolve this type of research so that the development costs are significantly reduced by taking advantage of virtualization techniques.
+
+Lastly, there is a tremendous need to familiarize ourselves with current attack scenarios such as \textit{Log4j} and ransomware and even old events like the Shellshock vulnerability so that the mistakes that happened in the past do not get repeated in the future.
+
+\section{Goal} \label{sec:goal}
+
+This work will address the deployment automation of the software used for cybersecurity training using an approach based on Infrastructure as Code and DevOps for networking and the relying infrastructure used by these scenarios. Several vulnerabilities will be explored related to Remote Code Execution, web applications, Local File Inclusion, Privilege Escalation, and forensics, which are associated with daily threats companies face. The ultimate goal is to build a set of playbooks that will automatically deploy, configure and provision container-based environments in a reasonable amount of time and use fewer resources in terms of funds and infrastructure so that the deployment process happens more efficiently. 
+
+Besides, due to the containerized nature of the scenarios, there is the possibility of running an entire enterprise-level network in a single computer or in the cloud. Notions regarding the safety of the training system are taken into account to ensure that no actual harm reaches the host computer but the sandboxed environment. 
+
+The project will focus on understanding the current stance concerning the evolution of cyber ranges and limitations in \textit{state-of-the-art} methods and pursuing research oriented toward overcoming these limitations.
+
+\section{Structure} \label{sec:structure}
+
+In Chapter \ref{chap:sota}, the current \textit{state-of-the-art} begins with an overview of general concepts related to cyber ranges and Infrastructure as Code as a DevOps practice, as well as a thorough analysis of the current research on the topic of cyber ranges and existing technologies. In Chapter \ref{chap:proposed_solution}, the proposed solution given by the dissertation is presented. Finally, Chapter \ref{chap:conclusion} closes with the concluding remarks.
