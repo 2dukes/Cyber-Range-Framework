@@ -164,8 +164,11 @@ Fig. \ref{fig:docker_architecture} depicts the architecture Docker follows. Seve
     \item \textit{Docker client}, which is the primary way users interact with Docker. Commands like \texttt{docker run} are sent to \textit{dockerd}, which takes further action on them.
     \item \textit{Docker Registries}, that stores Docker images. Docker Hub is an example of a public registry where Docker looks for images by default.
     \item \textit{Docker Images} is a read-only template with instructions for creating a container. Each of these instructions creates a layer in the image, which is later used when changed and a new image is rebuilt. Only the layer which was modified is rebuilt, which improves the speed of the rebuilding process of containers.
-    \item \textit{Docker Containers}, which are runnable instances of images. They can connect to various networks and attached storage. As referred to, a container is no more than a set of layers, and its last layer is always a read-write one, allowing the creation and modification of files and directories in the local filesystem of the container. The isolation achieved by containers is mostly due to a technology called \textit{namespaces}.
+    \item \textit{Docker Containers}, which are runnable instances of images. They can connect to various networks and attached storage. As referred to, a container is no more than a set of layers, and its last layer is always a read-write one, allowing the creation and modification of files and directories in the local filesystem of the container.
 \end{itemize}
+
+To conclude, \textit{LXC} (Linux Containers) and \textit{cgroups} (control groups) play a significant role in Docker's underlying architecture. \textit{LXC} is a lightweight operating system-level virtualization method for running multiple isolated Linux systems, known as containers, on a single Linux host. It provides the necessary tools, kernel features, and interfaces to create and manage containers. Each container operates as an independent environment with its own file system, processes, and network stack, while sharing the host's kernel. Historically, Docker used \textit{LXC} to create and manage containers by leveraging Linux kernel namespaces and control groups. However, it later replaced it with its own runtime called ``libcontainer''. This change allowed Docker more control over the containerization process and reduced its dependency on external tools.
+On the other hand, \textit{cgroups}, a Linux kernel feature that allows the allocation and isolation of system resources among different processes, are extensively used. \textit{Cgroups} provide a mechanism for managing, monitoring, and prioritizing CPU, memory, disk I/O, and other system resources, enabling fine-grained resource allocation and control. Whenever a Docker container is created, a \textit{cgroup} is assigned to it and acts as a resource controller for the container, enforcing limits and restrictions over it. These restrictions involve CPU and memory limits, among others, ensuring containers operate within defined boundaries and efficiently use the host system.
 
 \subsubsection{Ansible} \label{sec:selected_tools_ansible}
 
@@ -177,7 +180,7 @@ As mentioned, SSH is commonly used to connect to managed nodes. Still, other opt
 
 As for which machines Ansible manages, a simple INI file can be used to make groups of our own choosing. An example of a plain text inventory file looks like this:
 
-\begin{lstlisting}[caption=Ansible Example Inventory file., numbers=none]
+\begin{lstlisting}[caption=Ansible Example Inventory file.,numbers=none,label={lst:ansible_inv}]
 [webservers]
 www1.example.com
 10.10.2.3
@@ -187,7 +190,7 @@ db0.example.com
 db1.example.com
 \end{lstlisting}
 
-Here, two groups named ``webservers'' and ``dbservers'' were created, and the child items can be represented either by a Fully Qualified Domain Name (FQDN) or an IP address. Afterward, variables can be assigned to the group or specific hosts in the inventory file or in special directories.
+Listing \ref{lst:ansible_inv} shows two groups named ``webservers'' and ``dbservers'' respectively, that were created and whose child items can be represented either by a Fully Qualified Domain Name (FQDN) or an IP address. Afterward, variables can be assigned to the group or specific hosts in the inventory file or special directories.
 
 \begin{figure}[H]
     \includegraphics[width=5cm]{figures/ansible_scheme.png}
@@ -199,7 +202,13 @@ Fig. \ref{fig:ansible_schema} depicts a general view of how Ansible works, showi
 
 \subsubsection{Vagrant} \label{sec:selected_tools_vagrant}
 
+Vagrant is another open-source tool that creates a local environment which mimics the environment upon which your code will eventually be deployed. It simplifies the creation and management of VMs, simplifying the process of reproducing an environment across different operating systems and platforms.
+
+Several concepts need to be taken into account when focusing on how Vagrant works. Firstly, we need to consider the existence of a configuration file, the "Vagrantfile" which defines the desired state of a VM. This file uses "boxes" as base images for creating VMs, similarly to what happened in with Docker. Essentially, a box is a minimal operating system image that is further customized and provisioned by Vagrant. Moreover, we need to be aware of the concept of "providers", which take care of the creation, management, and execution of VMs. Examples include VirtualBox, VMware, and Hyper-V. Vagrant also supports using Docker as a provider which allows development environments to be backed by Docker containers rather than VMs. Regarding the provisioning of the VMs, configuration management tools such as Ansible can be used to automatically setup and configure the VMs. Lastly, as with Docker, it allows the creation of synchronized folders between the host machine and the Virtual Machine, and network-related configurations.
+
 \subsubsection{Tailscale} \label{sec:selected_tools_tailscale}
+
+The last tool selected tool that is worth mentioning is Tailscale.
 
 \section{Related Work} \label{sec:cyber_ranges}
 
