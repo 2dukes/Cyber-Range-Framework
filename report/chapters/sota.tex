@@ -208,7 +208,56 @@ Several concepts need to be taken into account when focusing on how Vagrant work
 
 \subsubsection{Tailscale} \label{sec:selected_tools_tailscale}
 
-The last tool selected tool that is worth mentioning is Tailscale.
+The tool selected tool that is worth mentioning is Tailscale which is a mesh VPN service that connects devices and applications in a secure and effortless way. It uses encrypted point-to-point connections using the WireGuard protocol. At first, Tailscale tries to connect devices point-to-point using a coordination server that is used to help nodes find each other by exchanging information on how they should connect, similar to the process of ``Hole Punching'', which is a NAT traversal process to directly connect two devices\footnote{\url{https://en.wikipedia.org/wiki/Hole_punching_(networking)}}. When, for some reason, this is not possible, maybe because the devices are using Symmetric NAT, meaning they only accept connections from peers they've previously connected to, Tailscale uses Designated Encrypted Relay for Packets (DERP) relay servers, and so, traffic remains end-to-end encrypted. This process is called TURN (Traversal Using Relays around NAT).
+
+As presented in Fig. \ref{fig:tailscale_hubandspoke}, conventional VPN services have a "Hub-and-Spoke" where each client device connects to a central VPN gateway.
+
+\begin{figure}[H]
+    \includegraphics[width=10cm]{figures/tailscale_hubandspoke.png}
+    \caption{Inneficient Traditional Hub-and-Spoke VPN \cite{tailscale_docs_ref}.}
+    \label{fig:tailscale_hubandspoke}
+\end{figure}
+
+This way, in a Hub-and-Spoke model, if we had a situation in the network where we needed ten fully connected nodes, we would need to make 90 separate tunnel endpoints and know each node's public key, public IP address, and port number, as well as the static IP address of the central hub to which each node should connect to. Some concerns should be addressed if this central hub is far from the remote devices, which can incur high-latency connections.
+
+Another possibility is using WireGuard and its highly lightweight tunnels to create a multi-hub setup, as depicted in Fig. \ref{fig:tailscale_multihub}.
+
+\begin{figure}[H]
+    \includegraphics[width=10cm]{figures/tailscale_multihub_setup.png}
+    \caption{More Efficient Multipoint VPN Setup \cite{tailscale_docs_ref}.}
+    \label{fig:tailscale_multihub}
+\end{figure}
+
+With this setup, each client device needs a static IP address, an open firewall port, and a set of WireGuard keys. Still, some issues are introduced when, for instance, a new user is added, and there is the need to distribute a new WireGuard key pair to every network device.
+
+A different and more efficient network schema that allows direct communication between nodes, contrary to the Hub-and-Spoke model, is the so-called ``Mesh Networks'' and consists of a set of WireGuard peer-to-peer connections, as presented in Fig. \ref{fig:tailscale_mesh}.
+
+\begin{figure}[H]
+    \includegraphics[width=10cm]{figures/tailscale_meshnetwork.png}
+    \caption{Point-to-Point Mesh Network \cite{tailscale_docs_ref}.}
+    \label{fig:tailscale_mesh}
+\end{figure}
+
+Several problems arise from this configuration:
+
+\begin{itemize}
+    \item Does every node in the network need to know its own key plus the other nodes' keys? What if nodes are added or removed?
+    \item How do nodes find each other?
+    \item How can firewall ports for every single node be opened to allow incoming connections in networks you do not own?
+\end{itemize}
+
+For the first problem, Tailscale uses the above-mentioned "coordination server", essentially a shared drop box for public keys. Here we get back to the Hub-and-Spoke model, but Tailscale claims these coordination servers carry virtually no traffic as only a few tiny encryption keys and policies are exchanged. The data plane itself, where the actual traffic is located, is a mesh. Typically the steps followed by a new node are as follows:
+
+\begin{itemize}
+    \item Every node generates a unique public/private key pair and links the public key to its identity.
+    \item The node establishes communication with the coordination server and provides its public key along with information on its current location and domain.
+    \item The node downloads a set of public keys and addresses within its domain from the coordination server. Other nodes have previously shared these keys.
+    \item The node configures its WireGuard instance by incorporating the relevant set of public keys.
+\end{itemize}
+
+Next, the coordination server must know which public keys should be sent to which nodes. This is achieved via authentication, and several options are supported, from 2-Factor Authentication (2FA) or Multi-Factor Authentication (MFA), SMS, Google Authenticator, Gmail, OAuth2, OIDC (OpenID Connect), and SAML providers, among others. With this setup in mind, the authentication process is mostly outsourced because all the account and login data of a specific Tailscale network domain is hosted in another platform. After the authentication process, the public keys of each node are downloaded, and a WireGuard tunnel is configured for each of the network's nodes.
+
+At last, it is essential to mention the NAT traversal feature offered by Tailscale, which turns connection between two nodes sitting behind separate NAT firewalls possible without ever needing to open a firewall port or configure a static IP address. The protocols used by Tailscale to achieve this are STUN (Session Traversal Utilities for NAT) and ICE (Interactive Connectivity Establishment)\footnote{\url{https://tailscale.com/blog/how-nat-traversal-works/}}. Essentially, ICE is a framework that allows peer-to-peer connections. ICE, in turn, uses STUN and/or TURN servers to accomplish this. TURN was already mentioned before and was related to relay servers that simply forward packets between two clients. STUN is a protocol that discovers the peers' public addresses and determines restrictions that may prevent a direct connection between them. Notice that no firewall configuration changes are needed as Tailscale, by default, uses HTTPS traffic, for which most firewalls and network setups allow outbound connections. This approach helps to bypass firewall restrictions that may block connections.
 
 \section{Related Work} \label{sec:cyber_ranges}
 
