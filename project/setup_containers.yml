@@ -34,7 +34,7 @@
 
 - name: DNS Servers Tasks
   hosts: dns_servers
-  vars: 
+  vars:
     selected_machines: "{{ machines + vulnerables.machines }}"
   roles:
     - dns
