@@ -80,7 +80,7 @@ const runScenario = async (req, res, next) => {
         else
             playbook_name = "setup_containers.yml";
 
-        const cmd = `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && ansible-playbook ${playbook_name} && cd manager' > mypipe`
+        const cmd = `echo 'cd .. && ./switch_challenge.sh ${scenario_name} && /home/${process.env.USER}/.local/bin/ansible-playbook ${playbook_name} && cd manager' > mypipe`
         exec(cmd, (err, output) => {
             // once the command has completed, the callback function is called
             if (err) {
