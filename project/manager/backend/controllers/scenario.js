@@ -44,7 +44,7 @@ const checkFlag = async (req, res, next) => {
 
 const cancelScenario = async (req, res, next) => {
     try {
-        exec("echo 'docker exec -it attackermachine tailscale logout 1>/dev/null 2>&1 ; docker exec -it kvmcontainer tailscale logout 1>/dev/null 2>&1 ; kill -9 $(ps -aux | grep \"websocketd --port=8080\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2) ; docker rm -f $(docker ps -a | grep -Ewv \"mongodb|backend|frontend|CONTAINER\" | cut -d \" \" -f1) 1>/dev/null 2>&1' > cancel_mypipe", (err, output) => {
+        exec("echo 'docker exec attackermachine tailscale logout 1>/dev/null 2>&1 ; docker exec kvmcontainer tailscale logout 1>/dev/null 2>&1 ; kill -9 $(ps -aux | grep \"websocketd --port=8080\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2) ; docker rm -f $(docker ps -a | grep -Ewv \"mongodb|backend|frontend|CONTAINER\" | cut -d \" \" -f1) 1>/dev/null 2>&1' > cancel_mypipe", (err, output) => {
             // once the command has completed, the callback function is called
             if (err) {
                 // log and return if we encounter an error

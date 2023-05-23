@@ -5,8 +5,8 @@
 scenario_name=$1
 
 # Logout from Tailscale
-docker exec -it attackermachine tailscale logout 1>/dev/null 2>&1
-docker exec -it kvmcontainer tailscale logout 1>/dev/null 2>&1
+docker exec attackermachine tailscale logout 1>/dev/null 2>&1
+docker exec kvmcontainer tailscale logout 1>/dev/null 2>&1
 
 # Remove all pending containers except from website
 docker rm -f $(docker ps -a | grep -Ewv "mongodb|backend|frontend|CONTAINER" | cut -d ' ' -f1) 1>/dev/null 2>&1
