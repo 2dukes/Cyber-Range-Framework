@@ -77,9 +77,9 @@ ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runCancel.sh\" | head -n 1 | tr -
 ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runCancel.sh\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2)"
 ssh "$remote_ssh" "docker rm -f \$(docker ps -a | grep -Ewv \"mongodb|backend|frontend|CONTAINER\" | cut -d \" \" -f1) 1>/dev/null 2>&1"
 
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && docker-compose up --build -d"
+ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && docker-compose up -d"
 ssh "$remote_ssh" "cd PROJ_Thesis_2223/project/ctfs && python3 fetchCTFs.py"
 
 # Start runWS.sh and runCancel.sh on a remote shell...
-ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runWS.sh &!' & 
-ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runCancel.sh &!' & 
+ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runWS.sh &!' &
+ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runCancel.sh &!' &

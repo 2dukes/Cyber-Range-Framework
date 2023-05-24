@@ -272,3 +272,5 @@ V	330520235420Z		110E	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330520235423Z		110F	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
 V	330521000958Z		1110	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330521001003Z		1111	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330521002118Z		1112	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330521002124Z		1113	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
