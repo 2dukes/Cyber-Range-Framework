@@ -511,23 +511,23 @@ Table \ref{tab:comparison_cr} presents a high-level overview of the main feature
 \hline
 \textit{CyExec} & \priority{50} & \priority{100} & \priority{100} & \priority{100} & \priority{50} & \priority{50} \\  
 \hline
-\textit{Pandora} & \priority{0} & \priority{25} & \priority{50} & \priority{0} & \priority{0} & \priority{50} \\
+\textit{Pandora} & \priority{0} & \priority{100} & \priority{50} & \priority{0} & \priority{0} & \priority{50} \\
 \hline
-\textit{CyRIS/CyTrONE} & \priority{50} & \priority{25} & \priority{100} & \priority{0} & \priority{0} & \priority{50} \\
+\textit{CyRIS/CyTrONE} & \priority{50} & \priority{100} & \priority{100} & \priority{0} & \priority{0} & \priority{50} \\
 \hline
-\textit{NCR} & - & \priority{25} & \priority{50} & \priority{0} & \priority{0} & - \\
+\textit{NCR} & - & \priority{100} & \priority{50} & \priority{0} & \priority{0} & - \\
 \hline
 \textit{SmallWorld}  & \priority{50} & \priority{0} & \priority{100} & \priority{0} & \priority{100} & \priority{100} \\
 \hline
-\textit{Leaf}  & \priority{100} & \priority{50} & \priority{100} & \priority{0} & \priority{100} & \priority{0} \\
+\textit{Leaf}  & \priority{100} & \priority{100} & \priority{100} & \priority{0} & \priority{100} & \priority{0} \\
 \hline
-\textit{CRACK} & \priority{50} & \priority{25} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
+\textit{CRACK} & \priority{50} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
 \hline
 \textit{SEED Labs} & \priority{50} & \priority{0} & \priority{50} & \priority{50} & \priority{50} & \priority{50} \\
 \hline
-\textit{Labtainers} & \priority{50} & \priority{50} & \priority{100} & \priority{50} & \priority{100} & \priority{50} \\
+\textit{Labtainers} & \priority{50} & \priority{100} & \priority{100} & \priority{50} & \priority{100} & \priority{50} \\
 \hline
-\textit{CRATE} & - & \priority{25} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
+\textit{CRATE} & - & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
 \hline
 \textit{DSP} & \priority{50} & \priority{0} & \priority{50} & \priority{100} & \priority{100} & \priority{50} \\
 \hline
@@ -539,6 +539,6 @@ Table \ref{tab:comparison_cr} presents a high-level overview of the main feature
   \label{tab:comparison_cr}
 \end{table}
 
-Several marks were given according to each cyber range. As a way to demystify some classifications, for the \textit{IaC} column, we considered half a circle as approaches that used customized descriptions to deploy scenarios or solutions only relying on Docker or Docker-compose without a standard tool, as some of the ones presented in Table \ref{tab:comparison_iac_tools}; for the \textit{Randomization} column, we considered tools that provided random traffic generation worth a quarter of a circle, network, system and accounts' configurations worth half a circle and cyber ranges that also included randomization of the vulnerabilities present as of a full circle. Regarding the \textit{Local \& Cloud Deployments} and \textit{Linux \& Windows Scenarios}, we considered half a circle for cases where only one of the features was present. About the \textit{Containerization} column, we considered half a circle for scenarios that combined containers and VMs in separate scenarios. Finally, concerning the \textit{Enterprise-level Scenarios} column, we considered full circles as a network with a wide variety of services ranging from firewalls, internal networks, IDS, and mail servers, among others. At the same time, half-circles were intermediate representations of enterprise-level networks.
+Several marks were given according to each cyber range. As a way to demystify some classifications, for the \textit{IaC} column, we considered half a circle as approaches that used customized descriptions to deploy scenarios or solutions only relying on Docker or Docker-compose without a standard tool, as some of the ones presented in Table \ref{tab:comparison_iac_tools}; for the \textit{Randomization} column, we considered tools that provided some sort of randomization of: traffic generation, network, system and accounts' configurations or of the vulnerabilities present in the scenario as of a full circle. Regarding the \textit{Local \& Cloud Deployments} and \textit{Linux \& Windows Scenarios}, we considered half a circle for cases where only one of the features was present. About the \textit{Containerization} column, we considered half a circle for scenarios that combined containers and VMs in separate scenarios. Finally, concerning the \textit{Enterprise-level Scenarios} column, we considered full circles as a network with a wide variety of services ranging from firewalls, internal networks, IDS, and mail servers, among others. At the same time, half-circles were intermediate representations of enterprise-level networks.
 
 With these ideas in mind, Chapter \ref{chap:proposed_solution} will further detail the proposed solution, which intends to achieve all the features mentioned earlier.

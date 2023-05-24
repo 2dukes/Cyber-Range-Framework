@@ -1,0 +1,34 @@
+\chapter{Problem Statement}\label{chap:problem_statement}
+
+\minitoc
+
+\section{Problem under Study} \label{sec:research_problem}
+
+From the literature review presented in Chapter \ref{chap:sota}, the following research questions can define the problem under study:
+
+\begin{enumerate}
+    \item How to overcome the weaknesses present in the current \textit{state-of-the-art} on cyber ranges, namely high-cost deployment of infrastructure, custom description files that make scenario extensions harder, and lack of randomization? 
+    \item How to develop lightweight scenarios with the complexity of an enterprise-level network without using old-case-driven approaches based on physical hardware and virtual machines?
+    \item How to automatically deploy, provision, and configure cyber ranges in a scalable way?
+    \item How to simplify the creation process of scenarios for the end-user?
+\end{enumerate}
+
+Having in mind these questions, the following hypothesis was considered:\\
+
+\leftskip=1.25cm\rightskip=1.25cm
+
+\textbf{H:} \textit{``Using an approach heavily relying upon DevOps, Infrastructure as Code and containerization, it is possible to automatically deploy and provision, in a cost-effective manner, a set of vulnerable enterprise-level scenarios, ensuring practical appealing cybersecurity training.''}
+
+\leftskip=0cm\rightskip=0cm
+
+\section{Hypothesis Validation} \label{sec:hypothesis_validation}
+
+To answer the hypothesis formed in Section \ref{sec:research_problem}, this work intends to develop a cyber range framework that builds upon the weaknesses of the presented projects in the \textit{state-of-the-art}, providing a unique solution based on IaC and containers. Moreover, we intend to allow both local and cloud deployments both running in a local computer or in a cloud instance similarly to what happens in local deployments. The latter provides greater security due to the security restrictions the cloud provider applies to isolate each virtual instance.  
+
+To achieve this, IaC tools, one of them being Ansible primarily due to its simplicity, to automate configuration and provisioning of the cyber range while thinking of future scenarios' expansion, which should be more straightforward, as commonly known technologies will be used. The main reason for choosing Ansible is related to the human-friendliness of the YAML syntax used in playbooks, contrary to other standard data formats like XML or JSON, and the intelligibility of the documentation. Using IaC, we avoid using a custom approach to cyber range deployment. We must consider the dilemma of whether virtual machines should be used due to the overhead they cause in terms of resource consumption. Virtual machines allow us to explore a broader range of vulnerabilities, for instance, kernel-related ones. While it is not the project's focus, virtual machines will still be used in the context of Windows-based scenarios. Having this in mind, the goal of this project is not just to stick with Linux-based scenarios but also to explore the scope of Windows-based scenarios, always having in mind complex enterprise-level networks. Then, we intend to address randomization by combining attack graphs consisting of different types of attacks on each scenario, as well as randomizing some network configurations, challenging the trainee by introducing different possibilities to a higher level of privilege. Lastly, we intend to create a mesh network with the machines relevant for the trainee to successfully solve the challenge.
+
+To conclude this topic, cyber ranges are essential in the context of education and cybersecurity professionals as a way to significantly improve their skills. Trainees see themselves as forced to perform experiments with real-world environment simulations that will better prepare them for security incident situations. Having all this in mind, we argue that the above-presented hypothesis is \textbf{plausible}.
+
+\section{Summary} \label{sec:problem_summary}
+
+The challenge of building cyber ranges capable of validating our hypothesis poses several challenges. The problem under study is introduced in Section \ref{sec:research_problem}, along with the analysis of the literature review placed in Chapter \ref{chap:sota}. Section \ref{sec:hypothesis_validation} presents the scope and validation of the hypothesis, as well as the definition of the driving concept behind its validation. Lastly, Chapter \ref{chap:validation} presents the actual work behind the hypothesis validation and how the project development took place.
