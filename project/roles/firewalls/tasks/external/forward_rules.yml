@@ -5,7 +5,7 @@
     destination_port: "{{ forward_info.to_port }}"
     protocol: tcp
     jump: ACCEPT
-  
+
 - name: Forward Rules (UDP)
   ansible.builtin.iptables:
     chain: FORWARD

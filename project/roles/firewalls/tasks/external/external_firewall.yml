@@ -24,28 +24,6 @@
 - name: UDP FW PREROUTING Rule [DNS]
   ansible.builtin.shell: iptables -A PREROUTING -p udp -t nat -i eth1 --dport 53 -j DNAT --to "{{ dns_server_ip }}:53"
 
-# - name: DNS PREROUTING Rules 1
-#   ansible.builtin.iptables:
-#     chain: PREROUTING
-#     table: nat
-#     in_interface: eth1
-#     destination_port: 53
-#     protocol: tcp
-#     to_destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
-#     to_ports: 53
-#     jump: DNAT
-
-# - name: DNS PREROUTING Rules 2
-#   ansible.builtin.iptables:
-#     chain: PREROUTING
-#     table: nat
-#     in_interface: eth1
-#     destination_port: 53
-#     protocol: udp
-#     to_destination: "{{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }}"
-#     to_ports: 53
-#     jump: DNAT
-
 - name: FW FORWARD Rule [DNS]
   ansible.builtin.iptables:
     chain: FORWARD
@@ -59,7 +37,7 @@
     destination: "{{ dns_server_ip }}"
     jump: MASQUERADE
 
-# Port Forwarding (CHANGE RULES' NAMES)
+# Port Forwarding
 
 - name: External Firewall Tasks (Forward)
   ansible.builtin.include_tasks: external/forward_rules.yml

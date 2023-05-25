@@ -3,13 +3,6 @@
     chain: FORWARD
     policy: DROP
 
-# - name: Accept Connections to DMZ Network
-#   ansible.builtin.iptables:
-#     chain: FORWARD
-#     ctstate: NEW,ESTABLISHED,RELATED
-#     destination: "{{ networks.dmz_net.network_addr }}"
-#     jump: ACCEPT
-
 - name: Accept Already Established Connections to Internal Network
   ansible.builtin.iptables:
     chain: FORWARD
@@ -17,15 +10,10 @@
     destination: "{{ networks.internal_net.network_addr }}"
     jump: ACCEPT
 
-- name: Accept Connections From Internal and DMZ networks [1]
+- name: Accept Connections From Internal Network [1]
   ansible.builtin.iptables:
     chain: FORWARD
     ctstate: NEW,ESTABLISHED,RELATED
     source: "{{ networks.internal_net.network_addr }}"
     jump: ACCEPT
 
-# - name: Accept Connections From Internal and DMZ networks [2]
-#   ansible.builtin.iptables:
-#     chain: FORWARD
-#     source: "{{ networks.internal_net.network_addr }},{{ networks.dmz_net.network_addr }}"
-#     jump: ACCEPT
