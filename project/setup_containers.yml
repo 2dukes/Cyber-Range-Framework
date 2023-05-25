@@ -44,11 +44,6 @@
   roles:
     - routers
 
-- name: External Tasks
-  hosts: external
-  roles:
-    - external
-
 # Scenario-specific Tasks
 
 - name: Vulnerable Machine Launch
