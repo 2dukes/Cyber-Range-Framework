@@ -66,7 +66,7 @@ openssl ca -config openssl.cnf -policy policy_anything -md sha256 -days 3650 -in
 openssl rsa -in server.key -out server_nopass.key
 ```
 
-> Notice also the need of the `openssh.cnf`, `serial`, `demoCA/`, and `index.txt` files/folders.
+> Notice also the need of the `openssl.cnf`, `serial`, `demoCA/`, and `index.txt` files/folders.
 
 Afterwards, the private key of the issued certificate without password protection (`server_nopass.key`) was coppied into the `unifi-certs/` folder (this file was named **privkey.pem**), which is were our Docker bind mount is located. This is were UniFi fetches its SSL certificates.
 
