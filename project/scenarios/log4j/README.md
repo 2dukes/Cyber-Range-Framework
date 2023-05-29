@@ -34,9 +34,9 @@ To understand what the Log4j vulnerability involves, the following resources whe
   - Log4j Vulnerable App: https://github.com/christophetd/log4shell-vulnerable-app
   - YARA rules (DETECTION): https://gist.github.com/Neo23x0/e4c8b03ff8cdf1fa63b7d15db6e3860b
   - Unifi: https://github.com/puzzlepeaches/Log4jUnifi
-  - MarshalSec (Malicious LDAP): https://github.com/puzzlepeaches/Log4jUnifi
+  - MarshalSec (Malicious LDAP): https://github.com/mbechler/marshalsec
 
-This scenario is based in the Tier 2 HackTheBox [Unified](https://www.sprocketsecurity.com/resources/another-log4j-on-the-fire-unifi) challenge and in the [SprocketSecurity blog](https://www.sprocketsecurity.com/resources/another-log4j-on-the-fire-unifi).
+This scenario is based in the Tier 2 HackTheBox **Unified** challenge and in the [SprocketSecurity blog](https://www.sprocketsecurity.com/resources/another-log4j-on-the-fire-unifi).
 
 To reproduce a vulnerable version of Unifi Network Application the Docker container used was adapted from [goofball/unifi](https://github.com/goofball222/unifi). The version used (which can be also customized) is `6.4.54`. 
 
@@ -81,15 +81,15 @@ cat server.crt ca.crt > fullchain.pem
 Notice, there is a need to only include certificate information inside this file. No extra information should be present. The final format should be something like:
 
 ```
------BEGIN (SERVER) CERTIFICATE-----
-#######################################
------END (SERVER) CERTIFICATE-----
 -----BEGIN (CA) CERTIFICATE-----
 #######################################
 -----END (CA) CERTIFICATE-----
+-----BEGIN (SERVER) CERTIFICATE-----
+#######################################
+-----END (SERVER) CERTIFICATE-----
 ```
 
-Then, there was the need of include our CA public-key certificte by default on the attacker's kali machine, so that when they visited the UniFi Network Application web interface, the page would appear as safe. This was accomplished using the `policies.json` file in the `setup/` folder, where all the setup files (using Jinja2 templates) are present. The CA was defined as trusted also system-wide. The `entrypoint.sh` is the one that is triggered at the end and uses all the others.
+Then, there was the need of including our CA's public-key certificate by default on the attacker's kali machine, so that when they visited the UniFi Network Application web interface, the page would appear as safe. This was accomplished using the `policies.json` file in the `setup/` folder, where all the setup files (using Jinja2 templates) are present. The CA was defined as trusted also system-wide. The `entrypoint.sh` is the one that is triggered at the end and uses all the others.
 
 Furthermore, a Selenium script, `setup/setup.py` was developed, being its main purpose complete the setup Wizard that appears on every start-up of the UniFi web interface. It creates an administrator user as specified in the credentials of the `all.yml` Ansible file. The `setup/requirements.txt` file holds the respective dependencies for the Selenium script to run.
 
