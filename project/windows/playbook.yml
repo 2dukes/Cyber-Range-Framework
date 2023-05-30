@@ -10,6 +10,15 @@
     state: present
 
 # Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
+- name: Install Process Explorer, Process Monitor and Pestudio
+  win_chocolatey:
+    name:
+    - procexp
+    - procmon
+    - pestudio
+    ignore_checksums: true
+    state: present
+
 - name: Install x64dbg
   win_chocolatey:
     name: x64dbg.portable 
