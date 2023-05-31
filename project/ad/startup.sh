@@ -17,7 +17,7 @@ iptables -A FORWARD -i virbr1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCE
 iptables -t nat -A PREROUTING -p tcp --dport 3389 -j DNAT --to-destination "${ip_windows}"
 iptables -t nat -A POSTROUTING -o virbr1 -p tcp --dport 3389 -d "${ip_windows}" -j SNAT --to-source 192.168.121.1
 
-# WinRM
+# PSRP
 iptables -A FORWARD -o virbr1 -p tcp --syn --dport 5985 -m conntrack --ctstate NEW -j ACCEPT
 iptables -t nat -A PREROUTING -p tcp --dport 5985 -j DNAT --to-destination "${ip_windows}"
 iptables -t nat -A POSTROUTING -o virbr1 -p tcp --dport 5985 -d "${ip_windows}" -j SNAT --to-source 192.168.121.1

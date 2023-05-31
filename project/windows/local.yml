@@ -1,4 +1,4 @@
-- name: Setup SSH and SOCKS server for WinRM Connection
+- name: Setup SSH and SOCKS server for PSRP Connection
   ansible.builtin.shell: sh windows/localconfig.sh {{ ansible_user_id }}
 
 - name: Fetch Windows Vagrant Box IP
