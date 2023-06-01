@@ -10,12 +10,13 @@
     state: present
 
 # Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
-- name: Install Process Explorer, Process Monitor and Pestudio
+- name: Install Process Explorer, Process Monitor, Resource Hacker, and Pestudio
   win_chocolatey:
     name:
     - procexp
     - procmon
     - pestudio
+    - reshack
     ignore_checksums: true
     state: present
 
