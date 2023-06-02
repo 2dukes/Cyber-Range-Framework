@@ -1,37 +1,22 @@
-- name: Execute a command in the remote shell, stdout goes to the specified file on the remote
-  ansible.windows.win_shell: dir
-
 # Install Tools
 
-- name: Install IDA
-  win_chocolatey:
-    name: ida-free
-    ignore_checksums: true
-    state: present
-
 # Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
-- name: Install Process Explorer, Process Monitor, Resource Hacker, and Pestudio
+- name: Install IDA, Process Explorer, Process Monitor, Resource Hacker, and Pestudio
   win_chocolatey:
     name:
+    - ida-free
     - procexp
     - procmon
     - pestudio
     - reshack
+    - x64dbg.portable
     ignore_checksums: true
     state: present
 
-- name: Install x64dbg
-  win_chocolatey:
-    name: x64dbg.portable 
-    ignore_checksums: true
-    state: present
+- name: Add Windows Defender Exception
+  ansible.windows.win_shell: Add-MpPreference -ExclusionPath "C:\Users\vagrant\Desktop" -ExclusionProcess "C:\Users\vagrant\Desktop\briefcase\DudeLocker.exe"
 
-- name: Copy Scenario Files [1]
+- name: Copy Scenario Files
   ansible.windows.win_copy:
     src: windows/scenarios/ransomware/briefcase
-    dest: C:\Users\vagrant\Desktop
-
-- name: Copy Scenario Files [2]
-  ansible.windows.win_copy:
-    src: windows/scenarios/ransomware/DudeLocker.exe
     dest: C:\Users\vagrant\Desktop
