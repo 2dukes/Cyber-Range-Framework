@@ -62,7 +62,7 @@ chmod +x BloodHound-linux-x64/BloodHound
 pip install bloodhound
 
 echo "172.140.0.40 dc01.xyz.com" >> /etc/hosts
-echo -e "nameserver 172.140.0.40\noptions ndots:0" > /etc/resolv.conf
+echo -e "nameserver 172.140.0.40\noptions ndots:0\nnameserver 8.8.8.8" > /etc/resolv.conf
 ```
 > Access http://localhost:7474
 
@@ -106,7 +106,7 @@ dcomInterface = transport.DCERPCTransportFactory(stringBinding)
 
 - Check privileges: `whoami /priv`
 
-Try `impacket-smbexec` for file shares:
+Try `impacket-smbclient` for file shares:
 `impacket-smbclient xyz.com/Administrator:completeSecurePassw0rd@172.140.0.40`
 
 ```
