@@ -728,7 +728,7 @@ The result is that now the \textit{test\_user} account has the newly replaced pa
 
 The Ransomware scenario is our first Windows-based scenario, opening the door to this new dissertation scope. There were some caveats in setting up this scenario. The initial idea was to combine both Linux scenarios and Windows scenarios. To maintain consistency in the overall project, we wanted to continue using containers. Still, since the development was based on a Linux host machine, and the underlying operating system resources and drivers used were also Linux-based, there was no way to create Windows containers. This happens because Docker is an OS-Level Virtualization and the Docker daemon provides each container the necessary kernel-level properties for it to be able to run. Due to this, Linux applications run on a Linux machine, and Windows applications run on a Windows platform. Still, there are exceptions in Windows due to the existence of \textit{Linux Subsystem}, making it possible for a Linux container to run on Windows. With this in mind, the solution we came up with was to use Linux containers with a KVM installed to run a Windows Vagrant box that would enable remote control. In the case of the Ransomware scenario, the malicious payload comes in the form of an executable (\texttt{.exe}) file, and having a Windows machine to run this script was the ideal situation. 
 
-This challenge distinguishes itself compared to the other scenarios because it is not attack-oriented. The final goal stays the same, which is to get the secret flag. Still, this scenario is forensics-oriented in the sense that the trainee has to use a set of tools to debug the executable file, understand the consequences of executing the payload, and develop the reverse engineering skills necessary to get the flag.
+This challenge distinguishes itself compared to the other scenarios because it is not attack-oriented. As such, there is no attacker machine and, therefore, no external network. Still, the final goal stays the same, which is to get the secret flag. Still, this scenario is forensics-oriented in the sense that the trainee has to use a set of tools to debug the executable file, understand the consequences of executing the payload, and develop the reverse engineering skills necessary to get the flag.
 
 \subsubsection{Windows Vagrant Box Inside Linux Docker Container} \label{sec:validation_windows_vagrant_inside_linux_docker}
 
@@ -752,7 +752,7 @@ This setup enabled a fully running Windows OS accessible through RDP and contain
     \item \textbf{Base Operating System}, that will be the main hosting platform.
     \item \textbf{Docker Daemon}, which will handle the final Docker image (\textit{Ubuntu 18.04 Linux}) out of which we will spawn a container. The Docker image's main function is to run a hypervisor on which the Windows VM will run.
     \item \textbf{Hypervisor on the Docker Image} (\textit{KVM-QEMU}), which enables the installation and management of the Windows VM later on.
-    \item \textbf{Windows VM}, the machine, a pre-packaged Windows 10 Vagrant box\footnote{\url{https://app.vagrantup.com/peru/boxes/windows-10-enterprise-x64-eval}}, we will be available through RDP.
+    \item \textbf{Windows VM}, the machine, a pre-packaged Windows 10 Enterprise Evaluation Vagrant box\footnote{\url{https://app.vagrantup.com/peru/boxes/windows-10-enterprise-x64-eval}}, we will be available through RDP.
 \end{itemize}
 
 The first step is to build the Docker image with the hypervisor installed. For this, we must ensure virtualization (VT-x) is enabled in the BIOS settings to launch the Virtual Machine. Then, in our \textit{Ubuntu 18.04 Linux} image, we first install the \textit{QEMU-KVM} hypervisor package and \textit{Libvirt}, which is an API library that manages KVM. Afterward, we map the \texttt{/dev/kvm} and \texttt{/dev/net/tun} devices in the host OS inside the container and the \texttt{/sys/fs/cgroup} directory in the host OS inside the container ensuring read-write permissions on it. Also, we make the container run in privileged mode, meaning it can access almost all resources the host OS can. Another vital topic worth mentioning is the installation of Vagrant, which is necessary to run the Windows VM. We then download the respective \textit{Vagrantfile}, which contains instructions on how to build the Vagrant box, whose size is about 5.6GB.
@@ -897,17 +897,142 @@ To move forward in the analysis, we need to patch the binary but keep the result
 
 After the serial number check, the malware decodes a global variable using the above-mentioned serial number as a multi-byte XOR key. The final result string is ``thosefilesreallytiedthefoldertogether''. The next phase is related to starting the cryptography activities using Microsoft's Crypto API for file encryption. First, the malware hashes the above-mentioned long string using SHA-1, deriving an AES-256 symmetric key. Later, it recursively enumerates every file in the ``briefcase'' directory and encrypts them. It uses Cipher Block Chaining (CBC) mode, being the Initialization Vector, the MD5 of the lower-cased name and the extension of each file. After this value is set, two handles to the file are obtained: one for reading and one for writing. The read content goes through \textit{CryptEncrypt} function and is written back to the file in 16KB blocks.
 
-After encrypting every file in the ``briefcase'' folder, the next step is to load the binary's resource, an image asking for a ransom, and set it as the Desktop's Wallpaper, as shown in Fig. \ref{fig:ida_5}.
+If there is no file to be encrypted in the ``briefcase'' folder, the binary loads a resource, an image asking for a ransom, and sets it as the Desktop's Wallpaper, as shown in Fig. \ref{fig:ida_5}.
 
 \begin{figure}[H]
-    \includegraphics[width=9cm]{figures/ida_5.png}
+    \includegraphics[width=8cm]{figures/ida_5.png}
     \caption{Desktop Wallpaper.}
     \label{fig:ida_5}
 \end{figure}
 
-The trainee must decrypt a previously encrypted file inside the briefcase folder to find the secret flag. Given that the malware uses AES symmetric encryption, we can take advantage of the fact that the key used for encrypting files is the same as the one used for decrypting them. So, one possibility that is not so straightforward for solving the challenge is to patch the binary by replacing the \textit{CryptEncrypt} call for \textit{CryptDecrypt} by modifying the sample's Import Address Table (IAT) statically or at runtime using a debugger. The other possible solution that is publicly available in the project's open-source repository is a Python script that computes the decryption key of the AES algorithm being the SHA-1 hash of the string ``thosefilesreallytiedthefoldertogether'', taking into consideration Microsoft's \textit{CryptDeriveKey} inner workings\footnote{\url{https://learn.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptderivekey}}, plus the MD5 hash of the lowercase of the filename and extension as the Initialization Vector. The decrypted file content is then unpadded.
+Ultimately, the trainee must decrypt a previously encrypted file inside the briefcase folder to find the secret flag. Given that the malware uses AES symmetric encryption, we can take advantage of the fact that the key used for encrypting files is the same as the one used for decrypting them. So, one possibility that is not so straightforward for solving the challenge is to patch the binary by replacing the \textit{CryptEncrypt} call for \textit{CryptDecrypt} by modifying the sample's Import Address Table (IAT) statically or at runtime using a debugger. The other possible solution that is publicly available in the project's open-source repository is a Python script that computes the decryption key of the AES algorithm being the SHA-1 hash of the string ``thosefilesreallytiedthefoldertogether'', taking into consideration Microsoft's \textit{CryptDeriveKey} inner workings\footnote{\url{https://learn.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-cryptderivekey}}, plus the MD5 hash of the lowercase of the filename and extension as the Initialization Vector. The decrypted file content is then unpadded.
 
 % Network Structure (No External Network)
 % Ansible (WinRMI Connection, Playbooks, etc)
 % FireEye Scenario
 % Reverse Engineering With Process Monitor, Process Explorer, PeStudio, Resource Hacker, IDA, x86dbg
+
+\subsection{Active Directory Scenario} \label{sec:validation_ad_scenario}
+
+The last custom-made challenge is Windows-based and goes through the Microsoft Active Directory (AD) technology. AD complies with a database (or directory) and a set of services that connect users to the network resources they need. The directory contains information on the running environment, which may include users and computers, as well as their permissions on what they are allowed to do. The use of AD Domain Controllers is a centralized way system administrators found to manage an entire domain, meaning a group of related users and computers. Multiple domains can be combined, forming a tree, and numerous trees form a forest. Typically, enterprise networks have many Domain Controllers synchronized with each other, meaning every time there is a user account password update, for instance, this information is replicated across the other Domain Controllers, so each of them stays up-to-date. User laptops and other devices that are part of the domain and do not run any service are not Domain Controllers. Instead, they are often called workstations.
+
+The AD database contains information on several AD objects within the domain which can include users, computers, printers, and shared folders across the network, among others. AD objects have attributes and may contain other objects. Attributes can be something like the person's name, department, global identifiers or the last logon time.
+
+AD Domain Controllers rely on several protocols, for instance, LDAP and Kerberos, for authentication and authorization means. Kerberos is the default authentication protocol AD uses and provides single sign-on access to subsequent network resources within the domain. Kerberos is based on encrypted tickets used when logging in the computers and accessing network shares, among others. Kerberos replaced an elder protocol named NTLM. Regarding LDAP, it is used when performing queries on the directory services for specific AD objects.
+
+\subsubsection{Scenario Construction} \label{sec:validation_ad_scenario_construction}
+
+The process of constructing this scenario is very similar to the structure presented in Section \ref{sec:validation_windows_vagrant_inside_linux_docker}. The main difference is we do not use a Windows 10 Enterprise Vagrant box, but a Windows Server 2022 Evaluation box. This change was added because the scenario focuses on building a vulnerable AD Domain Controller, which needs an underlying Windows Server. The other difference between the ransomware scenario and the AD one is we have an attacker machine sitting in the DMZ network, which simulates an attacker inside the organization's network. As with the ransomware scenario, we do not have an external network. The last added change concerned \textit{iptables} rules from our bastion host to the Windows Server VM. Previously, we only performed NAT and forwarding operations with respect to the RDP and WinRM/PSRP connection, as we only intended to access the remote VM using RDP and issue commands to it using the PSRP protocol. Now, as the challenge's focus is again attack-oriented, we want every type of traffic from our attacker machine to the bastion host to be redirected to the Windows Server VM. The only exception is SSH traffic because incoming connections to the bastion host should not be redirected to the Windows Server VM, as they are destined to the hypervisor container and not to the Windows Server VM. With this configuration set, we are able to issue attacks from the attacker machine to the Windows Server VM, knowing the traffic going through the bastion container will be correctly forwarded.
+
+The development of a vulnerable AD Domain Controller was based on John Hammond's Active Directory Youtube series\footnote{\url{https://www.youtube.com/watch?v=pKtDQtsubio&list=PL1H1sBF1VAKVoU6Q2u7BBGPsnkn-rajlp}} and on currently existing GitHub sources\footnote{\url{https://github.com/WazeHell/vulnerable-AD}}.
+
+% Same Configuration with Vagrant but uses Windows Server Vagrant Box & iptables changes.
+
+The first configurations steps on our Windows Server VM are:
+
+\begin{enumerate}
+    \item Change the Domain Controller's hostname to \textit{DC01}.
+    \item Install Active Directory Services and create a domain named \texttt{xyz.com}.
+    \item Configure the DNS server as the Windows Server VM itself and create a reverse DNS zone.
+    \item Create a private network share controlled by Domain Administrators. We move the secret flag into it.
+    \item Allow Remote Desktop sessions to ordinary Domain users, as this is not enabled by default.
+    \item Change the administrator accounts default passwords.
+    \item Generate a vulnerable AD schema with a set of Domain users and the Domain groups they belong to, including information on the Domain Controller's local administrators. This schema is randomized on every new scenario execution.
+    \item Taking the previously generated vulnerable AD schema, we configure our Domain Controller with several kinds of vulnerabilities the trainee can explore.
+\end{enumerate}
+
+The vulnerable configuration steps include:
+
+\begin{itemize}
+    \item Weaken the Domain Accounts password policy to allow weak passwords linked to user accounts.
+    \item Create the AD Groups and Users and add them to the respective AD Group.
+    \item Generate a vulnerable configuration to enable \textit{Kerberoasting} attacks. Essentially, we create a service account with a weak password and specify that future ticket requests to this service account should use the easily crackable ``RC4'' Kerberos Encryption type.
+    \item Configuration suitable for \textit{AS-REP Roasting} attacks. A maximum of three user accounts is configured not to require Kerberos pre-authentication, enabling this kind of attack.
+    \item Set a maximum of three AD user accounts as DNS Administrators.
+    \item Set a maximum of three AD user accounts vulnerable to \textit{DCSync} attacks.
+    \item Disable SMB Signing which enables the existence of man-in-the-middle (MiTM) attacks on the SMB Server. The SMB protocol is typically used for sharing access to files, printers, and other resources across the network.
+\end{itemize}
+
+\subsubsection{Active Directory Attacks} \label{sec:validation_ad_attacks}
+
+Several Active Directory attacks can be performed due to the inherently vulnerable Domain Controller configuration. Some of them will be explored in Section \ref{sec:validation_ad_exploit}. It is essential to mention that because a wide range of attacks can be performed in this scenario, the trainee may find many solutions to reach the secret flag. Other types of attacks may be worthless but still valuable concerning skills training.
+
+% Kerberoasting
+Starting with \textit{Kerberoasting}, an attack that attempts to gain access to the password hash of an Active Directory account with a Service Principle Name (SPN), an attribute that links a service to an AD user account. To perform this attack, we need access to an authenticated domain user, even with insufficient privileges. The attack works by requesting a Kerberos service ticket from the Kerberos Ticket Granting Service (TGS) for an SPN. This ticket is then sent by the Kerberos Key Distribution Center (KDC) and is encrypted with the hash of the service account password associated with the SPN. The attack then works offline by trying to crack the password hash using brute-force techniques in order to obtain the plaintext SPN account password. With the service account password in hand, the threat actor can impersonate the service account and is granted access to any network resource associated with the compromised account. This attack tends to work because the Domain Controller does not check if the Domain user is authorized to access a specific service whenever the Domain user initiates a TGS request. On the other hand, the service enforces certain access policies, verifying whether the Domain User should indeed be granted access. This creates a sort of loophole where an offline brute-force attack can occur.
+
+% AS-REP Roasting
+\textit{AS-REP Roasting} attacks enable adversaries to steal password hashes of user accounts that have Kerberos pre-authentication disabled. When enabled, every time a user needs access to a resource, the Kerberos authentication process takes place. The user sends an Authentication Server Request (AS-REQ) message to the Domain Controller containing a timestamp which is encrypted with the hash of the user's password. If the Domain Controller decrypts the timestamp using its stored version of the user's password hash, it sends back an Authentication Server Response (AS-REP) message that contains the Ticket Granting Ticket (TGT) issued by the Kerberos KDC. The TGT is later used for accessing resources required by the user. When pre-authentication is disabled, a malicious actor may request authentication data for any user, and the Domain Controller would return an AS-REP message. Since part of the AS-REP message is encrypted using the user's password, a malicious actor may attempt a brute-force attack to get the plaintext password. 
+
+% DCSync
+\textit{DCSync} attacks allow an attacker to simulate the behavior of a Domain Controller and request password hashes. This attack is commonly used to get the \textit{KRBTGT} password hash, which takes attackers a step closer to the \textit{Golden Ticket} attack. Typically, only high-privileged accounts have the necessary permissions to run these kinds of attacks. In our scenario, we enforce the necessary Domain replication privileges on randomly select accounts: \textit{Replicating Directory Changes}, \textit{Replicating Directory Changes All}, and \textit{Replicating Directory Changes In Filtered Set}.
+
+% Golden Ticket 
+\textit{Golden Ticket} attacks are performed by threat actors that attempt to gain unlimited access to an AD domain and exploit a vulnerability in the Kerberos authentication protocol. For this, an attacker needs the password hash of the \textit{KRBTGT} user so it can impersonate the KDC to mint Kerberos tickets giving him the power to access any resource. Because the TGT is signed and encrypted with the \textit{KRBTGT} password hash, the Domain Controller will accept it as proof of identity and issue any TGS tickets for it.
+
+
+% Silver Ticket
+The \textit{Silver Ticket} attack is similar to the \textit{Golden Ticket}, but it does not grant an adversary unfettered access to the domain. It only enables the attacker to forge TGS tickets for specific services, meaning it is a less powerful attack. Essentially, the attacker crafts TGS tickets encrypted with the password hash of a service account he previously compromised.
+
+% Pass-the-Ticket
+The \textit{Pass the Ticket} attack enables adversaries to use stolen Kerberos tickets to authenticate resources. Both TGS tickets and TGT tickets can be stolen and reused. \textit{Pass the Hash} attacks abuses the NTLM authentication protocol to authenticate as a user without having its plaintext password. Both attacks are part of the so-called lateral movement and maybe a start of \textit{DCSync} attacks and password hashing extractions from the \textit{NTDS.dit} file or the \textit{LSASS.exe} process memory, both storing password hashes from users with active sessions in the computer.
+
+Other attacks include abusing SMB signing disabled and compromising user accounts part of the \textit{DNSAdmins} group, which can be later used to obtain access to the Domain Controller.
+
+% Playbook steps
+% Vulnerable Configuration (https://github.com/WazeHell/vulnerable-AD, allowed attacks, randomization)
+
+\subsubsection{Exploits} \label{sec:validation_ad_exploit}
+
+This section intends to explore attacks to our Active Directory scenario. During our attacks, we will use the following tools:
+
+\begin{itemize}
+    \item \textbf{CrackMapExec}, a post-exploitation tool that helps automate assessing the security of large Active Directory domains. It supports several types of attacks, including various protocols such as SMB, LDAP, WinRM, and Kerberos.
+    \item \textbf{Impacket}, a collection of Python modules for working with network protocols that are extremely useful for attacking Active Directory networks.
+    \item \textbf{Bloodhound}, an Active Directory reconnaissance and attack management tool that depicts the AD network graphically and uses graph theory to identify hidden relationships, sessions, user permissions, and attack paths in a domain.
+    \item \textbf{Mimikatz}, a tool that can exploit Microsoft's Authentication systems. It can perform attacks such as: \textit{Pass the Hash}, \textit{Pass the Ticket}, \textit{Kerberoast Golden and Silver Tickets}, \textit{DCSync} attacks, among others. 
+\end{itemize}
+
+As in the Log4j scenario, we can start by doing some reconnaissance using, for instance, \texttt{nmap}. We can view the hypervisor container with port 22 open, which is the machine responsible for redirecting traffic to the target Windows Server machine.
+
+The next step is to grab a set of commonly used Active Directory users and a subset of the \textit{rockyou.txt} password dictionary to test if we can find some AD user accounts. At first, we need to register our hypervisor container as the attacker machine's DNS server. Then, we attempt to get some users using \textit{CME} with: \texttt{crackmapexec ldap 172.100.0.40 -u users.txt -p ''\\ -k}, where \textit{172.100.0.40} is our bastion host, and the users file contains some of the commonly used AD usernames. The retrieved output tells us existing AD users, as well as information on the Domain Controller, for instance, the hostname (\textit{DC01}) and the domain we are currently targeting (\textit{xyz.com}). With this information in mind, we can also map an entry in the \texttt{/etc/hosts} file of the \texttt{dc01.xyz.com} domain to the \texttt{172.100.0.40} IP address.
+
+We can then perform a brute-force attack using both the users and passwords dictionary, again, using \textit{CME} with \texttt{crackmapexec ldap dc01.xyz.com -u users.txt -p passwords\\.txt --continue-on-success | grep '[+]'}. If we are lucky, we will get a match between the AD users and their respective passwords. Then, we can test the login in the Domain Controller using the credentials of a match with: \texttt{crackmapexec smb dc01.xyz.com -u USERN\\AME -p PASSWORD}. We can use the command mentioned above and provide an extra \texttt{---pass-pol} flag to view the AD password policy, a \texttt{---users} flag to view the currently existing users, a \texttt{---groups} flag to view the existing groups, or a \texttt{---computers} flag to view the workstations that are part of the AD domain. All this information is helpful to perform similar brute-force attacks, as we now have information on the used password policy, and we know which AD users exist. Notice that with the credentials of an AD user, it is possible to have a Remote Desktop session linking to the remote controller.
+
+The next step is to use Bloodhound, where we can view information on existing AD users and their groups. We first configure Bloodhound and then use \textit{bloodhound-python} module, along with the previously fetched credentials of an AD user and collect information on the Active Directory domain, using \texttt{bloodhound-python -u USERNAME -p PASSWORD -dc dc01.xyz.com -d xyz.com -c all}. This will generate a set of \textit{JSON} files which should then be imported into Bloodhound.
+
+Bloodhound provides a realistic view of several AD objects. Fig. \ref{fig:bloodhound_ad_users} lists the Domain Users. We can select each of them and view their attributes, the groups they belong to, their unique identifiers, and other relevant information.
+
+\begin{figure}[H]
+    \includegraphics[width=12cm]{figures/bloodhound_ad_users.png}
+    \caption{Bloodhound Active Directory Users.}
+    \label{fig:bloodhound_ad_users}
+\end{figure}
+
+We can also, for instance, gather information on the Domain Controller's administrators, which combine local and Domain Administrators, as shown in Fig. \ref{fig:bloodhound_dc_admins}. Here we see a randomly selected account as a local administrator.
+
+\begin{figure}[H]
+    \includegraphics[width=12cm]{figures/bloodhound_dc_admins.png}
+    \caption{Bloodhound Domain Controller's Administrators.}
+    \label{fig:bloodhound_dc_admins}
+\end{figure}
+
+Bloodhound also allows fetching AD user accounts vulnerable to \textit{Kerberoasting}, \textit{AS-REP Roasting}, and \textit{DCSync} attacks. We can also find dangerous permissions on Domain Users and Groups or legacy OS versions on computers belonging to the AD domain. Each may lead an attacker to an attack path to obtain Domain Administrator privileges. At last, it allows the user to forge custom queries on the AD domain data, which turns this tool into one of the favorites for penetration testers. 
+
+Moreover, we can use \textit{Impacket} WMIExec module to perform lateral movement. This module allows executing commands on a remote system and establishing a semi-interactive shell on the remote host. As our setup uses a bastion host, our connection is not directed to the Domain Controller, meaning we had to tweak a little some module files. After all this, we may run \texttt{impacket-wmiexec xyz.com/USERNAME:PASSWORD@dc01.xyz.com} to obtain a remote shell if we use the local administrator account. We can then check the privileges of the current user session with \texttt{whoami /priv}. We can also try the same command with \texttt{impacket-psexec}, but no remote shell is obtained because Windows flags this as a malicious operation. This attack works if the Domain Controller's Windows Defender is turned off. Simultaneously, we can also check for RDP Desktop access using \texttt{impacket-rdp\_check xyz.com/USERNAME:PASSWOR\\D@dc01.xyz.com}.
+
+\textit{Impacket} also provides us with an SMB Client module to list the available network shares. We can observe the \textit{SYSVOL} Domain Controller share listed, and also an \textit{INTERNAL} share, on which only Domain Administrators have read access. To test this, we run \texttt{impacket-smbclient xyz.com/USERNAME:PASSWORD@dc01.xyz.com}. This share is where our secret flag is located. 
+
+Going more profound in the \textit{AS-REP Roasting} theme, we can use Kerbrute\footnote{\url{https://github.com/TarlogicSecurity/kerbrute}} that similarly to \textit{CrackMap\\Exec} performs brute-force attacks on specific users. Furthermore, it identifies which accounts have pre-authentication disabled, meaning they are vulnerable to this attack. If a match between a user and password is found, it saves the TGT ticket for each match found, which opens the door for \textit{Pass the Ticket} attacks. To perform the \textit{AS-REP Roasting} attack, we then run \texttt{crackmapexec ldap dc01.xyz.com -u users.txt -p '' --asreproast out.txt}, where the users' file contains the AD user with pre-authentication disabled. This command captures the AS-REP response. We then use \texttt{hashcat} to crack it with \texttt{hashcat -m18200 out.txt passwords.tx\\t}.
+
+It is time to enter the \textit{Kerberoasting} world. We will target service accounts, so we must enumerate every single one. For this, we brute-force the RID, the unique value representing an AD object. We can issue the command \texttt{crackmapexec smb dc01.xyz.com -u USERNAME -p PASSWORD -d xyz.com --rid-brute}. Then, we create a file with the service account names and use the \textit{GetUserSPNs Impacket script}\footnote{\url{https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetUserSPNs.py}} with the credentials of an AD user account to get the TGS tickets of the vulnerable service account. The command is as follows \texttt{python getUserSPNs.py xyz.com/USERNAME:PASSWORD -usersf\\ile users.txt -outputfile hashes.kerberoast}, and we then crack the tickets using \texttt{hashcat} with \texttt{hashcat -m13100 --force -a 0 hashes.kerberoast passwords.tx\\t}.
+
+The next attack is \textit{Pass the Ticket}, where we start by the fact that we have access to the local administrator account in the Domain Controller and use \textit{Impacket} to dump the NTLM hashes of the administrator account using \texttt{impacket-secretsdump -just-dc-ntlm xyz.com/USERNA\\ME:PASSWORD@dc01.xyz.com}. This technique is called \textit{Overpass the Hash} because it uses an NT hash to obtain a Kerberos ticket that will be later used to impersonate a user. Then we grab the TGT ticket using the \textit{Impacket GetTGT} module with the command \texttt{impacket-getTGT xyz.com/Administrator -hashes  LMHASH:NTHASH}. Lastly, we export the \textit{KRB5CCNAM\\E} environment variable with the path of the TGT ticket, and we use \textit{Impacket's} WMIExec module to get an Administrator shell on the Domain Controller using the \textit{Pass the Ticket} attack. We can also use \textit{Impacket's} SMBClient module to access the \textit{internal} network share and grab the secret flag. This is the intended solution for solving the challenge.
+
+% PsExec64
+The unintended solution uses \textit{PsExec}\footnote{\url{https://learn.microsoft.com/en-us/sysinternals/downloads/psexec}} to perform Local Privilege Escalation, which allows a non-admin process to escalate to SYSTEM if we run \textit{PsExec} with \texttt{.\textbackslash PsExec64.exe -accept\\eula \textbackslash\textbackslash dc01 -s cmd} using the local administrator account on a Remote Desktop session and change directory into the \textit{internal} network share folder, we can then print out the flag.
+
+% Golden Ticket & DCSync
+To perform the \textit{Golden Ticket} attack, we first grab the NT hashes using \textit{Impacket's Secrets Dump} module, as before, and the domain SID with \texttt{crackmapexec ldap dc01.xyz.com -u USERNAME -p PASSWORD --get-sid}. We can get a remote session using the local administrator account in the Domain Controller and in \textit{Mimikatz} dump the \textit{KRBTGT} account hashes by performing a \textit{DCSync} attack with \textit{lsadump::dcsync /domain:xyz.com /user:krbtgt}. Then, we craft the Golden Ticket using the obtained Domain SID and the \textit{KRBTGT} NT hash. To craft a Golden Ticket for the Administrator AD account, we run \texttt{kerberos::golden /domain:xyz.com /sid:AD\_DOMAIN\_SID /user:AD\_IMPERSONATED\_USER /krbtgt:KRBTGT\_NTHASH \\/id:AD\_IMPERSONATED\_USER\_ID /ptt}. With not just a Domain Controller but also workstations, we should be able to run the attack and get administrator privileges in the Domain Controller.
+
+% Abuse DNS Admins
+Lastly, we can perform a DLL injection attack using a vulnerable AD account belonging to the \textit{DNSAdmins} group. Essentially, this DLL is a reverse shell that connects to the attacker machine, and the threat actor should be able to obtain \textit{SYSTEM} privileges on the Domain Controller machine. 
