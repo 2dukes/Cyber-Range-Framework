@@ -31,21 +31,21 @@ iptables -D FORWARD -o virbr0 -j REJECT --reject-with icmp-port-unreachable
 iptables -D FORWARD -i virbr0 -j REJECT --reject-with icmp-port-unreachable
 
 # Redirect from KVM -> Windows Server (TCP, UDP, ICMP)
-iptables -t nat -A PREROUTING -p tcp ! --dport 22 -j DNAT --to-destination "${ip_windows}"
-iptables -A FORWARD -o virbr1 -p tcp ! --dport 22 -j ACCEPT
+iptables -t nat -A PREROUTING -i eth0 -p tcp ! --dport 22 -j DNAT --to-destination "${ip_windows}"
+iptables -A FORWARD -i eth0 -o virbr1 -p tcp ! --dport 22 -j ACCEPT
 iptables -t nat -A POSTROUTING -o virbr1 -p tcp ! --dport 22 -j SNAT --to-source 192.168.121.1
 
-iptables -t nat -A PREROUTING -p udp ! --dport 22 -j DNAT --to-destination "${ip_windows}"
-iptables -A FORWARD -o virbr1 -p udp ! --dport 22 -j ACCEPT
+iptables -t nat -A PREROUTING -i eth0 -p udp ! --dport 22 -j DNAT --to-destination "${ip_windows}"
+iptables -A FORWARD -i eth0 -o virbr1 -p udp ! --dport 22 -j ACCEPT
 iptables -t nat -A POSTROUTING -o virbr1 -p udp ! --dport 22 -j SNAT --to-source 192.168.121.1
 
-iptables -t nat -A PREROUTING -p icmp -j DNAT --to-destination "${ip_windows}"
-iptables -A FORWARD -o virbr1 -p icmp -j ACCEPT
+iptables -t nat -A PREROUTING -i eth0 -p icmp -j DNAT --to-destination "${ip_windows}"
+iptables -A FORWARD -i eth0 -o virbr1 -p icmp -j ACCEPT
 iptables -t nat -A POSTROUTING -o virbr1 -p icmp -j SNAT --to-source 192.168.121.1
 
-# iptables -t nat -A PREROUTING -j DNAT --to-destination "${ip_windows}"
-# iptables -A FORWARD -o virbr1 -j ACCEPT
-iptables -A FORWARD -i virbr1 -j ACCEPT
+# iptables -t nat -A PREROUTING -i eth0 -j DNAT --to-destination "${ip_windows}"
+# iptables -A FORWARD -i eth0 -o virbr1 -j ACCEPT
+iptables -A FORWARD -i virbr1 -o eth0 -j ACCEPT
 # iptables -t nat -A POSTROUTING -o virbr1 -j SNAT --to-source 192.168.121.1
 
 # Setup SSH

