@@ -91,3 +91,11 @@
   ansible.windows.win_file:
     path: C:\Users\Administrator\code
     state: absent
+
+- name: Add Windows Defender Exception
+  ansible.windows.win_shell: Add-MpPreference -ExclusionPath "C:\Users\Public\Documents"
+
+- name: Copy AD Attack Tools 
+  ansible.windows.win_copy:
+    src: ad/tools/
+    dest: C:\Users\Public\Documents

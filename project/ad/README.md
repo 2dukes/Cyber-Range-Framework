@@ -308,4 +308,6 @@ SMB         172.140.0.40    445    DC01             [+] Dumped 20 NTDS hashes to
 
 > Extra: Ref (**Abuse DNSAdmins**): https://www.hackingarticles.in/windows-privilege-escalation-dnsadmins-to-domainadmin/
 
+> Mimikatz and PsExec tools are available at C:\Users\Public\Documents
+
 > Administrator AD Account Password is: `completeSecurePassw0rd`

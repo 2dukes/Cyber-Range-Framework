@@ -114,7 +114,7 @@
     "name": "active-directory",
     "image": "ad.png",
     "author": "2dukes",
-    "description": "Some extremely vulnerable Active Directory Domain Controller was found out there. Will you be able to get through it?",
+    "description": "Some extremely vulnerable Active Directory Domain Controller was found out there. Will you be able to get through it? There are some useful programs in the C:\\Users\\Public\\Documents folder of the Domain Controller.",
     "category": "Windows",
     "difficulty": "Medium",
     "flag": "flag{1d_ch1ll3ng3_expl0r1ti0n_is_fun!}",
