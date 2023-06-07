@@ -519,8 +519,6 @@ def parse_challenge(cat, path, chal, has_jail_img):
                            "args": img_args
                            })
 
-            # Ports, Environment Vars, Flags
-
             # Machines
             machines.append({"name": f"vuln_service_{chal}_{container_name}",
                              "image": images[-1]["name"],

@@ -167,7 +167,7 @@ dns:
       network: external_net
 \end{lstlisting}
 
-Here, a domain named \textit{example-domain.ui.com} is presented along with \textit{internal} and \textit{external} specifications of it. This, as will later be explained, is related to two distinct DNS views that are defined. By ``internal view'' we refer to devices in the internal or DMZ networks; otherwise, they belong to the ``external view''. So, in the listing mentioned above, the \textit{example-domain.ui.com} domain points to the \textit{vuln\_service} container located in the DMZ whenever devices in the ``internal view'' look for this domain. Devices in the ``external view'' point to the external network interface of the edge router. This means resolved DNS requests made by external machines will go through the edge router and be forwarded to the respective machine. 
+Here, a domain named \textit{example-domain.ui.com} is presented along with \textit{internal} and \textit{external} specifications of it. This is related to two distinct DNS views that are defined. By ``internal view'' we refer to devices in the internal or DMZ networks; otherwise, they belong to the ``external view''. So, in the listing mentioned above, the \textit{example-domain.ui.com} domain points to the \textit{vuln\_service} container located in the DMZ whenever devices in the ``internal view'' look for this domain. Devices in the ``external view'' point to the external network interface of the edge router. This means resolved DNS requests made by external machines will go through the edge router and be forwarded to the respective machine. 
 
 After talking about DNS, we will go over another set of variables, namely the set of custom machines.
 
@@ -1038,4 +1038,50 @@ To perform the \textit{Golden Ticket} attack, we first grab the NT hashes using 
 Lastly, we can perform a DLL injection attack using a vulnerable AD account belonging to the \textit{DNSAdmins} group. Essentially, this DLL is a reverse shell that connects to the attacker machine, and the threat actor should be able to obtain \textit{SYSTEM} privileges on the Domain Controller machine. 
 
 Our Domain Controller is vulnerable to a wide range of attacks. Some of them were presented above, but many others can be used to target the domain. As mentioned before, this scenario reveals itself extremely useful as a way to provide the trainee hands-on experiments for all the possible attacks.
+
 \section{Imported Scenarios} \label{sec:validation_imported_scenarios}
+
+By now, we should have a clear knowledge of the scenario construction process. The most complex scenarios were detailed in Section \ref{sec:validation_custom_scenarios}, but the project supports the addition of already existing scenarios. To keep the same logic we followed so far, and we opted for picking up scenarios that were already based in Docker. Through our research using platforms like CTFtime\footnote{\url{https://ctftime.org/}}, we chose scenarios from the 2023 DiceCTF\footnote{\url{https://ctf.dicega.ng/}} competition which were available in GitHub\footnote{\url{https://github.com/dicegang/dicectf-2023-challenges}}. The presented scenarios ranged from several categories:
+
+\begin{itemize}
+    \item \textbf{Web Exploitation}, which focuses on challenges related to security vulnerabilities in web applications.
+    \item \textbf{Miscellaneous}, which point to random challenges requiring simple knowledge, logic, and patience to be solved.
+    \item \textbf{Cryptography}-related challenges.
+    \item \textbf{Binary Exploitation (\textit{Pwn})}, which comes down to finding a vulnerability in a Windows executable or Linux ELF and exploiting it to gain control over it.
+\end{itemize}
+
+A total of 25 challenges from the 2023 DiceCTF edition were imported. To enable this, a Python script was created to convert the scenarios from the format they were published on GitHub to the one our framework understands.
+
+Every imported DiceCTF scenario typically has a YAML file that is core to understanding the challenge. There, we can find information on the challenge's name, author, a short description, where to find the secret flag, the files that should be provided to the trainee so he can have a deeper understanding of the presented code, the ports that the scenario's containers should expose to the exterior.
+
+With all this information in place, we organized our folder structure for each scenario. Our Python script first pulls the DiceCTF's GitHub repositories and recursively looks for the challenges that use Docker. The ones that do not use it are, therefore, excluded. Other specific checks are also performed in this sense. We also look for challenges that were pinpointed to also be excluded because their Docker setup is incompatible with our framework's setup, simply because they use Docker images that do not support the installation of \textit{python3} and \textit{iproute2} packages. Both these packages are required in our setup.
+Then, the script goes through the challenge mentioned above's YAML file and starts creating the scenario's variables file. As before, each scenario's vulnerable container is exposed via a domain, and the format followed by DiceCTF is \texttt{{CHALLENGE\_NAME}.mc.ax}. In our variable's file, we create the necessary configurations in the DNS server, reverse proxy, and the edge router's port forwarding. As each scenario is attack-oriented, we need to include the attacker machine located in the external network in our setup. This will be the machine in control of the trainee. The following tasks involve setting up the custom scenario's structure, which is very similar for each scenario. The only things that change are the created containers and the domain of the exposed service. If the scenario has two or more containers, the container's name is mapped in DNS, which usually happens in Docker. For instance, if a scenario deploys containers \texttt{app} and \texttt{mongo}, the \texttt{app} container may attempt to access the database using the \texttt{mongo} domain. As such, the \texttt{mongo} string must be mapped to the \texttt{mongo} container's IP address.
+
+The last thing on this topic is a feature called \textit{AdminBot} that some scenarios make available. Essentially, this is another service that exposes both a backend and a frontend. The attacker can request this backend service to make an HTTP request to a domain of their choice, which can be the vulnerable server itself, in most scenarios, or a randomly selected domain. Typically, this request incorporates a flag in it, for instance, in the form of a cookie. The \textit{AdminBot} is entirely available for the trainee. It works as an extra that can provide real aid when solving the challenge.
+
+\begin{figure}[H]
+    \includegraphics[width=12cm]{figures/adminbot.png}
+    \caption{\textit{AdminBot} interface.}
+    \label{fig:template_net}
+\end{figure}
+
+\section{Scenario Extensibility} \label{sec:validation_scenario_extensibility}
+
+This topic intends to address the scenario extensibility theme. This topic is essential because it ensures the project's continuity regarding future updates. Scenario extensibility is closely related to what was presented in Section \ref{sec:custom_scenario_variables}. For our framework to support new scenarios, developers must understand the project's inner workings. This encompasses variables declaration of each scenario, namely DNS configuration for new domains, port forwarding issues, entry point setup, and representation of custom machines. Given the knowledge we have so far, adding new scenarios to our configuration should be relatively straightforward. 
+
+A new folder inside the \texttt{scenarios} folder should be created for each scenario. Then, a file named \textit{challenge\_vars.yml} should store the custom variables of the scenario. The rest of the folder structure is dedicated to scenario files. Every configuration should be specified on the \textit{challenge\_vars.yml} file.
+
+Firstly, the DNS configuration, where information on each domain should be specified. This includes selecting the machines to which internal and external DNS requests should be mapped. Afterward, we should determine the Docker images that will be linked to the custom Docker containers of the scenario. This includes the Docker images' name, the path to reach the Dockerfile, and, optionally, possible arguments to the Docker image construction process. During the explanation of how our framework works, we always followed the logic of having a domain associated with the vulnerable machine because it is easier for the trainee to reach the vulnerable machine by a domain than by an IP address. While expanding the project's scenarios, we follow the same line of logic. As such, adding a reverse proxy to redirect each request to the appropriate Docker container is mandatory. 
+
+With this in mind, we must also include a Docker image configuration for the proxy. The next step is to configure the Docker containers of our custom machines by specifying their name, the Docker image they are associated with, the groups they belong to, the Docker networks and assigned IP address, possible Docker volumes, information on where to find the DNS server, environment variables, and possible variables. The mandatory Docker containers include, again, the reverse proxy and the DNS server. An important note is that the reverse proxy configuration should consist of a set of variables later used in the NGINX configuration, as explained in Section \ref{sec:ansible_reverse_proxies_role}. This includes specifying the domains to be mapped by the reverse proxy and the machines and ports the requests should be redirected. Notice that this setup allows load balancing configurations as several machines can be specified to the same domain. 
+
+The next topic concerns port forwarding configurations on the edge router. The goal of this configuration is to redirect requests from the attacker's machine located in the external network to the vulnerable service. But since we have a reverse proxy in between, requests are first redirected to it, which then forwards the packets to the final vulnerable service. This configuration allows us to configure the edge router's inbound port and configure the target machine and port to which packets should be redirected. In situations where the target machine is the reverse proxy, its destination port should be 443 (HTTPS), as specified in Section \ref{sec:ansible_reverse_proxies_role}. In scenarios like Log4j, the connection between the attacker machine and the vulnerable service is not handled by a reverse proxy, so we can map packets directly to the vulnerable service.
+
+Lastly, we need to pay attention to the entry point scripting section. For configurations in Docker containers, we need to include a folder with a set of Jinja2 templating files that support the inclusion of variables specified in the YAML files. There is no need to use Jinja2 templates for configurations in the local machine. With each of these configurations, an \textit{entrypoint.sh.j2} or an \textit{entrypoint.sh} file should be placed, as it will be the script that Ansible's actions will trigger. Concerning the setup of the attacker machine, including the previously mentioned root CA is needed so that the digital certificates are considered trusted across the scenarios.
+
+Having all these steps in mind and following the logic of the presented scenarios, it is simple to expand the project to new scenarios.
+
+% Python Script
+    % DiceCTF GitHub format
+    % Our format (talk about entrypoints)
+    % Scenarios that require Admin Bot
