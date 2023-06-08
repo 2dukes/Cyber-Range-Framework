@@ -12,8 +12,9 @@ As a way to validate the stated hypothesis (\textit{cf.} Section \ref{sec:resear
     \item \textbf{Custom Scenarios}: From Linux to Windows-based scenarios, details on how they were developed will be presented and how they can be attacked.
     \item \textbf{Imported Scenarios}: The process of importing scenarios from previous CTF competitions and how they managed to fit in the previously developed scenario construction.
     \item \textbf{Scenario Extensibility}: Details on how new scenarios could be developed and the necessary changes to do so.
-    \item \textbf{Cloud Deployment}: Insights on how the cloud deployment was taken into account using Microsoft Azure as the cloud provider.
     \item \textbf{User Interface Panel}: Presentation of the UI responsible for managing scenarios' in a sort of a CTF-level style.
+    \item \textbf{Cloud Deployment}: Insights on how the cloud deployment was taken into account using Microsoft Azure as the cloud provider.
+    \item \textbf{Summary}: Final considerations on the validation chapter.
 \end{enumerate}
 
 
@@ -26,7 +27,7 @@ Across the entire development, Docker was the selected tool responsible for prov
 Lastly, in particular, situations, as we will later see, Vagrant, was used in order to create Windows-based scenarios. Essentially the setup we built was a Windows Vagrant box running within the Linux Docker container, letting Windows-based types of attacks be successfully explored by the trainee. One question may arise: \textit{Why not use a Windows VM instead of a Vagrant box inside a Docker container?} The issue with this approach is that more storage will be needed if we intend to run several instances of the Windows VM. Instead, the Docker read-only image will stay the same if we use the first-mentioned approach.
 Only the container that derives from that same image will change, adding its read-write layer that interacts with the Docker read-only image. As a result, the system uses way less storage. Concerning Windows-based VMs, a similar approach can be taken into account. In scenarios with more than one Windows VM, an optimal solution to reduce resource consumption would be to use a container with a hypervisor installed responsible for monitoring all the present Windows VMs, instead of having one hypervisor per Windows VM. This can be achieved using linked clones in Vagrant in which new VMs only differing in disk images are created using the parent disk image belonging to a master VM. Another key aspect of choosing this setup was consistency. We wanted to create scenarios based on containers and not use a hybrid approach that used containers and VMs separately. With this, we are ready to move into the architectural details of the project.
 
-The engineering process, along with these tools, allowed us to obtain a set of cybersecurity training scenarios that can be run locally without needing an enormously complex infrastructure. More specifically, the lightweight containerization approach followed during the development allowed us to run complex scenarios with a distance of a command or click. In Chapter \textbf{CLOUD DEPLOYMENT}, we also discuss how we could export our set of cyber ranges into a remote machine again, with the help of Ansible, to perform every needed remote configuration.
+The engineering process, along with these tools, allowed us to obtain a set of cybersecurity training scenarios that can be run locally without needing an enormously complex infrastructure. More specifically, the lightweight containerization approach followed during the development allowed us to run complex scenarios with a distance of a command or click. In Section \ref{sec:validaiton_cloud_deployment}, we also discuss how we could export our set of cyber ranges into a remote machine again, with the help of Ansible, to perform every needed remote configuration.
 
 \section{Architecture} \label{sec:validation_architecture}
 
@@ -467,7 +468,7 @@ The \textit{entry point} role performs the necessary tasks to configure a certai
 The \textit{mesh} role handles devices that need to join the Tailscale network, called \textit{tailnet}. As explained in Section \ref{sec:selected_tools_tailscale}, this network allows communication between each device that belongs to it. This is useful when focusing on cloud deployments if we, for instance, want to connect to port 6080 on our attacker machine to be able to control it remotely and, as we will see, in the Windows-based scenarios to access the Windows Vagrant box using \textit{remote desktop}. 
 
 This role's actions start by installing Tailscale and starting the \textit{tailscaled} service. After this, the container is instructed to join a specific Tailscale network using an authentication key and by specifying a hostname for the machine. An authentication key allows the addition of new nodes to the Tailscale network without needing to sign in to the network. A reusable authentication key was created to connect multiple nodes to the network. Each time a new node joins the Tailscale network using this authentication key, it enters the group of Tailscale ephemeral nodes, which essentially refer to short-lived devices that are automatically removed from the network after a short period of inactivity and are immediately removed from the network in case they are instructed to do so. Also, the usage of the same hostname for a particular machine allows accessing it using a Tailscale feature called ``MagicDNS'' which essentially registers all the DNS names for the network's devices using the following logic: \texttt{[Device Hostname].[Network DNS Name]}
-The device's hostname was already mentioned above. By default, the network's DNS name is chosen by Tailscale upon the first usage. The ``MagicDNS'' configuration provides easy access to machines when they are not under our control. This will be very useful in the chapter of \textbf{CLOUD DEPLOYMENT}.
+The device's hostname was already mentioned above. By default, the network's DNS name is chosen by Tailscale upon the first usage. The ``MagicDNS'' configuration provides easy access to machines when they are not under our control. This will be very useful in Section \ref{sec:validation_cloud_deployment}.
 
 \section{Custom Scenarios} \label{sec:validation_custom_scenarios}
 
@@ -1057,7 +1058,7 @@ Every imported DiceCTF scenario typically has a YAML file that is core to unders
 With all this information in place, we organized our folder structure for each scenario. Our Python script first pulls the DiceCTF's GitHub repositories and recursively looks for the challenges that use Docker. The ones that do not use it are, therefore, excluded. Other specific checks are also performed in this sense. We also look for challenges that were pinpointed to also be excluded because their Docker setup is incompatible with our framework's setup, simply because they use Docker images that do not support the installation of \textit{python3} and \textit{iproute2} packages. Both these packages are required in our setup.
 Then, the script goes through the challenge mentioned above's YAML file and starts creating the scenario's variables file. As before, each scenario's vulnerable container is exposed via a domain, and the format followed by DiceCTF is \texttt{{CHALLENGE\_NAME}.mc.ax}. In our variable's file, we create the necessary configurations in the DNS server, reverse proxy, and the edge router's port forwarding. As each scenario is attack-oriented, we need to include the attacker machine located in the external network in our setup. This will be the machine in control of the trainee. The following tasks involve setting up the custom scenario's structure, which is very similar for each scenario. The only things that change are the created containers and the domain of the exposed service. If the scenario has two or more containers, the container's name is mapped in DNS, which usually happens in Docker. For instance, if a scenario deploys containers \texttt{app} and \texttt{mongo}, the \texttt{app} container may attempt to access the database using the \texttt{mongo} domain. As such, the \texttt{mongo} string must be mapped to the \texttt{mongo} container's IP address.
 
-The last thing on this topic is a feature called \textit{AdminBot} that some scenarios make available. Essentially, this is another service that exposes both a backend and a frontend. The attacker can request this backend service to make an HTTP request to a domain of their choice, which can be the vulnerable server itself, in most scenarios, or a randomly selected domain. Typically, this request incorporates a flag in it, for instance, in the form of a cookie. The \textit{AdminBot} is entirely available for the trainee. It works as an extra that can provide real aid when solving the challenge.
+The last thing on this topic is a feature called \textit{AdminBot} that some scenarios make available. Essentially, this is another service that exposes both a back-end and a front-end. The attacker can request this back-end service to make an HTTP request to a domain of their choice, which can be the vulnerable server itself, in most scenarios, or a randomly selected domain. Typically, this request incorporates a flag in it, for instance, in the form of a cookie. The \textit{AdminBot} is entirely available for the trainee. It works as an extra that can provide real aid when solving the challenge.
 
 \begin{figure}[H]
     \includegraphics[width=12cm]{figures/adminbot.png}
@@ -1079,9 +1080,62 @@ The next topic concerns port forwarding configurations on the edge router. The g
 
 Lastly, we need to pay attention to the entry point scripting section. For configurations in Docker containers, we need to include a folder with a set of Jinja2 templating files that support the inclusion of variables specified in the YAML files. There is no need to use Jinja2 templates for configurations in the local machine. With each of these configurations, an \textit{entrypoint.sh.j2} or an \textit{entrypoint.sh} file should be placed, as it will be the script that Ansible's actions will trigger. Concerning the setup of the attacker machine, including the previously mentioned root CA is needed so that the digital certificates are considered trusted across the scenarios.
 
-Having all these steps in mind and following the logic of the presented scenarios, it is simple to expand the project to new scenarios.
+Having these considerations in mind and following the logic of the already presented scenarios, it is simple to expand the project to new scenarios. 
 
 % Python Script
     % DiceCTF GitHub format
     % Our format (talk about entrypoints)
     % Scenarios that require Admin Bot
+
+\section{User Interface Panel} \label{sec:validation_ui}
+
+For users that like to handle the scenario launching with the touch of a button, we created a user interface that presents us with a listing of every scenario. Fig. \ref{fig:ui_architecture_diagram} presents us with a basic overview of the UI panel's current stance.
+
+\begin{figure}[H]
+    \includegraphics[width=14cm]{figures/ui_diagram.pdf}
+    \caption{User Interface Panel Architecture Diagram.}
+    \label{fig:ui_architecture_diagram}
+\end{figure}
+
+To achieve this, we created a \textit{docker-compose.yml} file responsible for launching containers for the front-end, back-end and database supporting the UI platform. The front-end was developed in \textit{ReactJS}\footnote{\url{https://react.dev/}} using the Material UI\footnote{\url{https://mui.com/material-ui/getting-started/overview/}} component library. The back-end was developed in NodeJS\footnote{\url{https://nodejs.org/en}} and the database in MongoDB\footnote{\url{https://www.mongodb.com/}}. In the middle of the diagram, we can see two distinct sections, the ``\textit{Named FIFOs}'' and the ``\textit{Populate MongoDB}''. The latter concerns the same Python script mentioned in Section \ref{sec:validation_imported_scenarios}, responsible for importing scenarios from the DiceCTF competition.
+Along with this functionality, this script also populates the MongoDB database with the information of every scenario. The ``\textit{Named FIFOs}'' is composed of two named FIFOs that are extremely important for the correct functioning of the project. The goal, of the UI panel, is to launch scenarios with the click of a button. This means when a user clicks a button, an HTTP request will be sent from the front-end container to the back-end container, which will have to launch the scenario somehow. As the back-end itself runs inside a container, there is no direct way of running a shell sent to the back-end service in the machine hosting the containers. To overcome this, we created these FIFOs, which are bind mounted from the host machine's file system to the back-end container's file system. So, every time the back-end container sends a command to a FIFO, on the host machine, there is a script running and waiting for an input which will be the shell command used for launching the scenario. As this command is read in the FIFO, it is then executed in the host machine. So, this part of the problem was solved. The next issue concerned how the user could get feedback on the execution of the scenario. As this process normally takes a while, having a loading spinner with a percentage of the scenario's progress would probably be boring.
+The way we approached this was to have a \textit{WebSocket} bound to the local machine that would echo the output of the scenario's execution command. So, whenever we connect to this \textit{WebSocket} we receive real-time feedback on the scenario's execution process. The way to achieve this was using a program called \textit{websocketd}\footnote{\url{https://github.com/joewalnes/websocketd}}. Then, we have another named FIFO that also waits for incoming data. To the \textit{cancel\_mypipe} FIFO, we wait for commands that cancel the current scenario execution, essentially killing the current \textit{websocketd} process.
+
+\begin{figure}[H]
+    \includegraphics[width=13cm]{figures/ui_dashboard.png}
+    \caption{User Interface Panel.}
+    \label{fig:ui_panel}
+\end{figure}
+
+Fig. \ref{fig:ui_panel} presents the front-end design. The UI panel consists of two primary tabs, one for all the available scenarios and one for the solved scenarios, meaning the already completed ones. The design of each page is similar. We can observe two side-bar filters for the categories of the challenges and their difficulty. 
+
+\begin{figure}[H]
+    \includegraphics[width=13cm]{figures/ui_example_scenario.png}
+    \caption{User Interface Log4j Scenario.}
+    \label{fig:ui_log4j_scenario}
+\end{figure}
+
+In Fig. \ref{fig:ui_log4j_scenario}, we can see the details associated with a scenario, namely the name, author, category, difficulty, a short description, and the domains of the services to be targeted within the scenario. This modal also consists of a bottom panel where the front-end connects to the above-mentioned \textit{WebSocket} and constantly receives real-time data on the scenario's execution steps provided by Ansible. 
+
+% Frontend
+% Backend
+% Named FIFO
+
+\section{Cloud Deployment} \label{sec:validation_cloud_deployment}
+
+One of the project's key aspects was the ability to run complex scenarios with the effort of a click or a command in the local machine. A UI panel was created to broaden the accessibility to users that want to keep it simple. However, the project's focus was to support remote deployments, namely, cloud deployments.
+
+During the development, we used Microsoft Azure as our cloud provider. We created a \textit{Standard D2ads v5} Azure Virtual Machine featured with 2 vCPUs, 8GB of RAM, and 128GB disk space due to the amount of memory the current cyber ranges take. The OS used was Ubuntu 22.04. 
+
+For every scenario deployment, the last steps included the installation of Tailscale in the attacker machine (\textit{attackermachine}) and/or in the hypervisor container (\textit{kvmcontainer}). After the installation of this tool, we added these machines to our Tailscale network as ephemeral nodes with a previously generated authentication key that could sign in to the network. Even the Azure VM where we later deployed the project had Tailscale installed and joined the network using the same authentication key. With such a configuration set, accessing every machine belonging to our Tailscale mesh network was easy using \textit{MagicDNS}. Through our host machine, which was also part of the Tailscale network, we can access the attacker machine using the domain \texttt{attackermachine.rhino-duck.ts.net}, the hypervisor container using \texttt{kvmcontainer.rhino-duck.ts.net}, and the remote machine using \texttt{local.rhino-duck.\\ts.net}. With our remote deployment set in place, we can use these domains to access every remote container without needing any port forwarding or firewall configurations set. This means we can access our attacker machine using VNC, Remote Desktop into our Windows VM, and even access our UI panel hosted in the remote machine. Notice that on every new scenario execution, either via the UI panel or the command line, we first attempt to remove possible attacker or hypervisor machines from the Tailscale network so that when new scenarios are deployed, and other machines attempt to join the Tailscale network, there is no collision between domain names. With this in mind, we ensure that we always target the correct machines when accessing any of the domains mentioned above.
+
+To enable the remote setup of Azure's VM, a Bash script was created. It configures the target machine with the necessary packages and files to run Ansible, uses a GitHub deployment key associated with the project to pull data from the repository, and runs an Ansible bootstrap playbook in the target machine. At last, the UI panel is launched. All the configuration and provisioning tasks of the remote machine are done using a pre-configured SSH key generated through Azure. The commands and file copy operations are performed using SSH and \textit{Rsync}, a command line tool that looks to replace the already deprecated \textit{Secure Copy Protocol (SCP)}.
+
+% Tailscale (kvmcontainer, attackermachine, local | rhino-duck.ts.net)
+% Microsoft Azure
+
+\section{Summary} \label{sec:validation_summary}
+
+This chapter presented the results from the validation process of the developed project solution. Starting from Section \ref{sec:validation_iac_tools_in_cr_construction}, we provide a brief insight into the Infrastructure-as-Code tools used across the project and a short overview of the design decisions taken across the project. In Section \ref{sec:validation_architecture}, we detail the logic followed using Ansible groups, roles, and variables crucial to understanding the project's inner workings. Furthermore, Section \ref{sec:validation_custom_scenarios} explains the construction process of the Log4j, Ransomware, and Active Directory scenarios, the problems overcame, and possible solutions to get the secret flag of each scenario. Section \ref{sec:validation_imported_scenarios} details the process of importing scenarios from the DiceCTF competition. With this, we significantly expanded the number of scenarios available in the project. Moreover, Section \ref{sec:validation_scenario_extensibility} presents insights on creating new scenarios and including them in our framework. Section \ref{sec:validation_ui} explains the architecture behind the UI panel used to manage the entire framework and, lastly, Section \ref{sec:validation_cloud_deployment} explains the cloud deployment process to carry out the scenarios to a remote machine accessible through the Internet.
+
+The validation process revealed itself helpful when identifying possibilities for improving the implemented solution. We developed a framework capable of being run on a local or remote machine, featuring a straightforward user interface, and capable of letting the trainee improve his skills in several areas across the cybersecurity field.
