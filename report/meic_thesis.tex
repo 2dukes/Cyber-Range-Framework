@@ -52,6 +52,7 @@
 % Listings
 \definecolor{cloudwhite}{cmyk}{0,0,0,0.025}  % color
 
+
 %% Include source-code listings package
 \usepackage{listings}
 \lstset{ %
@@ -110,7 +111,7 @@
 %\thesisdate{July 31, 2008}
 
 %% Comment next line copyright text if not used
-%\copyrightnotice{Name of the Author, 2008}
+\copyrightnotice{}
 
 \supervisor{Supervisor}{Rolando Martins}
 \supervisor{Co-Supervisor}{Carlos Novo}
@@ -136,30 +137,38 @@
 \logo{figures/uporto-feup.pdf}
 
 %% Uncomment next line for additional text below the author's name (front page)
-% \additionalfronttext{Preparação da Dissertação}
+\additionalfronttext{Masters Thesis}
 %\additionalfronttext{Dissertation Planning}
-
 %%----------------------------------------
 %% Preliminary materials
 %%----------------------------------------
 
+
 % remove unnecessary \include{} commands
+
 \begin{Prolog}
+  \clearpage\phantom{}
   \include{chapters/abstract} % the abstract
-  % \include{chapters/acknows}  % the acknowledgments
-  % \include{quotes/quote}    % initial quotation if desired
-  \cleardoublepage
+  \clearpage\phantom{}
+  \include{chapters/acknows}  % the acknowledgments
+  \clearpage\phantom{}
+  \include{quotes/quote}    % initial quotation if desired
+  \clearpage\phantom{}
+  %\cleardoublepage
   \pdfbookmark[0]{Table of Contents}{contents}
   \tableofcontents
-  \cleardoublepage
+  %\cleardoublepage
   \pdfbookmark[0]{List of Figures}{figures}
   \listoffigures
-  \cleardoublepage
+  %\cleardoublepage
+  \clearpage\phantom{}
   \pdfbookmark[0]{List of Tables}{tables}
   \listoftables
-  \cleardoublepage
+  %\cleardoublepage
+  \clearpage\phantom{}
   \pdfbookmark[0]{List of Listings}{listings}
   \lstlistoflistings
+  \clearpage\phantom{}
   \include{chapters/abbrevs}  % the list of abbreviations used
 \end{Prolog}
 
@@ -169,11 +178,16 @@
 \StartBody
 
 %% TIP: use a separate file for each chapter
-\include{chapters/introduction.tex} 
+\include{chapters/introduction.tex}
+\clearpage\phantom{}
 \include{chapters/sota.tex}
+\clearpage\phantom{}
 \include{chapters/problem.tex}
+\clearpage\phantom{}
 \include{chapters/validation.tex}
+\clearpage\phantom{}
 \include{chapters/conclusion.tex}
+\clearpage\phantom{}
 
 %%----------------------------------------
 %% Final materials

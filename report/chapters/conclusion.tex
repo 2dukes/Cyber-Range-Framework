@@ -1,10 +1,63 @@
-\chapter{Conclusion}\label{chap:conclusion}
+\chapter{Conclusions}\label{chap:conclusion}
+
+\section{Conclusions} \label{sec:conclusions}
 
 The current thesis touches on a multitude of topics and approaches. In this section, we go over each of these.
 
 Cyber ranges play an essential role in cybersecurity training professionals and students. There is a constant need to improve the knowledge of better-protecting systems against outside and inside threats. Typically, the best defense is attacking, which opens the door to cyber ranges based on CTF challenges where cybersecurity enthusiasts can build upon their skills.
 
-The analysis of the current \textit{state-of-the-art} revealed many cyber ranges built using old-case-driven approaches, which turn out to be costly and sometimes less effective. Most of these deployments are associated with virtual machines and physical hardware. More cost-effective and lightweight solutions are starting to emerge using approaches based on containerization. This virtualization allows larger deployments that consume fewer resources compared to old methods. Issues concerning the manual and overwhelming process of developing brand-new cyber range scenarios are starting to be overtaken due to the randomization of scenarios. The issues posed by threats introduced with cloud cyber range deployments that may put in danger the underlying network of the cyber ranges were also explored. Interesting features concerning traffic generation, event capture, and logging, as well as various network services used to simulate complex enterprise-level networks, were addressed.
+The literature review process revealed many cyber ranges built using old-case-driven approaches, which turn out to be costly and sometimes less effective. Most of these deployments are associated with virtual machines and physical hardware. More cost-effective and lightweight solutions are starting to emerge using approaches based on containerization. This virtualization allows larger deployments that consume fewer resources compared to old methods. Issues concerning the manual and overwhelming process of developing brand-new cyber range scenarios are starting to be overtaken due to the randomization of scenarios. Moreover, not every cyber range is ready to be deployed on a remote machine, which may turn the entire process of hosting scenarios centralized.
 
-Our solution aims to strengthen what the current \textit{state-of-the-art} lacks. Using a DevOps approach relying on Infrastructure as Code with Ansible to configure and provision cyber ranges scenarios based on Docker containers and developing complex networks both based on Windows and Linux vulnerabilities with the help of tools like Vagrant and having in mind possible permutations of vulnerabilities, configurations, and attacks enabling randomization of the available scenarios, we expect to develop a unique solution that will successfully meet the stated hypothesis. As mentioned throughout the document, the final result of this dissertation is to develop a set of Ansible playbooks that correctly configures and deploys a defined set of scenarios. Lastly, the we intend to make the developed code open-source so it can be further extended in terms of new scenarios and features and as a way to better prepare the cybersecurity workforce for future security incidents.
+Our solution aims to strengthen what the current \textit{state-of-the-art} lacks and revolves upon the following central hypothesis:\\
 
+\leftskip=1.25cm\rightskip=1.25cm
+
+\textbf{H:} \textit{``Using an approach heavily relying upon DevOps, Infrastructure as Code and containerization, it is possible to automatically deploy and provision, in a cost-effective manner, a set of vulnerable enterprise-level scenarios, ensuring practical appealing cybersecurity training.''}\\
+
+\leftskip=0cm\rightskip=0cm
+
+To validate our hypothesis, we used a DevOps approach relying on Infrastructure as Code with Ansible to configure and provision cyber range scenarios based on Docker containers. Moreover, we developed enterprise-level networks, considering various attack paths, enabling the trainee to solve a scenario in many ways. We also addressed randomization by changing the IP address of each container on every new scenario execution. With the help of Ansible, we can say we created a framework capable of integrating a wide range of Docker-based scenarios that are supported by an enterprise-level network in a cost-effective manner.
+
+Creating custom scenarios allowed us to expand our knowledge to new environments related to world-known vulnerabilities, namely, Log4j, which haunted several companies across the end of the year 2021. We have built a scenario that successfully explores this vulnerability, allowing the trainee to experience and attack services vulnerable to Log4j. Furthermore, we not only visited the Linux operating system. With the aid of Vagrant, we also dived through Windows-based scenarios, which introduced another degree of complexity to our project. We developed a scenario that included a Ransomware sample, which still haunts individuals and companies nowadays. We created a purposely vulnerable Active Directory Domain Controller where trainees can test every sort of attack path. The journey of custom scenario creation does not finish here, as we designed our framework to allow the integration of new scenarios. 
+
+To provide something visible that manages the entire framework, we created a UI panel that works in sort of a CTF-like platform, where a user can launch scenarios, exploit them and submit the correct secret flag to mark them as solved. 
+
+Finally, we wanted to turn our framework flexible, so we deployed our scenarios to a remote machine and joined containers that needed to be accessible from the exterior to a Tailscale mesh network.
+
+In conclusion, we developed a straightforward cyber range framework that addresses some of the knowledge gaps the cybersecurity force needs to build upon and successfully validated our initially proposed hypothesis. 
+
+\section{Contributions} \label{sec:contributions}
+
+All in all, we can highlight the following:\\
+
+\textbf{Literature Review}
+
+We conducted an analysis of the \textit{state-of-the-art} to understand the current research paradigm, the technologies used while building cyber range environments, and their applicability in cybersecurity training.\\
+
+\textbf{Cyber Range Framework}
+
+We designed and implemented a configurable, dynamic, easily-deployable, and robust framework for cyber ranges. This tool uses cutting-edge technologies to automatically launch a wide range of scenarios that a cybersecurity professional or enthusiast can explore. The GitHub repository hosting our framework will be open-sourced.\\\\
+
+\textbf{Validation of the Proposed Hypothesis}
+
+The conducted work allows us to state the hypothesis was validated strongly. Over Chapter \ref{chap:validation}, we provided insight into how our solution was built and the methodology and logic followed across the project development.
+
+\section{Future Work} \label{sec:future_work}
+
+The final outcome of the developed framework is quite interesting. However, we believe any things can be considered for future work, namely:\\
+
+\textbf{Scenarios}
+
+Pursue further efforts in creating scenarios that use a wider range of network services, for instance, Mail servers, Intrusion Detection, and Prevention Systems. The possibility of using real hardware in some scenarios could also add value to the project. The ability to generate traffic from hypothetical users sitting in the network and logging the activities carried by an attacker to try to exploit a vulnerable service could also be meaningful from the trainee's point of view.\\
+
+\textbf{Randomization}
+
+Several possible avenues of research were identified during the Literature Review (\textit{cf.} Chapter \ref{chap:sota}), which were not fully explored. We are talking about randomization. We mentioned every time a scenario is launched, the IP address of each container varies. However, further developments can take in consideration the randomization of user accounts, credentials, operating systems,  network configurations, and services. Even if considering the above-mentioned traffic generation, several types of traffic could be generated.\\
+
+\textbf{Docker Escape Concerns}
+
+Our framework is tailored for running in controlled environments. Even in cloud deployments, we guarantee access to the externally accessible machines only if the machine trying to access them is part of the Tailscale network. The traffic exchanged between the mesh network is encrypted, and any device sitting outside it cannot access any machine or decrypt any traffic. Still, if by any means the trainee feels inspired to perform Docker escape attacks, it would be useful to explore some countermeasures to prevent the trainee from accessing the host system.\\
+
+\textbf{Open-source}
+
+A final consideration of this work pertains to the ability to open the framework to any cybersecurity professional or enthusiast, developer, academic institution, or even government as a means of skills training.
