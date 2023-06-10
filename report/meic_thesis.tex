@@ -147,28 +147,29 @@
 % remove unnecessary \include{} commands
 
 \begin{Prolog}
-  \clearpage\phantom{}
+  \clearpage\thispagestyle{empty}\setcounter{page}{0}\phantom{}\clearpage
   \include{chapters/abstract} % the abstract
-  \clearpage\phantom{}
+  \blankpage
   \include{chapters/acknows}  % the acknowledgments
-  \clearpage\phantom{}
+  \blankpage
   \include{quotes/quote}    % initial quotation if desired
-  \clearpage\phantom{}
+  \blankpage
   %\cleardoublepage
   \pdfbookmark[0]{Table of Contents}{contents}
   \tableofcontents
   %\cleardoublepage
+  \blankpage
   \pdfbookmark[0]{List of Figures}{figures}
   \listoffigures
   %\cleardoublepage
-  \clearpage\phantom{}
+  \blankpage
   \pdfbookmark[0]{List of Tables}{tables}
   \listoftables
   %\cleardoublepage
-  \clearpage\phantom{}
+  \blankpage
   \pdfbookmark[0]{List of Listings}{listings}
   \lstlistoflistings
-  \clearpage\phantom{}
+  \blankpage
   \include{chapters/abbrevs}  % the list of abbreviations used
 \end{Prolog}
 
@@ -179,15 +180,15 @@
 
 %% TIP: use a separate file for each chapter
 \include{chapters/introduction.tex}
-\clearpage\phantom{}
+\blankpage
 \include{chapters/sota.tex}
-\clearpage\phantom{}
+\blankpage
 \include{chapters/problem.tex}
-\clearpage\phantom{}
+\blankpage
 \include{chapters/validation.tex}
-\clearpage\phantom{}
+\blankpage
 \include{chapters/conclusion.tex}
-\clearpage\phantom{}
+\blankpage
 
 %%----------------------------------------
 %% Final materials

