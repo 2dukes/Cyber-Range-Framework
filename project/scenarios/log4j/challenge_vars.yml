@@ -26,7 +26,6 @@ vulnerables:
   images:
     - name: unifi_log4j
       path: scenarios/log4j
-      dockerfile: Dockerfile.alpine.mongo
       args:
         VERSION: "6.4.54"
     - name: reverse_proxy

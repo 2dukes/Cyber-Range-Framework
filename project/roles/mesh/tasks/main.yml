@@ -5,7 +5,7 @@
   failed_when: "cmdln.rc == 2"
 
 - name: Start Tailscale
-  ansible.builtin.shell: tailscaled --state=tailscaled.state &
+  ansible.builtin.shell: nohup tailscaled --state=tailscaled.state &
 
 - name: Join Tailscale Network
   ansible.builtin.shell: "tailscale up --auth-key={{ tailscale_auth_key }} --hostname={{ inventory_hostname }}"

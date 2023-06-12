@@ -293,3 +293,5 @@ V	330527120455Z		1123	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
 V	330604121942Z		1124	unknown	/C=US/O=FEUP/CN=recursive-csp.mc.ax
 V	330604121946Z		1125	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
 V	330604121949Z		1126	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
+V	330609113058Z		1127	unknown	/C=US/O=FEUP/CN=adminbot.mc.ax
+V	330609113101Z		1128	unknown	/C=US/O=FEUP/CN=adminbotapi.mc.ax
