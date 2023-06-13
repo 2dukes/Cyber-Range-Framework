@@ -147,9 +147,9 @@ openssl rsa -in server.key -out server_nopass.key
 
 \blankpage
 
-\chapter{Entry Point Bash Script} \label{ap1:log4j_entrypoint_script}
+\chapter{Attacker Machine - Entry Point Bash Script} \label{ap1:log4j_entrypoint_script}
 
-\begin{lstlisting}[language=bash,caption=Entrypoint Bash Script.]
+\begin{lstlisting}[language=bash,caption=Attacker Machine - Entrypoint Bash Script.]
 #!/bin/bash
 
 cd "$( dirname "$0" )"
@@ -172,9 +172,9 @@ cat policies.json > /usr/lib/firefox-esr/distribution/policies.json
 
 \blankpage
 
-\chapter{Cloning Rogue JNDI GitHub Repository} \label{ap1:unifi_clone_rogue_jndi}
+\chapter{Log4j Scenario - Running Exploit} \label{ap1:unifi_clone_rogue_jndi}
 
-\begin{lstlisting}[language=bash,caption=Cloning Rogue JNDI GitHub Repository.]
+\begin{lstlisting}[language=bash,caption=Log4j Scenario - Running Exploit.]
 # Clone Rogue JNDI GitHub repository and build project
 git clone https://github.com/veracode-research/rogue-jndi && cd rogue-jndi && mvn package
 
