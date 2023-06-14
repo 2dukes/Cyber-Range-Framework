@@ -474,47 +474,47 @@ Starting from the methodology used during the research process, exploring genera
 
 As mentioned throughout this chapter, current cyber range problems are related to high-cost infrastructure relying too much on virtual machines, and details of these kinds of open-source scenarios rarely reference up-to-date vulnerabilities and attacks. Container-based solutions are starting to appear, but they heavily rely on custom cyber range description files, using the YAML, XML, or, sometimes, even the JSON format. There are cases where IaC tools are not being used, hampering scalability concerns. In such cases, typically, a custom tool was designed to parse and take action on the aforementioned customized scenario description files. Randomization is clearly lacking in some cyber range scenarios, which is understandable given that developing these testing environments is a slow manual process.
 
-Nonetheless, key takeaway ideas in the performed search are mostly related to the services present in the cyber range scenarios, which simulate enterprise-level networks and the technologies used to build them. Other topics that stand out during our search concern traffic generation using automated scripts that emulate benevolent or malicious behavior and aspects related to monitoring trainee actions across the testing environment are also important factors that can make the scenario more realistic. Lastly, the set of vulnerabilities and attacks instigated across all references, especially in open-source projects, will be very useful for our project's sake.
+Nonetheless, key takeaway ideas in the performed search are mostly related to the services present in the cyber range scenarios, which simulate enterprise-level networks and the technologies used to build them. Other topics that stand out during our search concern traffic generation using automated scripts that emulate benevolent or malicious behavior and aspects related to monitoring trainee actions across the testing environment are also important factors that can make the scenario more realistic. Lastly, the set of vulnerabilities and attacks instigated across all references, especially in open-source projects, were very useful for our project's sake to better understand typical scenario examples.
 
 Table \ref{tab:comparison_cr} presents a high-level overview of the main features supported by some of the most relevant cyber ranges, finishing with the proposed solution's aim.
 
 \begin{table}[H]
   \caption{Comparison of Cyber Ranges.}
-\scalebox{0.59}{
-\begin{tabular}{ | c | c | c | c | c | c | c | c |}
+\scalebox{0.54}{
+\begin{tabular}{ | c | c | c | c | c | c | c | c | c |}
 \hline
-\empty & \textbf{IaC} & \textbf{Randomization} & \textbf{Local \& Cloud Deployments} & \textbf{Containerization} & \textbf{Enterprise-level Scenarios} & \textbf{Linux \& Windows Scenarios}  \\ 
+\empty & \textbf{IaC} & \textbf{Randomization} & \textbf{Local \& Cloud Deployments} & \textbf{Containerization} & \textbf{Enterprise-level Scenarios} & \textbf{Linux \& Windows Scenarios} & \textbf{Open-source} \\ 
 \hline
-\textit{CyExec} & \priority{50} & \priority{100} & \priority{100} & \priority{100} & \priority{50} & \priority{50} \\  
+\textit{CyExec} & \priority{50} & \priority{100} & \priority{100} & \priority{100} & \priority{50} & \priority{50} & \priority{0} \\  
 \hline
-\textit{Pandora} & \priority{0} & \priority{100} & \priority{50} & \priority{0} & \priority{0} & \priority{50} \\
+\textit{Pandora} & \priority{0} & \priority{100} & \priority{50} & \priority{0} & \priority{0} & \priority{50} & \priority{0} \\
 \hline
-\textit{CyRIS/CyTrONE} & \priority{50} & \priority{100} & \priority{100} & \priority{0} & \priority{0} & \priority{50} \\
+\textit{CyRIS/CyTrONE} & \priority{50} & \priority{100} & \priority{100} & \priority{0} & \priority{0} & \priority{50} & \priority{100} \\
 \hline
-\textit{NCR} & - & \priority{100} & \priority{50} & \priority{0} & \priority{0} & - \\
+\textit{NCR} & - & \priority{100} & \priority{50} & \priority{0} & \priority{0} & - & \priority{0} \\
 \hline
-\textit{SmallWorld}  & \priority{50} & \priority{0} & \priority{100} & \priority{0} & \priority{100} & \priority{100} \\
+\textit{SmallWorld}  & \priority{50} & \priority{0} & \priority{100} & \priority{0} & \priority{100} & \priority{100} & \priority{0} \\
 \hline
-\textit{Leaf}  & \priority{100} & \priority{100} & \priority{100} & \priority{0} & \priority{100} & \priority{0} \\
+\textit{Leaf}  & \priority{100} & \priority{100} & \priority{100} & \priority{0} & \priority{100} & \priority{0} & \priority{0} \\
 \hline
-\textit{CRACK} & \priority{50} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
+\textit{CRACK} & \priority{50} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} & \priority{100} \\
 \hline
-\textit{SEED Labs} & \priority{50} & \priority{0} & \priority{50} & \priority{50} & \priority{50} & \priority{50} \\
+\textit{SEED Labs} & \priority{50} & \priority{0} & \priority{50} & \priority{50} & \priority{50} & \priority{50} & \priority{100} \\
 \hline
-\textit{Labtainers} & \priority{50} & \priority{100} & \priority{100} & \priority{50} & \priority{100} & \priority{50} \\
+\textit{Labtainers} & \priority{50} & \priority{100} & \priority{100} & \priority{50} & \priority{100} & \priority{50} & \priority{100} \\
 \hline
-\textit{CRATE} & - & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
+\textit{CRATE} & - & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} & \priority{0} \\
 \hline
-\textit{DSP} & \priority{50} & \priority{0} & \priority{50} & \priority{100} & \priority{100} & \priority{50} \\
+\textit{DSP} & \priority{50} & \priority{0} & \priority{50} & \priority{100} & \priority{100} & \priority{50} & \priority{100} \\
 \hline
-\textit{SecGen} & \priority{100} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} \\
+\textit{SecGen} & \priority{100} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} & \priority{100} \\
 \hline
-\textit{\textbf{\specialcell{Proposed\\Solution}}} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} \\
+\textit{\textbf{\specialcell{Proposed\\Solution}}} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} \\
 \hline
 \end{tabular}}
   \label{tab:comparison_cr}
 \end{table}
 
-Several marks were given according to each cyber range. As a way to demystify some classifications, for the \textit{IaC} column, we considered half a circle as approaches that used customized descriptions to deploy scenarios or solutions only relying on Docker or Docker-compose without a standard tool, as some of the ones presented in Table \ref{tab:comparison_iac_tools}; for the \textit{Randomization} column, we considered tools that provided some sort of randomization of: traffic generation, network, system and accounts' configurations or of the vulnerabilities present in the scenario as of a full circle. Regarding the \textit{Local \& Cloud Deployments} and \textit{Linux \& Windows Scenarios}, we considered half a circle for cases where only one of the features was present. About the \textit{Containerization} column, we considered half a circle for scenarios that combined containers and VMs in separate scenarios. Finally, concerning the \textit{Enterprise-level Scenarios} column, we considered full circles as a network with a wide variety of services ranging from firewalls, internal networks, IDS, and mail servers, among others. At the same time, half-circles were intermediate representations of enterprise-level networks.
+Several marks were given according to each cyber range. As a way to demystify some classifications, for the \textit{IaC} column, we considered half a circle as approaches that used customized descriptions to deploy scenarios or solutions only relying on Docker or Docker-compose without a standard tool, as some of the ones presented in Table \ref{tab:comparison_iac_tools}; for the \textit{Randomization} column, we considered tools that provided some sort of randomization of: traffic generation, network, system and accounts' configurations or of the vulnerabilities present in the scenario as of a full circle. Regarding the \textit{Local \& Cloud Deployments} and \textit{Linux \& Windows Scenarios}, we considered half a circle for cases where only one of the features was present. About the \textit{Containerization} column, we considered half a circle for scenarios that combined containers and VMs in separate scenarios. Concerning the \textit{Enterprise-level Scenarios} column, we considered full circles as a network with a wide variety of services ranging from firewalls, internal networks, IDS, and mail servers, among others. At the same time, half-circles were intermediate representations of enterprise-level networks. Finally, the \textit{Open-source} column, considers scenarios available to the general public.
 
-With these ideas in mind, Chapter \ref{chap:problem_statement} will further detail the problem to be solved.
+Our framework addresses every column of Table \ref{tab:comparison_cr} which is not achieved by any other framework. Even in cyber range frameworks such as \textit{CyExec}, which is very complete in terms of the mentioned features, a possible idea would be to extend the development. Unfortunately, not all frameworks are open-source and some of them lack community support. Instead, we opted for creating a brand new framework featured with the functionalities we wanted. With this idea in mind, Chapter \ref{chap:problem_statement} will further detail the problem to be solved.
