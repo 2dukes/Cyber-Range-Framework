@@ -93,7 +93,7 @@ To meet the project's requirements, the following instructions should be perform
 - Install required packages:
 
 ```sh
-sudo apt update && sudo apt install python3 python3-pip python3-requests websocketd
+sudo apt update && sudo apt install python3 python3-pip python3-requests websocketd rdesktop
 ```
 
 - Install Ansible:

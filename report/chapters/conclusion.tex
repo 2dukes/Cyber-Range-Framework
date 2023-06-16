@@ -18,13 +18,13 @@ Our solution aims to strengthen what the current \textit{state-of-the-art} lacks
 
 \leftskip=0cm\rightskip=0cm
 
-To validate our hypothesis, we used a DevOps approach relying on Infrastructure as Code with Ansible to configure and provision cyber range scenarios based on Docker containers. Moreover, we developed enterprise-level networks, considering various attack paths, enabling the trainee to solve a scenario in many ways. We also addressed randomization by changing the IP address of each container on every new scenario execution. With the help of Ansible, we can say we created a framework capable of integrating a wide range of Docker-based scenarios that are supported by an enterprise-level network in a cost-effective manner.
+To validate our hypothesis, we used a DevOps approach relying on Infrastructure as Code with Ansible to configure and provision cyber range scenarios based on Docker containers. Moreover, we developed enterprise-level networks, considering various attack paths, enabling the trainee to solve a scenario in many ways. We also addressed randomization by changing the IP address of each container on every new scenario execution. With the help of Ansible, we created a framework capable of integrating a wide range of Docker-based scenarios supported by an enterprise-level network in a cost-effective manner.
 
 Creating custom scenarios allowed us to expand our knowledge to new environments related to world-known vulnerabilities, namely, Log4j, which haunted several companies across the end of the year 2021. We have built a scenario that successfully explores this vulnerability, allowing the trainee to experience and attack services vulnerable to Log4j. Furthermore, we not only visited the Linux operating system. But with the aid of Vagrant, we also dived through Windows-based scenarios, which introduced another degree of complexity to our project. We developed a scenario that included a Ransomware sample, which still haunts individuals and companies nowadays. We created a purposely vulnerable Active Directory Domain Controller where trainees can test every sort of attack path. The journey of custom scenario creation does not finish here, as we designed our framework to allow the integration of new scenarios. 
 
 To make the framework easy to manage, we created a UI panel that works in sort of a CTF-like platform, where a user can launch scenarios, exploit them and submit the correct secret flag to mark them as solved. 
 
-Finally, to turn our framework flexible, we deployed our scenarios not only locally, but to a remote machine and joined containers that needed to be accessible from the exterior to a Tailscale mesh network.
+Finally, to make framework flexible, we deployed our scenarios not only locally, but to a remote machine and joined containers that needed to be accessible from the exterior to a Tailscale mesh network.
 
 In conclusion, we developed a straightforward cyber range framework that addresses some of the knowledge gaps the cybersecurity force needs to build upon and successfully validated our initially proposed hypothesis. 
 
@@ -38,7 +38,7 @@ We conducted an analysis of the \textit{state-of-the-art} to understand the curr
 
 \textbf{Cyber Range Framework}
 
-We designed and implemented a configurable, dynamic, easily-deployable, and robust framework for cyber ranges. This tool uses cutting-edge technologies to automatically launch a wide range of scenarios that a cybersecurity professional or enthusiast can explore. Such type of scenarios are quite meaningful as they are strongly related with the vulnerabilities that still haunt the lives of many companies nowadays. Also, the fact that our framework uses an approach heavily reliant in containers allows the creation of flexible scenarios which can easily address important areas, such as, the Internet of Things (IoT). The GitHub repository hosting our framework will be open-sourced.\\
+We designed and implemented a configurable, dynamic, easily-deployable, and robust framework for cyber ranges. This tool uses cutting-edge technologies to automatically launch a wide range of scenarios that a cybersecurity professional or enthusiast can explore. Such types of scenarios are quite meaningful as they are strongly related to the vulnerabilities that still haunt the lives of many companies nowadays. Also, the fact that our framework uses an approach heavily reliant on containers allows the creation of flexible scenarios which can easily address important areas, such as the Internet of Things (IoT). The GitHub repository hosting our framework will be open-sourced.\\
 
 \textbf{Validation of the Proposed Hypothesis}
 
@@ -58,11 +58,11 @@ The current framework is suited for a single trainee only. A possible future imp
 
 \textbf{Randomization}
 
-Several possible avenues of research were identified during the Literature Review (\textit{cf.} Chapter \ref{chap:sota}), which were not fully explored. We are talking about randomization. We mentioned every time a scenario is launched, the IP address of each container varies. However, further developments can take in consideration the randomization of user accounts, credentials, operating systems,  network configurations, and services. Even if considering the above-mentioned traffic generation, several types of traffic could be generated.\\
+Several possible avenues of research were identified during the Literature Review (\textit{cf.} Chapter \ref{chap:sota}), which were not fully explored. We are talking about randomization. We mentioned every time a scenario is launched, the IP address of each container varies. However, further developments can consider the randomization of user accounts, credentials, operating systems,  network configurations, and services. Even if considering the above-mentioned traffic generation, several types of traffic could be generated.\\
 
 \textbf{Docker Escape Concerns}
 
-Our framework is tailored for running in controlled environments. Even in cloud deployments, we guarantee access to the externally accessible machines only if the machine trying to access them is part of the Tailscale network. The traffic exchanged between the mesh network is encrypted, and any device sitting outside it cannot access any machine or decrypt any traffic. Still, if by any means the trainee feels inspired to perform Docker escape attacks, it would be useful to explore some countermeasures to prevent the trainee from accessing the host system.\\
+Our framework is tailored for running in controlled environments. Even in cloud deployments, we guarantee access to the externally accessible machines only if the machine trying to access them is part of the Tailscale network. The traffic exchanged between the mesh network is encrypted, and any device sitting outside it cannot access any machine or decrypt any traffic. Still, if by any means the trainee feels inspired to perform Docker escape attacks, it would be helpful to explore some countermeasures to prevent the trainee from accessing the host system.\\
 
 \textbf{Open-source}
 
