@@ -50,7 +50,7 @@ ssh_config_res2=$(ssh "$remote_ssh" "cat ~/.ssh/config | grep 'github.com'")
 
 if [ -z "$ssh_config_res2" ]
 then
-    ssh "$remote_ssh" "echo '${ssh_config2}' >> ~/.ssh/config"
+    ssh "$remote_ssh" "echo '${ssh_config2}' > ~/.ssh/config"
 fi
 
 # Pull Github Repository
