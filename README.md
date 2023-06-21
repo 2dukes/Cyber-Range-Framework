@@ -109,7 +109,7 @@ mkfifo PROJ_Thesis_2223/project/manager/mypipe
 mkfifo PROJ_Thesis_2223/project/manager/cancel_mypipe
 ```
 
-- Install Docker, docker-compose, necessary Python modules, and Tailscale with the [bootstrap.yml](project/bootstrap.yml) playbook. **This playbook is suited for Debian and Ubuntu-based machines only!**
+- Install Docker, docker-compose, necessary Python modules, and Tailscale with the [bootstrap.yml](project/bootstrap.yml) playbook. **This playbook is suited for Ubuntu-based machines only!**
 
 ```sh
 ansible-playbook bootstrap.yml
