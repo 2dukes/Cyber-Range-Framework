@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const flag = fs.readFileSync(path.resolve(__dirname, 'flag.txt'), 'utf8');
+const flag = fs.readFileSync(path.resolve(__dirname, 'flag_tmp.txt'), 'utf8');
 
 function sleep(time) {
   return new Promise(resolve => {
@@ -19,12 +19,7 @@ module.exports = {
     // you wish it was that easy
     await page.setCookie({
       "name": "FLAG",
-      "value": flag,
-      "domain": "impossible-xss.mc.ax",
-      "path": "/",
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "Strict"
+      "value": flag
     });
     await page.setJavaScriptEnabled(false);
 

@@ -4,7 +4,7 @@ dns:
         machine: edge_router
         network: external_net
     internal:
-        machine: vuln_service_bop_main
+        machine: reverse_proxy1
         network: dmz_net
 port_forwarding:
 -   destination_port: 443

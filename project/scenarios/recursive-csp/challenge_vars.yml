@@ -4,7 +4,7 @@ dns:
         machine: edge_router
         network: external_net
     internal:
-        machine: vuln_service_recursive-csp_main
+        machine: reverse_proxy1
         network: dmz_net
 -   domain: adminbot.mc.ax
     external:
@@ -29,6 +29,8 @@ setup:
     machines:
     -   name: localhost
         setup: '{{ playbook_dir }}/scenarios/recursive-csp/setup/'
+    -   name: admin_bot_api
+        setup: '{{ playbook_dir }}/scenarios/recursive-csp/admin_bot_setup/*.j2'
     -   name: attackermachine
         setup: '{{ playbook_dir }}/scenarios/recursive-csp/attacker_machine_setup/*.j2'
 vulnerables:

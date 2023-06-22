@@ -363,7 +363,7 @@ def parse_challenge(cat, path, chal, has_jail_img):
         dns.append({
             "domain": f"{chal}.mc.ax",
             "internal": {
-                "machine": f"vuln_service_{chal}_{first_container_name}",
+                "machine": REVERSE_PROXY_CONTAINER_NAME,
                 "network": DMZ_NET_NAME
             },
             "external": {
@@ -473,6 +473,14 @@ def parse_challenge(cat, path, chal, has_jail_img):
                 "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/setup/"
             })
 
+            setup.append({
+                "name": "admin_bot_api",
+                "setup": "{{ playbook_dir }}" + f"/scenarios/{chal}/admin_bot_setup/*.j2"
+            })
+
+            copy_dir(f"{parent_dir}/admin_bot_setup",
+                    f"{path}/admin_bot_setup")
+            
         # Import CA
         setup.append({
             "name": ATTACKER_MACHINE_CONTAINER_NAME,

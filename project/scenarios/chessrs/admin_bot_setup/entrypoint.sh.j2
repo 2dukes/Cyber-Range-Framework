@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Load new trusted root CA
+
+cp /setup/ca.crt /usr/local/share/ca-certificates
+update-ca-certificates
