@@ -45,11 +45,9 @@ The other set of scenarios were imported from the [DiceCTF](https://ctf.dicega.n
 | pwn      | [chessrs](project/scenarios/chessrs/)                       |
 | pwn      | [disc-pwn](project/scenarios/disc-pwn/)                     |
 | pwn      | [dicer-visor](project/scenarios/dicer-visor/)               |
-| pwn      | [otterorld](project/scenarios/otterworld/)                 |
+| pwn      | [otterorld](project/scenarios/otterworld/)                  |
 | pwn      | [sice-supervisor](project/scenarios/sice-supervisor/)       |
 | pwn      | [term-zelda](project/scenarios/term-zelda/)                 |
-| misc     | [geminiblog](project/scenarios/geminiblog/)                 |
-| misc     | [mlog](project/scenarios/mlog/)                             |
 | misc     | [Pike](project/scenarios/pike/)                             |
 | misc     | [Prison Reform](project/scenarios/prison-reform/)           |
 | crypto   | [bbbb](project/scenarios/bbbb/)                             |
