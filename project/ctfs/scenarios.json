@@ -27,10 +27,6 @@
     "description": "DISC: Diced Instruction Set Computer.\nNow pwn it!\n(This is the same binary as rev/disc-rev, you may want to try that first)\nNote: remote flag will be the same size as template flag in binary.",
     "difficulty": "Hard"
   },
-  "geminiblog": {
-    "description": "I wrote my own client and server for the gemini protocol. Come try it out!",
-    "difficulty": "Hard"
-  },
   "gift": {
     "description": "Send money to all your friends! Can you get enough balance to see /flag?",
     "difficulty": "Hard"
@@ -46,10 +42,6 @@
   "jwtjail": {
     "description": "A simple tool to verify your JWTs! Oh, that CVE? Don't worry, we're running the latest version.",
     "difficulty": "Hard"
-  },
-  "mlog": {
-    "description": "The future of log lines is here! Get your ML infused log lines and never worry about missing information in your logs. NOTE: this challenge uses a heavy PoW because unfortunately OpenAI is expensive. Please use your own OpenAI API key to test; then once you are confident, try against the remote server. Quickstart: install poetry, then run poetry install and OPENAI_KEY=<your key here> poetry run mlog.",
-    "difficulty": "Easy"
   },
   "otterworld": {
     "description": "Otter World!",
