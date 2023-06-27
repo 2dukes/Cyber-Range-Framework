@@ -214,7 +214,7 @@ Conventional VPN services use the "Hub-and-Spoke" model where each client device
 A different and more efficient network schema that allows direct communication between nodes, contrary to the Hub-and-Spoke model, is the so-called ``Mesh Networks'' and consists of a set of WireGuard peer-to-peer connections, as presented in Fig. \ref{fig:tailscale_mesh} (p. \pageref{fig:tailscale_mesh}).
 
 \begin{figure}[H]
-    \includegraphics[width=10cm]{figures/tailscale_meshnetwork.png}
+    \includegraphics[width=7cm]{figures/tailscale_meshnetwork.png}
     \caption{Point-to-Point Mesh Network \cite{tailscale_docs_ref}.}
     \label{fig:tailscale_mesh}
 \end{figure}
@@ -245,7 +245,7 @@ As explained, cyber ranges are mainly focused on virtualization and containeriza
 According to Ferguson \textit{et al.} \cite{national_cr_ref}, the National Cyber Range (NCR), closely tied to the American Department of Defense, provides a ``\textit{unique environment for cybersecurity testing throughout the program development life cycle using unique methods to assess resiliency to advanced cyberspace security threats}''. The NCR works as an Internet-like environment supported by a multitude of Virtual Machines and physical hardware. Scenarios are deployed to perform tests that should not occur on open operational networks due to potentially catastrophic consequences caused by the execution of malicious payloads. It features traffic generation techniques, several types of vulnerability scanning, exploitation, and data capturing tools. As expected, the main focus of this project is purely military, meaning there are few details on the internals of the cyber range.
 
 \begin{figure}[H]
-    \includegraphics[width=10cm]{figures/ncr_core_capabilities.png}
+    \includegraphics[width=8cm]{figures/ncr_core_capabilities.png}
     \caption{NCR Core Capabilities \cite{national_cr_ref}.}
     \label{fig:ncr_core_capabilities}
 \end{figure}
@@ -253,7 +253,7 @@ According to Ferguson \textit{et al.} \cite{national_cr_ref}, the National Cyber
 As depicted in Fig. \ref{fig:ncr_core_capabilities} (p. \pageref{fig:ncr_core_capabilities}), a firewall is placed between the "Isolated Testbeds" and the "Range Management Enclave". The latter consists of encapsulation tools and an automation tool kit that provisions resources from a "Common Resource Pool". Physical Layer 1 switching ensures isolation concerning the low-level communication protocol stack.  
 
 \begin{figure}[H]
-    \includegraphics[width=10cm]{figures/ncr_test_evaluation.png}
+    \includegraphics[width=8cm]{figures/ncr_test_evaluation.png}
     \caption{NCR Test and Evaluation Event Execution \cite{national_cr_ref}.}
     \label{fig:ncr_test_evaluation}
 \end{figure}
@@ -263,7 +263,7 @@ Fig. \ref{fig:ncr_test_evaluation} (p. \pageref{fig:ncr_test_evaluation}) shows 
 Gustafsson \textit{et al.} \cite{crate_ref} proposes CRATE, a cyber range heavily relying on a dedicated hardware platform, and the topic of Section \ref{sec:vm_cr} (p. \pageref{sec:vm_cr}), virtualization.
 
 \begin{figure}[ht]
-    \includegraphics[width=10cm]{figures/crate_architecture.png}
+    \includegraphics[width=8cm]{figures/crate_architecture.png}
     \caption{CRATE Architecture \cite{crate_ref}.}
     \label{fig:crate_architecture}
 \end{figure}
@@ -276,8 +276,8 @@ Fig. \ref{fig:crate_architecture} (p. \pageref{fig:crate_architecture}) shows a 
 
 Most current \textit{state-of-the-art} focuses on cyber ranges based on Virtual Machines. Pham \textit{et al.} \cite{cyris_ref} proposes a system, CyRIS (Cyber Range Instantiation)\footnote{\url{https://github.com/crond-jaist/cyris}}, that automatically prepares and manages cyber ranges for cybersecurity training based on custom specifications. CyRIS is part of CyTrONE\footnote{\url{https://github.com/crond-jaist/cytrone}} \cite{cytrone_ref}, a training framework that facilitates training activities providing an open-source set of tools that automate the training content generation. It also integrates with a Learning Management System, Moodle. 
 
-\begin{figure}[ht]
-    \includegraphics[width=9cm]{figures/cyris_workflow.png}
+\begin{figure}[H]
+    \includegraphics[width=8cm]{figures/cyris_workflow.png}
     \caption{CyRIS Working Flow \cite{cyris_ref}.}
     \label{fig:cyris_workflow}
 \end{figure}
@@ -286,7 +286,7 @@ According to Fig. \ref{fig:cyris_workflow} (p. \pageref{fig:cyris_workflow}), Cy
 
 \begin{figure}[H]
     \includegraphics[width=7cm]{figures/cyris_architecture.png}
-    \caption{CyRIS's Architecture \cite{cyris_ref}.}
+    \caption{CyRIS Architecture \cite{cyris_ref}.}
     \label{fig:cyris_architecture}
 \end{figure}
 
@@ -303,7 +303,7 @@ CyRIS comprises five key features that play important roles in its architecture:
 Beuran \textit{et al.} \cite{cytrone_ref} presents CyTrONE that follows the architecture presented in Fig. \ref{fig:cytrone_architecture} (p. \pageref{fig:cytrone_architecture}), where CyRIS is also represented.
 
 \begin{figure}[H]
-    \includegraphics[width=10cm]{figures/cytrone_architecture.png}
+    \includegraphics[width=8cm]{figures/cytrone_architecture.png}
     \caption{CyTrONE's Architecture \cite{cytrone_ref}.}
     \label{fig:cytrone_architecture}
 \end{figure}
@@ -315,7 +315,7 @@ The \textit{Training Management} module is based on user inputs and the training
 Like CyTrONE, Furfaro \textit{et al.} \cite{cloud_based_platform_ref} proposes another platform, SmallWorld, also integrated with e-learning systems that explores both virtualization and cloud technologies to reproduce a realistic hybrid environment. Here, the concept of autonomous software agents that imitate the behaviors of human users or malicious actors is introduced. The Agents' behavior is defined via an XML \textit{Agent Definition Language} (ADL) that describes a finite state automaton of the agents' states, possible transitions, and actions. This intermediate representation is later translated into executable code. This tool is featured with a Software Development Kit (SDK) that handles interaction with other tools and allows for the development of customized plug-ins. It uses its own customized \textit{Scenario Definition Language} (SDL) to describe the scenario properties, similarly to other projects. As it is common in VM-based scenarios and due to the possibility of deploying this system in the cloud, this system defines a VPN entry point for accessing the scenario from the exterior.
 
 \begin{figure}[H]
-    \includegraphics[width=10cm]{figures/smallworld_architecture.png}
+    \includegraphics[width=8cm]{figures/smallworld_architecture.png}
     \caption{SmallWorld's Architecture \cite{cloud_based_platform_ref}.}
     \label{fig:smallworld_architecture}
 \end{figure}
@@ -369,6 +369,16 @@ Yamin \textit{et al.} \cite{serious_games_as_a_tool_to_model_attack_and_defense_
 Ficco \textit{et al.} \cite{leaf_ref} mentions a complex cyber range especially tailored for Internet Of Things (IoT) scenarios and Edge applications. Apart from the standard features of these types of cyber ranges, it includes a gorgeous user interface and a complex monitoring system where events are collected via firewalls, IDS, and due to network traffic analysis. Events also refer to machine monitoring operations, for instance, if a machine is not responding or a particular port is open or closed. These sorts of events should be communicated to those outside the cyber range, meaning an API must be made available. This project was developed using technologies like pfSense, an open-source software that emulates firewalls, routers, DHCP servers, DNS servers, and VPN endpoints. Three virtualization technologies were tested: VMware ESXi, OpenStack, and Oracle VirtualBox. VMware ESXi and OpenStack are used for remote deployments. VirtualBox is for smaller local deployments, meaning cyber range VMs are distributed as OVA files. Details on network configuration with pfSense, firewall rules, management of Certification Authorities (CA) and SSL certificates for encrypted traffic between servers and users that go through pfSense, creation of groups within the network with several layers of privileges, references to OpenVPN, which comes installed by default installed in pfSense, Network Address Translation (NAT) and DNS configurations are highly detailed in this article.
 
 Bernardinetti \textit{et al.} \cite{nautilus_ref} cites Nautilus, a VM-based cyber range that leverages cloud technologies to semi-automate the deployment of vulnerable virtualized networks. It includes a platform-agnostic configuration language for the scenarios aiming for local and remote deployments. Additionally, it uses Vagrant and Ansible for software provisioning. Essentially, Nautilus works on top of any hypervisor, such as VirtualBox, VMWare, KVM, and Amazon AWS, among others. Configuration files for the VMs are written in a \textit{Vagrantfile}, including hardware specifications, the base image to use, and network configurations. A set of Ansible playbooks describe how to provision the VM. All this is done using Nautilus SDL, meaning these high-level descriptions of the scenes are parsed, and the outcome serves as input for Ansible and Vagrant.
+
+Vykopal \textit{et al.} \cite{kypo_crp_ref} mentions the KYPO Cyber Range Platform that combines IaC using tools such as Ansible, Terraform and Kubernetes, microservices, OpenStack's cloud provider technology. The environment's declaration is based on human-readable data-serialization languages such as JSON, YAML, or the open-source software Packer\footnote{\url{https://www.packer.io/}}. Furthermore, KYPO provides a user management platform, which facilitates the life of instructors, as this framework has close bounds to university education. For each scenario, users connect to a set of Virtual Machines and communicate with the rest of the network. The entire environment is based on sandboxed environments and is suitable both for cloud deployments, as mentioned, and local environments. This framework also supports the addition of containers to the scenario's environment.
+
+\begin{figure}[H]
+    \includegraphics[width=7cm]{figures/KYPO-portal-diagram.png}
+    \caption{KYPO's Conceptual Architecture \cite{kypo_arch_ref}.}
+    \label{fig:kypo_concept_arch}
+\end{figure}
+
+Fig. \ref{fig:kypo_concept_arch} presents the project's architecture. The ``Repositories'' module stores sandbox definitions used in the target environment that are loaded by the so-called KYPO portal. This includes network topologies and provisioning definitions, specifying the internal structure of sandboxes as well as the configuration of the hosts. The ``Users'' module refers to the different roles and scopes available in KYPO. They can create and manage training or other users and are responsible for designing sandboxes. Moreover, users can access machines in the cloud using Apache Guacamole, Remote Desktop, or SSH. The ``KYPO Portal'' is a simple GUI so users can interact with the cyber range's microservices, essentially working as a mediator. The ``Cloud'' module is based on the OpenStack cloud platform and controls computing, storage, and network resource pools. The last presented module is the user computer and works as an alternative to cloud sandboxes. The deployment is done using VirtualBox and Vagrant in such cases. This framework allows instructors to assess the progress obtained by trainees during a certain scenario. It also enables the creation of a set of questions and tasks related to each scenario. It allows visualization of scenario cheating attempts, using variables such as the minimum solve time and time proximity in which two submissions from distinct players on the same level are flagged.
 
 Lastly, Russo \textit{et al.} \cite{crack_ref} suggests CRACK, a cyber range that uses an SDL for declaring scenarios and supports automatic verification of the training objects of the scenario. The SDL can be translated into Datalogs as part of declarative programming logic, which are later used for executing test cases on the scenario. It follows an approach interrelated to IaC for cloud deployment of Virtual Machines. 
 
@@ -475,11 +485,9 @@ As mentioned throughout this chapter, current cyber range problems are related t
 
 Nonetheless, key takeaway ideas in the performed search are mostly related to the services in the cyber range scenarios, which simulate enterprise-level networks and the technologies used to build them. Other topics that stand out during our search concern traffic generation using automated scripts that emulate benevolent or malicious behavior, and aspects related to monitoring trainees' actions across the testing environment are also essential factors that can make the scenario more realistic. Lastly, the set of vulnerabilities and attacks instigated across all references, especially in open-source projects, were very useful for our project's sake to better understand typical scenario examples.
 
-Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}) presents a high-level overview of the main features supported by some of the most relevant cyber ranges, finishing with the proposed solution's aim.
-
 \begin{table}[H]
   \caption{Comparison of Cyber Ranges.}
-\scalebox{0.54}{
+\scalebox{0.5}{
 \begin{tabular}{ | c | c | c | c | c | c | c | c | c |}
 \hline
 \empty & \textbf{IaC} & \textbf{Randomization} & \textbf{Local \& Cloud Deployments} & \textbf{Containerization} & \textbf{Enterprise-level Scenarios} & \textbf{Linux \& Windows Scenarios} & \textbf{Open-source} \\ 
@@ -495,6 +503,8 @@ Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}) presents a high-l
 \textit{SmallWorld}  & \priority{50} & \priority{0} & \priority{100} & \priority{0} & \priority{100} & \priority{100} & \priority{0} \\
 \hline
 \textit{Leaf}  & \priority{100} & \priority{100} & \priority{100} & \priority{0} & \priority{100} & \priority{0} & \priority{0} \\
+\hline
+\textit{KYPO}  & \priority{100} & \priority{0} & \priority{100} & \priority{100} & \priority{100} & \priority{100} & \priority{100} \\
 \hline
 \textit{CRACK} & \priority{50} & \priority{100} & \priority{50} & \priority{0} & \priority{100} & \priority{50} & \priority{100} \\
 \hline
@@ -514,6 +524,8 @@ Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}) presents a high-l
   \label{tab:comparison_cr}
 \end{table}
 
+Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}) presents a high-level overview of the main features supported by some of the most relevant cyber ranges, finishing with the proposed solution's aim.
+
 Several marks were given according to each cyber range. As a way to demystify some classifications, for the \textit{IaC} column, we considered half a circle as approaches that used customized descriptions to deploy scenarios or solutions only relying on Docker or Docker-compose without a standard tool, as some of the ones presented in Table \ref{tab:comparison_iac_tools} (p. \pageref{tab:comparison_iac_tools}); for the \textit{Randomization} column, we considered tools that provided some randomization of: traffic generation, network, system, and accounts' configurations or of the vulnerabilities present in the scenario as of a full circle. Regarding the \textit{Local \& Cloud Deployments} and \textit{Linux \& Windows Scenarios}, we considered half a circle for cases where only one of the features was present. About the \textit{Containerization} column, we considered half a circle for scenarios that combined containers and VMs in separate scenarios. Concerning the \textit{Enterprise-level Scenarios} column, we considered full circles as a network with a wide variety of services ranging from firewalls, internal networks, IDS, and mail servers, among others. At the same time, half-circles were intermediate representations of enterprise-level networks. Finally, the \textit{Open-source} column considers cyber range frameworks available to the general public.
 
-Our framework addresses every column of Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}), which is not achieved by any other framework. Even in cyber range frameworks such as \textit{CyExec}, which is complete in terms of the mentioned features, a possible idea would be to extend the development. Unfortunately, not all frameworks are open-source, and some lack community support. Instead, we opted to create a new framework with the functionalities we wanted, using the technology stack of our choice. With this idea in mind, Chapter \ref{chap:problem_statement} (p. \pageref{chap:problem_statement}) will further detail the problem to be solved.
+Our framework addresses every column of Table \ref{tab:comparison_cr} (p. \pageref{tab:comparison_cr}), which is not achieved by any other framework. Even in cyber range frameworks such as \textit{CyExec}, which is quite complete in terms of the mentioned features, a possible idea would be to extend the development. Unfortunately, not all frameworks are open-source, and some lack community support. Instead, we opted to create a new framework with the functionalities we wanted, using the technology stack of our choice. With this idea in mind, Chapter \ref{chap:problem_statement} (p. \pageref{chap:problem_statement}) will further detail the problem to be solved.
