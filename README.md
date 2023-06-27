@@ -124,7 +124,7 @@ pip install pypsrp python-dotenv
 pip install -r PROJ_Thesis_2223/project/ctfs/requirements.txt
 ```
 
-Then, the Ansible host device should install Tailscale and join a *Tailnet* Mesh network, according to the steps mentioned in Section [Tailscale & Cloud Deployments](#tailscale--cloud-deployments).
+Then, the Ansible host device should install Tailscale and join a *Tailnet* Mesh network, according to the steps mentioned in Section [Tailscale & Cloud Deployments](#tailscale--cloud-deployments). **These steps should also be taken into account even when using the [bootstrap.yml](project/bootstrap.yml) playbook.**
 
 > **The Ansible host machine needs to have virtualization enabled to run Windows-based scenarios.**
 
@@ -157,7 +157,7 @@ Lastly, we have created a [remote_setup.sh](project/remote/remote_setup.sh) scri
 - `remote_ip` as the external IP address of the remote machine.
 - `remote_user` with the root user's name in the remote machine.
 - `remote_privKey` as the path to the private SSH remote key that enables access to the remote machine.
-- `local_github_key` as the path to the framework's GitHub repository deploy key. This key has read-only permissions, so the target machine can only pull data from the repository. The private key's contents are as follows:
+- `local_github_key` as the path to the framework's GitHub repository deploy key. This key has read-only permissions, so the target machine can only pull data from the repository. This key should have read-only permissions for the owner. This is achieved with `chmod 400 [key_filename]`. The private key's contents are as follows:
  
  ```
 -----BEGIN OPENSSH PRIVATE KEY-----
