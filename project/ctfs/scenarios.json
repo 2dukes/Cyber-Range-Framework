@@ -116,7 +116,7 @@
     "name": "ransomware",
     "image": "ransomware.jpg",
     "author": "2dukes",
-    "description": "A malicious .exe file encrypted the flag file inside the briefcase folder. Will you be able to crack it? IDA Free version, x64dbg portable (C:\\ProgramData\\chocolatey\\bin\\x64dbg), Process Explorer, Procmon, PeStudio, and Resource Hacker are already installed to facilitate the Reverse Engineering process. RDesktop is enabled. You can access the machine using the credentials vagrant/vagrant.",
+    "description": "A malicious .exe file encrypted the flag file inside the briefcase folder. Will you be able to crack it? IDA Free version, x64dbg portable (C:\\ProgramData\\chocolatey\\bin\\x64dbg), Process Explorer, PeStudio, and Resource Hacker are already installed to facilitate the Reverse Engineering process. RDesktop is enabled. You can access the machine using the credentials vagrant:vagrant.",
     "category": "Windows",
     "difficulty": "Medium",
     "flag": "flag{m1ybe_a_w3ird_typ3_0f_rans0mwar3}",
