@@ -1,12 +1,11 @@
 # Install Tools
 
 # Portable Chocolatey tools installed in C:\ProgramData\chocolatey\bin
-- name: Install IDA, Process Explorer, Process Monitor, Resource Hacker, and Pestudio
+- name: Install IDA, Process Explorer, Resource Hacker, x64dbg, and Pestudio
   win_chocolatey:
     name:
     - ida-free
     - procexp
-    - procmon
     - pestudio
     - reshack
     - x64dbg.portable
