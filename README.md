@@ -151,23 +151,12 @@ To perform such setup, an ephemeral key should be created in the Tailscale confi
 
 ### Cloud Deployment Configurations
 
-Lastly, we have created a [remote_setup.sh](project/remote/remote_setup.sh) script tested in Microsoft Azure's Virtual Machines that successfully performs cloud deployments. Still, [some variables](https://github.com/2dukes/PROJ_Thesis_2223/blob/4057851b5e61cdcc27665e956e8f03d6f0ee4ac5/project/remote/remote_setup.sh#L3-L9) need to be configured:
+Lastly, we have created a [remote_setup.sh](project/remote/remote_setup.sh) script tested in Microsoft Azure's Virtual Machines that successfully performs cloud deployments. Still, [some variables](https://github.com/2dukes/Cyber-Range-Framework/blob/3b858e2c44e4fe80d90025e48fd1306ef3a9cd00/project/remote/remote_setup.sh#L3-L8) need to be configured:
 
 - `remote_ssh` the SSH hostname of the remote machine.
 - `remote_ip` as the external IP address of the remote machine.
 - `remote_user` with the root user's name in the remote machine.
 - `remote_privKey` as the path to the private SSH remote key that enables access to the remote machine.
-- `local_github_key` as the path to the framework's GitHub repository deploy key. This key has read-only permissions, so the target machine can only pull data from the repository. This key should have read-only permissions for the owner. This is achieved with `chmod 400 [key_filename]`. The private key's contents are as follows:
- 
- ```
------BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACDmhR9yKlJuedUJTqernxesPuRxK8Zh9hMhatT5ZzpWGAAAAJhlMqjXZTKo
-1wAAAAtzc2gtZWQyNTUxOQAAACDmhR9yKlJuedUJTqernxesPuRxK8Zh9hMhatT5ZzpWGA
-AAAED0zTl2e/UyixMy2k6Ps2idm1cnd+bqY+1bWHDXYc65P+aFH3IqUm551QlOp6ufF6w+
-5HErxmH2EyFq1PlnOlYYAAAAEnJlbW90ZUBtYWNoaW5lLmNvbQECAw==
------END OPENSSH PRIVATE KEY-----
-```
 
 # Running Scenarios
 

@@ -3,7 +3,6 @@
 remote_ssh="remote_machine"
 remote_ip="172.187.128.103"
 remote_user="azureuser"
-local_github_key="/home/dukes/.ssh/remoteGithub"
 
 # chmod 400 <private_key_path> | Private Key from Azure
 remote_privKey="/home/dukes/Documents/ThesisWork/Cyber-Range-Framework/project/remote/keys/FEUPVM_key.pem"
@@ -29,32 +28,17 @@ fi
 # Update Indexes
 ssh "$remote_ssh" 'sudo apt-get update && sudo apt-get -y upgrade'
 
-# Install Python 3 & rsync
-ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip rsync git openssh-client'
+# Install Python 3
+ssh "$remote_ssh" 'sudo apt-get -y install python3 python3-pip git openssh-client'
 
 # Install Ansible
 ssh "$remote_ssh" 'pip install --user ansible'
 
-# Copy SSH Repository Key (Deploy Key added specifically to this repository)
-rsync "$local_github_key" "$remote_ssh":~/.ssh/id_rsa
-
 # Remove Already Existing Github Repository
 ssh "$remote_ssh" 'rm -rf Cyber-Range-Framework'
 
-ssh_config2="Host github.com
-  StrictHostKeyChecking no
-  IdentityFile ~/.ssh/id_rsa
-"
-
-ssh_config_res2=$(ssh "$remote_ssh" "cat ~/.ssh/config | grep 'github.com'")
-
-if [ -z "$ssh_config_res2" ]
-then
-    ssh "$remote_ssh" "echo '${ssh_config2}' > ~/.ssh/config"
-fi
-
 # Pull Github Repository
-ssh "$remote_ssh" 'git clone git@github.com:2dukes/Cyber-Range-Framework.git'
+ssh "$remote_ssh" 'git clone https://github.com/2dukes/Cyber-Range-Framework.git'
 
 # Create named FIFOs
 ssh "$remote_ssh" "mkfifo Cyber-Range-Framework/project/manager/mypipe"
