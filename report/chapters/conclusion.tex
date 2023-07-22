@@ -40,7 +40,7 @@ We conducted an analysis of the \textit{state-of-the-art} to understand the curr
 
 \textbf{Cyber Range Framework}
 
-We designed and implemented a configurable, dynamic, easily-deployable, and robust framework for cyber ranges. This tool uses cutting-edge technologies to automatically launch a wide range of scenarios that a cybersecurity professional or enthusiast can explore. Such types of scenarios are quite meaningful as they are strongly related to the vulnerabilities that still haunt the lives of many companies nowadays. Also, the fact that our framework uses an approach heavily reliant on containers allows the creation of flexible scenarios which can easily address important areas, such as the Internet of Things (IoT). Finally, the GitHub repository hosting our framework will be open-sourced\footnote{\url{https://github.com/2dukes/PROJ_Thesis_2223}}.\\
+We designed and implemented a configurable, dynamic, easily-deployable, and robust framework for cyber ranges. This tool uses cutting-edge technologies to automatically launch a wide range of scenarios that a cybersecurity professional or enthusiast can explore. Such types of scenarios are quite meaningful as they are strongly related to the vulnerabilities that still haunt the lives of many companies nowadays. Also, the fact that our framework uses an approach heavily reliant on containers allows the creation of flexible scenarios which can easily address important areas, such as the Internet of Things (IoT). Finally, the GitHub repository hosting our framework will be open-sourced\footnote{\url{https://github.com/2dukes/Cyber-Range-Framework}}.\\
 
 \textbf{Validation of the Proposed Hypothesis}
 
@@ -62,6 +62,8 @@ Pursue further efforts in creating scenarios that use a wider range of network s
 
 The current framework is suited for a single trainee only. A possible future improvement could be enabling scenario deployments to multiple remote machines so that numerous trainees can improve their skills in a style similar to a CTF competition.\\
 
+\clearpage
+
 \textbf{Randomization}
 
 Several possible avenues of research were identified during the Literature Review (\textit{cf.} Chapter \ref{chap:sota}, p. \pageref{chap:sota}), which were not fully explored. We are talking about randomization. We mentioned every time a scenario is launched, the IP address of each container varies. We also provide the ability to experiment with several attack paths in certain scenarios. However, further developments can consider the randomization of user accounts, credentials, operating systems, other network configurations, and services. Even if considering the above-mentioned traffic generation, several types of traffic could be generated.\\
@@ -69,3 +71,4 @@ Several possible avenues of research were identified during the Literature Revie
 \textbf{Docker Escape Concerns}
 
 Our framework is tailored for running in controlled environments. Even in cloud deployments, we guarantee access to the externally accessible machines only if the machine trying to access them is part of the Tailscale network. The traffic exchanged between the mesh network is encrypted, and any device sitting outside it cannot access any machine or decrypt any traffic. Still, if by any means the trainee feels inspired to perform Docker escape attacks, it would be helpful to explore some countermeasures to prevent the trainee from accessing the host system.\\
+
