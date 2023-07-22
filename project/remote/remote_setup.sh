@@ -6,7 +6,7 @@ remote_user="azureuser"
 local_github_key="/home/dukes/.ssh/remoteGithub"
 
 # chmod 400 <private_key_path> | Private Key from Azure
-remote_privKey="/home/dukes/Documents/ThesisWork/PROJ_Thesis_2223/project/remote/keys/FEUPVM_key.pem"
+remote_privKey="/home/dukes/Documents/ThesisWork/Cyber-Range-Framework/project/remote/keys/FEUPVM_key.pem"
 
 # Local Tasks
 
@@ -39,7 +39,7 @@ ssh "$remote_ssh" 'pip install --user ansible'
 rsync "$local_github_key" "$remote_ssh":~/.ssh/id_rsa
 
 # Remove Already Existing Github Repository
-ssh "$remote_ssh" 'rm -rf PROJ_Thesis_2223'
+ssh "$remote_ssh" 'rm -rf Cyber-Range-Framework'
 
 ssh_config2="Host github.com
   StrictHostKeyChecking no
@@ -54,21 +54,21 @@ then
 fi
 
 # Pull Github Repository
-ssh "$remote_ssh" 'git clone git@github.com:2dukes/PROJ_Thesis_2223.git'
+ssh "$remote_ssh" 'git clone git@github.com:2dukes/Cyber-Range-Framework.git'
 
 # Create named FIFOs
-ssh "$remote_ssh" "mkfifo PROJ_Thesis_2223/project/manager/mypipe"
-ssh "$remote_ssh" "mkfifo PROJ_Thesis_2223/project/manager/cancel_mypipe"
+ssh "$remote_ssh" "mkfifo Cyber-Range-Framework/project/manager/mypipe"
+ssh "$remote_ssh" "mkfifo Cyber-Range-Framework/project/manager/cancel_mypipe"
 
 # Get into project/ and Bootstrap Machine (bootstrap.yml)
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
+ssh "$remote_ssh" "cd Cyber-Range-Framework/project && /home/${remote_user}/.local/bin/ansible-playbook bootstrap.yml -v"
 
 # Enable ip_tables & ip6_tables kernel module (Cloud Machine)
 ssh "$remote_ssh" "sudo insmod /lib/modules/\$(uname -r)/kernel/net/ipv4/netfilter/ip_tables.ko"
 ssh "$remote_ssh" "sudo insmod /lib/modules/\$(uname -r)/kernel/net/ipv6/netfilter/ip6_tables.ko"
 
 # Launch UI
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && docker-compose down"
+ssh "$remote_ssh" "cd Cyber-Range-Framework/project && docker-compose down"
 ssh "$remote_ssh" "docker exec -it attackermachine tailscale logout 1>/dev/null 2>&1 ; docker exec -it kvmcontainer tailscale logout 1>/dev/null 2>&1"
 ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runWS.sh\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2)"
 ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runWS.sh\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2)"
@@ -77,9 +77,9 @@ ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runCancel.sh\" | head -n 1 | tr -
 ssh "$remote_ssh" "kill -9 \$(ps -aux | grep \"runCancel.sh\" | head -n 1 | tr -s \" \" | cut -d \" \" -f 2)"
 ssh "$remote_ssh" "docker rm -f \$(docker ps -a | grep -Ewv \"mongodb|backend|frontend|CONTAINER\" | cut -d \" \" -f1) 1>/dev/null 2>&1"
 
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project && docker-compose up -d"
-ssh "$remote_ssh" "cd PROJ_Thesis_2223/project/ctfs && python3 fetchCTFs.py"
+ssh "$remote_ssh" "cd Cyber-Range-Framework/project && docker-compose up -d"
+ssh "$remote_ssh" "cd Cyber-Range-Framework/project/ctfs && python3 fetchCTFs.py"
 
 # Start runWS.sh and runCancel.sh on a remote shell
-ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runWS.sh &!' &
-ssh "$remote_ssh" 'cd PROJ_Thesis_2223/project/manager && ./runCancel.sh &!' &
+ssh "$remote_ssh" 'cd Cyber-Range-Framework/project/manager && ./runWS.sh &!' &
+ssh "$remote_ssh" 'cd Cyber-Range-Framework/project/manager && ./runCancel.sh &!' &
